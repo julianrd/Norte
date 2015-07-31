@@ -1,10 +1,93 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static "FacturasNorte/css/index_style.css" %}">
+
 <head>
-    <meta charset="UTF-8">
-    <title></title>
+  <title>Facturas Norte</title>
+
 </head>
+
 <body>
-<h1>CLIENTE</h1>
-</body>
+
+  <div id="main">
+
+    <div id="header">
+
+
+      <div id="logo">
+
+        <div id="logo_text">
+
+          <!-- class="logo_colour", allows you to change the colour of the text -->
+          <h1><a href="index.html">Sistema De Facturación <span class="logo_colour">Norte</span></a></h1>
+
+          <h2>Sistema de Facturación Electronica de Clientes</h2>
+
+        </div>
+
+      </div>
+
+
+        <ul id="menu">
+
+          <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+          <li class="selected"><a href="index.html">Mi Cuenta</a></li>
+          <li><a href="Example.html">Mis Facturas</a></li>
+          <li><a href="page.html">Reclamar </a></li>
+          <li><a href="another_page.html">Novedades</a></li>
+          <li><a href="contact.html">Contáctenos</a></li>
+
+              <div style="width: 950px; margin: 0 auto; id="Sesion">
+
+               <a href="#"><p>Cerrar Sesión</p></a>
+
+        </ul>
+      </div>
+
+    </div>
+    <div id="content_header"></div>
+    <div id="site_content">
+      <div class="sidebar">
+        <!-- insert your sidebar items here -->
+        <h3>Ultimas Novedades</h3>
+        <h4>Nuevo sistema de Facturación</h4>
+        <h5>Septiembre 2015</h5>
+        <p>Se Lanzará nuevo sistema<br /><a href="#">Leer Más</a></p>
+        <p></p>
+        <h4>New Website Launched</h4>
+        <h5>Septiembre 2015</h5>
+        <p>lalala lalala<br /><a href="#">Leer Más</a></p>
+        <h3>Useful Links</h3>
+        <ul>
+          <li><a href="#">link 1</a></li>
+          <li><a href="#">link 2</a></li>
+          <li><a href="#">link 3</a></li>
+          <li><a href="#">link 4</a></li>
+        </ul>
+        <h3>Search</h3>
+        <form method="post" action="#" id="search_form">
+          <p>
+            <input class="search" type="text" name="search_field" value="Enter keywords....." />
+            <input name="search" type="image" style="border: 0; margin: 0 0 -9px 5px;" src="style/search.png" alt="Search" title="Search" />
+          </p>
+        </form>
+      </div>
+      <div id="content">
+        <!-- insert the page content here -->
+        <h1>Bienvenido al Sistema de online de Facturación</h1>
+            <h2>Estamos Trabajando...</h2>
+                <img src="{% static "FacturasNorte/img/diarioNorte.jpg" %}" />
+
+            <p>Aun no hay novedades</>
+        </ul>
+      </div>
+    </div>
+    <div id="content_footer"></div>
+    <div id="footer">
+      Copyright &copy; JJ | <a href="http://validator.w3.org/check?uri=referer">Chaco</a> | <a href="http://jigsaw.w3.org/css-validator/check/referer">Corrientes</a> | <a href="http://www.html5webtemplates.co.uk">design from JJ</a>
+    </div>
+  </div>
+
 </html>

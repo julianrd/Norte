@@ -64,9 +64,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'sqlserver_ado',
         'NAME': 'FacturasNorte',
-        'HOST': 'PABLOHP',#'GFAST',
-        'USER': 'sa',
-        'PASSWORD': 'Norte1234',#'dni36017874',
+        'HOST': 'JORGIED',#'GFAST',
+        'USER': '',
+        'PASSWORD': '',#'dni36017874',
         'OPTIONS': {
             'provider': 'SQLNCLI',
             'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;'
@@ -114,7 +114,7 @@ FORMAT_MODULE_PATH  = 'Norte.formats'
 #LOGIN PATHS
 LOGIN_REDIRECT_URL = 'FacturasNorte:index'
 
-LOGIN_URL = 'FacturasNorte/registration/'
+LOGIN_URL = 'FacturasNorte:login'
 
 # #FORMAT FILES
 # FORMAT_MODULE_PATH = [
