@@ -1,0 +1,7 @@
+{% load l10n %}
+<h1>{{ cliente.nombre}}</h1>
+
+<p>DNI: {{ cliente.dni }}</p>
+<p>Fecha nacimiento: {{ cliente.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</p>
+<p>Domicilio: {{ cliente.domicilio }}</p>
+<p>Telefono: {{ cliente.telefono }}</p>

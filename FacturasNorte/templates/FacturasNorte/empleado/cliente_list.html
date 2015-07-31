@@ -1,0 +1,8 @@
+<h1>Clientes</h1>
+<ul>
+{% for cliente in cliente_list %}
+    <li><a href={% url 'FacturasNorte:detalle_cliente' cliente.pk %}>{{ cliente.nombre }} - {{ cliente.email }}</a> -- <a href={% url 'FacturasNorte:modif_cliente' cliente.pk %}>Modificar</a> -- <a href={% url 'FacturasNorte:elim_cliente' cliente.pk %}>Eliminar</a></li>
+{% empty %}
+    <li> No hay clientes disponibles.</li>
+{% endfor %}
+</ul>
