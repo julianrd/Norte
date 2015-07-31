@@ -20,6 +20,11 @@ urlpatterns = patterns('',
     url(r'^index/$', views.index, name = 'index'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'FacturasNorte/registration/logged_out.html'}, name='logout'),
 
+    url(r'^password_change/$', auth_views.password_change, {'template_name': 'FacturasNorte/registration/change_password.html'}, name='password_change'),
+    url(r'^password_change/done/$', auth_views.password_change_done, {'template_name': 'FacturasNorte/registration/password_change_done.html'}, name='password_change_done'),
+    url(r'^password_reset/$', auth_views.password_reset, {'template_name': 'FacturasNorte/registration/password_reset_form.html'}, name='password_reset'),
+    url(r'^password_reset/done/$', auth_views.password_reset_done, {'template_name': 'FacturasNorte/registration/password_reset_done.html'}, name='password_reset_done'),
+
     url(r'^staff/nuevo_cliente/$', views.ClienteCreateView.as_view(), name = 'nuevo_cliente'),
     url(r'^staff/cliente/(?P<pk>\d+)/$', views. ClienteDetailView.as_view(), name = 'detalle_cliente'),
     url(r'^staff/lista_cliente/$', views.ClienteListView.as_view(), name = 'lista_cliente'),
