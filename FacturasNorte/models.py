@@ -157,6 +157,25 @@ class Administrador(models.Model):
     domicilio = models.CharField(max_length=254, blank=True, default='')
     telefono = models.CharField(max_length=254, blank=True, default='')
 
+    class Meta:
+        db_table = 'Administradores'
+        verbose_name_plural = 'Administradores'
+
+
+class Empleado(models.Model):
+    nroUsuario = models.OneToOneField(User)
+    nombre = models.CharField(max_length=40, null=False)
+    dni = models.CharField(max_length=8, null=False)
+    email = models.EmailField(max_length=255, blank=True, unique=True, null=False, default='')
+    fechaNacimiento = models.DateTimeField(blank=True, null=True)
+    domicilio = models.CharField(max_length=254, blank=True, default='')
+    telefono = models.CharField(max_length=254, blank=True, default='')
+
+
+    class Meta:
+        db_table = 'Empleados'
+        verbose_name_plural = 'Empleados'
+
     """
     def __init__(self, dni, nombre, fechaNacimiento, domicilio, telefono):
         super(Administrador, self).__init__()
@@ -197,9 +216,6 @@ class Administrador(models.Model):
     def __unicode__(self):
         return self.nombre
 
-    class Meta:
-        db_table = 'Administradores'
-        verbose_name_plural = 'Administradores'
 
 @receiver(pre_save, sender=Cliente)
 def nuevo_Usuario(sender, **kwargs):
@@ -233,67 +249,3 @@ def crear_usuario_cliente(cliente):
     return
 
 
-
-
-"""
-@receiver(pre_save, sender=Cliente)
-def nuevo_Usuario(sender, **kwargs):
-    cliente = kwargs.get('instance')
-    try:
-        u = cliente.get_usuario()
-    except User.DoesNotExist:
-        u = User(username=cliente.nombre,
-                 email=cliente.email,
-                 is_superuser=False,
-                 is_staff=False,
-                 is_active=True)
-        u.save()
-        cliente.nroUsuario = u
-
-
-@receiver(pre_save, sender=Administrador)
-def nuevo_Usuario(sender, **kwargs):
-    admin = kwargs.get('instance')
-    try:
-        u = admin.get_usuario()
-    except User.DoesNotExist:
-        u = User(username=admin.nombre,
-                 email=admin.email,
-                 is_staff=True,
-                 is_superuser=True,
-                 is_active=True)
-        u.save()
-        admin.nroUsuario = u
-
-@receiver(post_save, sender=User)
-def nuevo_Cliente_o_Admin(sender, **kwargs):
-    if kwargs.get('created', False):
-        usuario = kwargs.get('instance')
-        if usuario.is_staff:
-            perfil = Administrador()
-        else:
-            perfil = Cliente()
-        perfil.set_usuario(usuario)
-        perfil.set_nombre(usuario.username)
-        perfil.set_email(usuario.email)
-        perfil.save()
-"""
-
-
-
-"""
-@receiver(pre_save, sender=Cliente)
-def agregar_usuario_cliente_existente(sender, **kwargs):
-    if kwargs.get('created', True):
-        cliente = kwargs.get('instance')
-        if cliente.nroUsuario.username == 'anonimo':
-            nuevo_usuario = User(username=cliente.email.split("@")[0],
-                                 email=cliente.email,
-                                 is_superuser=False,
-                                 is_staff=False,
-                                 is_active=True,
-                                 date_joined=timezone.now())
-            nuevo_usuario.save()
-            cliente.nroUsuario = nuevo_usuario
-            cliente.save()
-"""

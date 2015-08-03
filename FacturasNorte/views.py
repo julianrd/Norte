@@ -2,7 +2,7 @@ __author__ = 'Julian'
 from django.contrib.auth import views
 from django.utils import timezone
 from FacturasNorte.forms import AdminRegisterForm, ClienteRegisterForm
-from FacturasNorte.models import Administrador, Cliente
+from FacturasNorte.models import Administrador, Cliente, Empleado
 from FacturasNorte.models import User
 from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -68,6 +68,68 @@ class AdminDetailView(DetailView):
         context = super(AdminDetailView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
         return context
+
+class EmpCreateView(FormView):
+    template_name = "FacturasNorte/staff/add_emp.html"
+    form_class = AdminRegisterForm
+    success_url = reverse_lazy('FacturasNorte:lista_emp')
+
+    def form_valid(self, form):
+
+        #Nuevo Usuario
+        nuevo_usuario = User()
+        nuevo_usuario.username = form.cleaned_data['email_field'].split("@")[0]
+        nuevo_usuario.set_password(form.cleaned_data['password_field'])
+        nuevo_usuario.email = form.cleaned_data['email_field']
+        nuevo_usuario.is_active = True
+        nuevo_usuario.is_staff = True
+        nuevo_usuario.is_superuser = True
+        nuevo_usuario.date_joined = timezone.now()
+        nuevo_usuario.save()
+
+        #Nuevo_Admin
+        nuevo_admin = Administrador()
+        nuevo_admin.set_dni(form.cleaned_data['dni_field'])
+        nuevo_admin.set_nombre(form.cleaned_data['nombre_field'])
+        nuevo_admin.set_email(form.cleaned_data['email_field'])
+        nuevo_admin.set_fechaNacimiento(form.cleaned_data['fecha_nacimiento_field'])
+        nuevo_admin.set_domicilio(form.cleaned_data['domicilio_field'])
+        nuevo_admin.set_telefono(form.cleaned_data['telefono_field'])
+        nuevo_admin.set_usuario(nuevo_usuario)
+        nuevo_admin.save()
+
+        return super(EmpCreateView, self).form_valid(form)
+
+
+class EmpModifView(UpdateView):
+    model = Empleado
+    template_name = "FacturasNorte/empleado/mod_emp.html"
+    success_url = reverse_lazy('FacturasNorte:lista_emp')
+
+class EmpDeleteView(DeleteView):
+    model = Empleado
+    template_name = "FacturasNorte/empleado/del_emp.html"
+    success_url = reverse_lazy('FacturasNorte:lista_emp')
+
+class EmpListView(ListView):
+    template_name = "FacturasNorte/empleado/emp_list.html"
+    model = Empleado
+    context_object_name = 'emp_list'
+
+    def get_queryset(self):
+        """Return the last five published questions (not including those set to be published in the future)."""
+        return Empleados.objects.all
+
+class EmpDetailView(DetailView):
+    template_name = "FacturasNorte/empleado/emp_detail.html"
+    model = Empleado
+    context_object_name = 'empleados'
+
+    def get_context_data(self, **kwargs):
+        context = super(EmpDetailView, self).get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        return context
+
 
 class ClienteCreateView(FormView):
     template_name = "FacturasNorte/staff/add_cliente.html"

@@ -64,7 +64,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'sqlserver_ado',
         'NAME': 'FacturasNorte',
-        'HOST': 'JORGIED',#'GFAST',
+        'HOST': 'JORGIED',
         'USER': '',
         'PASSWORD': '',#'dni36017874',
         'OPTIONS': {
@@ -121,3 +121,9 @@ LOGIN_URL = 'FacturasNorte:login'
 #     'Norte.formats',
 #     'FacturasNorte.formats',
 # ]
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'jor.lencina@gmail.com'
+EMAIL_HOST_PASSWORD = 'jorgito'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
