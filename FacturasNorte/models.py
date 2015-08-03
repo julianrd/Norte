@@ -233,8 +233,6 @@ def crear_usuario_cliente(cliente):
     return
 
 
-
-
 """
 @receiver(pre_save, sender=Cliente)
 def nuevo_Usuario(sender, **kwargs):
@@ -264,22 +262,7 @@ def nuevo_Usuario(sender, **kwargs):
                  is_active=True)
         u.save()
         admin.nroUsuario = u
-
-@receiver(post_save, sender=User)
-def nuevo_Cliente_o_Admin(sender, **kwargs):
-    if kwargs.get('created', False):
-        usuario = kwargs.get('instance')
-        if usuario.is_staff:
-            perfil = Administrador()
-        else:
-            perfil = Cliente()
-        perfil.set_usuario(usuario)
-        perfil.set_nombre(usuario.username)
-        perfil.set_email(usuario.email)
-        perfil.save()
 """
-
-
 
 """
 @receiver(pre_save, sender=Cliente)

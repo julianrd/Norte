@@ -39,7 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'FacturasNorte'
+    'FacturasNorte',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -64,9 +64,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'sqlserver_ado',
         'NAME': 'FacturasNorte',
-        'HOST': 'JORGIED',#'GFAST',
-        'USER': '',
-        'PASSWORD': '',#'dni36017874',
+        'HOST': 'PABLOHP',#'GFAST',
+        'USER': 'sa',
+        'PASSWORD': 'Norte1234',#'dni36017874',
         'OPTIONS': {
             'provider': 'SQLNCLI',
             'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;'
@@ -106,6 +106,10 @@ TEMPLATE_DIRS = (
 )
 
 #AUTHENTICATION
+AUTH_PROFILE_MODULE = 'FacturasNorte.Administrador'
+AUTH_PROFILE_MODULE = 'FacturasNorte.Empleado'
+AUTH_PROFILE_MODULE = 'FacturasNorte.Cliente'
+
 AUTHENTICATION_BACKENDS = ('FacturasNorte.backends.Emailbackend','django.contrib.auth.backends.ModelBackend')
 
 #Path for date formats
