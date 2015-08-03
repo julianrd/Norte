@@ -103,7 +103,7 @@ ol li
 { width: 878px;
   position: relative;
   height: 134px;
-  background: #3A332D url(/static/img/img_index/logo.png) no-repeat;}
+  background: #3A332D url(../img/img_index/logo.png) no-repeat;}
 
 #logo #logo_text
 { position: absolute;
@@ -154,7 +154,7 @@ ul#menu li a
   text-align: center;
   color: #FFF;
   text-decoration: none;
-  background: #635B53 url(/static/img/img_index/tab.png) no-repeat 100% 0;}
+  background: #635B53 url(../img/img_index/tab.png) no-repeat 100% 0;}
 
 ul#menu li.tab_selected a
 { height: 20px;
@@ -162,10 +162,10 @@ ul#menu li.tab_selected a
 
 ul#menu li.selected
 { margin: 2px 2px 0 0;
-  background: #635B53 url(/static/img/img_index/tab_selected.png) no-repeat 0 0;}
+  background: #635B53 url(../img/img_index/tab_selected.png) no-repeat 0 0;}
 
 ul#menu li.selected a, ul#menu li.selected a:hover
-{ background: #635B53 url(/static/img/img_index/tab_selected.png) no-repeat 100% 0;
+{ background: #635B53 url(../img/img_index/tab_selected.png) no-repeat 100% 0;
   color: #111;}
 
 ul#menu li a:hover
@@ -173,11 +173,11 @@ ul#menu li a:hover
 
 #content_header, #content_footer
 { width: 940px;
-  background: url(/static/img/img_index/content_header.png) no-repeat;
+  background: url(../img/img_index/content_header.png) no-repeat;
   height: 14px;}
 
 #content_footer
-{ background: url(/static/img/img_index/content_footer.png) no-repeat;}
+{ background: url(../img/img_index/content_footer.png) no-repeat;}
 
 #site_content
 { width: 878px;
@@ -205,7 +205,7 @@ ul#menu li a:hover
 .sidebar li a, .sidebar li a:hover
 { padding: 0 0 0 35px;
   display: block;
-  background: transparent url(/static/img/img_index/link.png) no-repeat left center;}
+  background: transparent url(../img/img_index/link.png) no-repeat left center;}
 
 .sidebar li a.selected
 { color: #444;
@@ -217,11 +217,11 @@ ul#menu li a:hover
   padding: 0;}
 
 #content ul
-{ margin: 2px 0 22px 0px;}
+{ margin: 2px 0px 22px 0px;}
 
 #content ul li
 { list-style-type: none;
-  background: url(/static/img/img_index/bullet.png) no-repeat;
+  background: url(../img/img_index/bullet.png) no-repeat;
   margin: 0 0 6px 0;
   padding: 0 0 4px 25px;
   line-height: 1.5em;}

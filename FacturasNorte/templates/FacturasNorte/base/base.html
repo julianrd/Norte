@@ -1,82 +1,54 @@
-{% load staticfiles %}{% load firstof from future %}<!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>{% block title %}{% endblock %}</title>
-<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "FacturasNorte/admin/css/base.css" %}{% endblock %}" />
-{% block extrastyle %}{% endblock %}
-<!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "FacturasNorte/admin/css/ie.css" %}{% endblock %}" /><![endif]-->
-{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "FacturasNorte/admin/css/rtl.css" %}{% endblock %}" />{% endif %}
-<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "FacturasNorte/admin" %}{% endfilter %}";</script>
-<script type="text/javascript">window.__admin_utc_offset__ = "{% filter escapejs %}{% now "Z" %}{% endfilter %}";</script>
-{% block extrahead %}{% endblock %}
-{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>{% block title %}Norte Online{% endblock %}</title>
 </head>
-{% load i18n %}
+<body>
 
-<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
-
-<!-- Container -->
-<div id="container">
-
-    {% if not is_popup %}
-    <!-- Header -->
-    <div id="header">
-        <div id="branding">
-        {% block branding %}{% endblock %}
+    <div class="container">
+        <div id="header" class="row">
+            <h1><a href="{% url 'FacturasNorte:index' %}">Diario Norte</a></h1>
+             <div id="branding">
+                {% block branding %}{% endblock %}
+             </div>
         </div>
-        {% if user.is_active and user.is_staff %}
-        <div id="user-tools">
-            {% block welcome-msg %}
-                {% trans 'Bienvenido,' %}
-                <strong>{% firstof user.get_short_name user.get_username %}</strong>.
-            {% endblock %}
-            {% block userlinks %}
-                {% url 'django-admindocs-docroot' as docsroot %}
-                {% if docsroot %}
-                    <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
-                {% endif %}
+
+
+            {% if user.is_active %}
+            <div id="user-tools">
+                {% block welcome-msg %}
+                    <p>Bienvenido, <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+                {% endblock %}
+            <!--
+
                 {% if user.has_usable_password %}
-                <a href="{% url 'FacturasNorte:password_change' %}">{% trans 'Change password' %}</a> /
+                    {% block user-account %}
+                    <a href="{% url 'FacturasNorte:password_change' %}">Cambiar contrasena</a>
+                    {% endblock %}
                 {% endif %}
-                <a href="{% url 'FacturasNorte:logout' %}">{% trans 'Log out' %}</a>
-            {% endblock %}
-        </div>
-        {% endif %}
-        {% block nav-global %}{% endblock %}
-    </div>
-    <!-- END Header -->
-    {% block breadcrumbs %}
-    <div class="breadcrumbs">
-    <a href="{% url 'FacturasNorte:index' %}">{% trans 'Home' %}</a>
-    {% if title %} &rsaquo; {{ title }}{% endif %}
-    </div>
-    {% endblock %}
-    {% endif %}
+            -->
+                <a href="{% url 'FacturasNorte:logout' %}">Cerrar sesion</a></p>
+            </div>
+            {% endif %}
 
-    {% block messages %}
-        {% if messages %}
-        <ul class="messagelist">{% for message in messages %}
-          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
-        {% endfor %}</ul>
-        {% endif %}
-    {% endblock messages %}
+            {% block nav-global %}{% endblock %}
+        </div><!-- header -->
 
-    <!-- Content -->
-    <div id="content" class="{% block coltype %}colM{% endblock %}">
-        {% block pretitle %}{% endblock %}
-        {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
-        {% block content %}
-        {% block object-tools %}{% endblock %}
-        {{ content }}
-        {% endblock %}
-        {% block sidebar %}{% endblock %}
-        <br class="clear" />
-    </div>
-    <!-- END Content -->
+        <div id="content" class="row">
+        {% block content %}{% endblock %}
+        </div><!-- content -->
 
-    {% block footer %}<div id="footer"></div>{% endblock %}
-</div>
-<!-- END Container -->
+        <div id="footer" class="row">
+        Copyright &copy; {% now "Y" %}
+        </div><!-- footer -->
+
+    </div><!-- containter -->
+
 
 </body>
 </html>

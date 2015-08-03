@@ -249,3 +249,50 @@ def crear_usuario_cliente(cliente):
     return
 
 
+"""
+@receiver(pre_save, sender=Cliente)
+def nuevo_Usuario(sender, **kwargs):
+    cliente = kwargs.get('instance')
+    try:
+        u = cliente.get_usuario()
+    except User.DoesNotExist:
+        u = User(username=cliente.nombre,
+                 email=cliente.email,
+                 is_superuser=False,
+                 is_staff=False,
+                 is_active=True)
+        u.save()
+        cliente.nroUsuario = u
+
+
+@receiver(pre_save, sender=Administrador)
+def nuevo_Usuario(sender, **kwargs):
+    admin = kwargs.get('instance')
+    try:
+        u = admin.get_usuario()
+    except User.DoesNotExist:
+        u = User(username=admin.nombre,
+                 email=admin.email,
+                 is_staff=True,
+                 is_superuser=True,
+                 is_active=True)
+        u.save()
+        admin.nroUsuario = u
+"""
+
+"""
+@receiver(pre_save, sender=Cliente)
+def agregar_usuario_cliente_existente(sender, **kwargs):
+    if kwargs.get('created', True):
+        cliente = kwargs.get('instance')
+        if cliente.nroUsuario.username == 'anonimo':
+            nuevo_usuario = User(username=cliente.email.split("@")[0],
+                                 email=cliente.email,
+                                 is_superuser=False,
+                                 is_staff=False,
+                                 is_active=True,
+                                 date_joined=timezone.now())
+            nuevo_usuario.save()
+            cliente.nroUsuario = nuevo_usuario
+            cliente.save()
+"""
