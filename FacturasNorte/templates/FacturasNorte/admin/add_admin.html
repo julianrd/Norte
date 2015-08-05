@@ -2,24 +2,24 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
         {% load staticfiles %}
 
-              <link rel="stylesheet" href="{% static "css/style.css" %}">
-              <img src="{% static "img/bg_infobox.gif" %}" alt="asd"/>
-              <img src="{% static "img/h1.png" %}" alt=""/>
-              <img src="{% static "img/overlay.png" %}" alt=""/>
+              <link rel="stylesheet" href="{% static "FacturasNorte/css/style.css" %}">
+              <img src="{% static "FacturasNorte/img/bg_infobox.gif" %}" alt="asd"/>
+              <img src="{% static "FacturasNorte/img/h1.png" %}" alt=""/>
+              <img src="{% static "FacturasNorte/img/overlay.png" %}" alt=""/>
     <head>
         <title>Registro de Administrador</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <link rel="stylesheet" type="text/css" href="{% static "FacturasNorte/css/style.css" %}"/>
     </head>
 
     <body>
-        <form action="" class="register">
+        <form action="" class="register" method="post">
 
             <fieldset class="row1">
                 <legend>Facturas Norte
                 </legend>
                     {% load l10n %}
-                    <form method="post">
+                    <form action="" method="post">
                         {% csrf_token %}
                          <h1> Formulario de Registro Administrador</h1>
                              {% for field in form %}
@@ -35,9 +35,11 @@
                               <p></p>
                               <p></p>
 
-                         <div style="width: 170px; margin: 0 auto; value="Guardar"/>
-                         <input type="submit" value="Guardar"/>
-
+                         <div style="width: 170px; margin: 0 auto;">
+                            <input type="submit" value="Guardar"/>
+                         </div>
                     </form>
+            </fieldset>
+        </form>
     </body>
 </html>
