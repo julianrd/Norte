@@ -64,9 +64,9 @@ DATABASES = {
         'ENGINE': 'sqlserver_ado',
         'NAME': 'FacturasNorte',
 
-        'HOST': 'JORGIED',
-        'USER': '',
-        'PASSWORD': '',#'dni36017874',
+        'HOST': 'PABLOHP',#'JORGIED',
+        'USER': 'sa',
+        'PASSWORD': 'Norte1234',#'dni36017874',
 
         'OPTIONS': {
             'provider': 'SQLNCLI',
@@ -127,6 +127,7 @@ LOGIN_URL = 'FacturasNorte:login'
 #     'FacturasNorte.formats',
 # ]
 
+<<<<<<< HEAD
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
@@ -136,3 +137,11 @@ EMAIL_PORT = 25
 
 
 
+=======
+#EMAIL OPTIONS
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'julian.rd7@gmail.com'
+EMAIL_HOST_PASSWORD = 'tel563539'
+EMAIL_USE_TLS = True
+>>>>>>> ae52ab16a66f0f80fd83c1dd3516a3a34859e7fd

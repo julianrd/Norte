@@ -2,7 +2,7 @@ __author__ = 'Julian'
 from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_delete, pre_save
 from django.utils import timezone
 
 
@@ -135,6 +135,12 @@ class Cliente(models.Model):
     def set_nombre(self, nombre):
         self.nombre = nombre
 
+    def set_dni(self, dni):
+        self.nroDoc = dni
+
+    def set_fechaNacimiento(self, fecha):
+        self.fechaNacimiento = fecha
+
     def set_email(self, email):
         self.email = email
 
@@ -221,24 +227,19 @@ class Empleado(models.Model):
 def nuevo_Usuario(sender, **kwargs):
     cliente = kwargs.get('instance')
     #Obtener usuario existente
-    try:
-        u = cliente.get_usuario()
-    #Si no existe, crear uno nuevo
-    except User.DoesNotExist:
-        crear_usuario_cliente(cliente)
-
+    u = cliente.get_usuario()
     #Si el usuario era anonimo, asignar uno nuevo
     anonimo = User.objects.get(username='anonimo')
     if u == anonimo:
         crear_usuario_cliente(cliente)
 
     #Si se modifica el email, actualizarlo en el usuario
-    elif cliente.email != Cliente.objects.get(pk=cliente.numero).get_email():
+    elif cliente.email != User.objects.get(pk=cliente.nroUsuario.id).email:
         u.email = cliente.get_email()
         u.save()
 
 def crear_usuario_cliente(cliente):
-    u = User(username=cliente.nombre,
+    u = User(username=cliente.email.split("@")[0],
              email=cliente.email,
              date_joined = timezone.now(),
              is_superuser=False,
@@ -248,6 +249,28 @@ def crear_usuario_cliente(cliente):
     cliente.nroUsuario = u
     return
 
+
+
+@receiver(post_delete, sender=Administrador)
+def eliminar_usuario_admin(sender, **kwargs):
+    eliminar_usuario(**kwargs)
+
+@receiver(post_delete, sender=Empleado)
+def eliminar_usuario_empleado(sender, **kwargs):
+    eliminar_usuario(**kwargs)
+
+@receiver(post_delete, sender=Cliente)
+def eliminar_usuario_cliente(sender, **kwargs):
+    eliminar_usuario(**kwargs)
+
+def eliminar_usuario(**kwargs):
+    model = kwargs.get('instance')
+    try:
+        u = model.get_usuario()
+    except User.DoesNotExist:
+        return
+    u.delete()
+    return
 
 """
 @receiver(pre_save, sender=Cliente)
