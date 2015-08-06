@@ -1,6 +1,7 @@
 __author__ = 'Julian'
 from django import forms
 from Norte import formats
+from django.db import models
 
 class AdminRegisterForm(forms.Form):
     nombre_field = forms.CharField(label='Nombre', initial='Su nombre')
@@ -21,4 +22,35 @@ class ClienteRegisterForm(forms.Form):
     telefono_field = forms.CharField(label='Telefono', max_length=254, initial='Su numero sin comillas ni parentesis')
     password_field = forms.CharField(widget=forms.PasswordInput(), initial='')
     password_again_field = forms.CharField(widget=forms.PasswordInput(), initial='')
+
+
+
+class ContactUsuarioAnonimoForm(forms.Form):
+
+    email = forms.EmailField(
+        label='Email',
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
+    subject = forms.CharField(
+        label='Asunto',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    body = forms.CharField(
+        label='Mensaje',
+        widget=forms.Textarea(attrs={'class': 'form-control'})
+    )
+
+
+class ContactUsuarioLoginForm(forms.Form):
+
+    subject = forms.CharField(
+        label='Asunto',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    body = forms.CharField(
+        label='Mensaje',
+        widget=forms.Textarea(attrs={'class': 'form-control'})
+    )
+
+
 

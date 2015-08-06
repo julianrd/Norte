@@ -1,4 +1,3 @@
-
 """
 Django settings for Norte project.
 
@@ -128,8 +127,12 @@ LOGIN_URL = 'FacturasNorte:login'
 #     'FacturasNorte.formats',
 # ]
 
+
+EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'jor.lencina@gmail.com'
-EMAIL_HOST_PASSWORD = 'jorgito'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_HOST_PASSWORD = 'jorgito2011'
+EMAIL_PORT = 25
+
+
+

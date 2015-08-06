@@ -4,19 +4,25 @@ from django.utils import timezone
 from FacturasNorte.forms import AdminRegisterForm, ClienteRegisterForm
 from FacturasNorte.models import Administrador, Cliente, Empleado
 from FacturasNorte.models import User
-
 from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView
-from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from django.core.mail import send_mail
 
+
+#Importaciones para conficuracion de contacto
+import smtplib
+from django.core.urlresolvers import reverse_lazy
+from django.core.mail import send_mail, EmailMessage
+from django.contrib import messages
+from .forms import ContactUsuarioAnonimoForm, ContactUsuarioLoginForm
 
 
 from FacturasNorte.forms import AdminRegisterForm, ClienteRegisterForm
 from FacturasNorte.models import Administrador, Cliente
 from FacturasNorte.models import User
+
+
 
 
 class AdminCreateView(FormView):
@@ -236,3 +242,45 @@ def crear_usuario(form, rol):
     return nuevo_usuario
 
 """
+
+
+def send_email_contact(email, subject, body):
+    import smtplib
+    body = '{} ha enviado un email de contacto\n\n{}\n\n{}'.format(email, subject, body)
+    send_mail(
+        subject = 'Nuevo email de contacto',
+        message = body,
+        from_email = 'jor.lencina@gmail.com',
+        recipient_list =['jor.lencina@gmail.com'],
+            )
+
+
+
+class ContactView(FormView):
+
+    template_name = 'FacturasNorte/contact.html'
+    success_url = reverse_lazy('contact.html')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            self.form_class = ContactUsuarioLoginForm
+        else:
+            self.form_class = ContactUsuarioAnonimoForm
+        return super(ContactView, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        subject = form.cleaned_data.get('subject')
+        body = form.cleaned_data.get('body')
+        email = form.cleaned_data.get('email')
+
+        if self.request.user.is_authenticated():
+            send_email_contact(self.request.user.email, subject, body)
+
+        else:
+            send_email_contact(email, subject, body)
+            messages.success(self.request, 'Email enviado con exito')
+
+
+        return super(ContactView, self).form_valid(form)
+
+
