@@ -2,30 +2,27 @@ from django.http import HttpResponse
 
 __author__ = 'Julian'
 from django.utils import timezone
-<<<<<<< HEAD
 
 from FacturasNorte.forms import AdminRegisterForm, ClienteRegisterForm
 from FacturasNorte.models import Administrador, Cliente, Empleado
 from FacturasNorte.models import User
-=======
->>>>>>> ae52ab16a66f0f80fd83c1dd3516a3a34859e7fd
+
 from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-<<<<<<< HEAD
 
 
-#Importaciones para conficuracion de contacto
+
+#Importaciones para configuracion de contacto
 import smtplib
 from django.core.urlresolvers import reverse_lazy
 from django.core.mail import send_mail, EmailMessage
 from django.contrib import messages
 from .forms import ContactUsuarioAnonimoForm, ContactUsuarioLoginForm
 
-=======
+
 from django.core.mail import send_mail, BadHeaderError
->>>>>>> ae52ab16a66f0f80fd83c1dd3516a3a34859e7fd
 
 from FacturasNorte.models import Empleado
 from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
@@ -42,6 +39,8 @@ def logout_view(request):
     # Redirect to a success page.
 
 
+def ThankYou (request):
+    return render (request, 'FacturasNorte/thankyou.html')
 
 
 class AdminCreateView(FormView):
@@ -248,9 +247,6 @@ def crear_usuario(form, rol):
     nuevo_usuario.save()
     return nuevo_usuario
 
-<<<<<<< HEAD
-"""
-
 
 def send_email_contact(email, subject, body):
     import smtplib
@@ -267,7 +263,7 @@ def send_email_contact(email, subject, body):
 class ContactView(FormView):
 
     template_name = 'FacturasNorte/contact.html'
-    success_url = reverse_lazy('contact.html')
+    success_url = reverse_lazy('FacturasNorte:thankyou')
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated():
@@ -292,7 +288,7 @@ class ContactView(FormView):
         return super(ContactView, self).form_valid(form)
 
 
-=======
+
 def enviar_password(password):
     import smtplib
     #subject = 'Cuenta registrada'
@@ -304,4 +300,6 @@ def enviar_password(password):
     server.login(sender, 'tel563539')
     server.sendmail(sender, ['julian_rd7@hotmail.com'], message)
     server.close()
->>>>>>> ae52ab16a66f0f80fd83c1dd3516a3a34859e7fd
+
+
+

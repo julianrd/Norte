@@ -1,11 +1,11 @@
 {% extends "FacturasNorte/base/base.html" %}
-{% load staticfiles %}
-
-
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link rel="stylesheet" href="{% static "FacturasNorte/css/index_style.css" %}">
+
+
 
 {% block content %}
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static "FacturasNorte/css/index_style.css" %}">
 
     {% if user.username != '' %}
         <h1>Index</h1>
@@ -41,11 +41,11 @@
 
                         <ul id="menu">
                         <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
-                        <li class="selected"><a href="index.html">Mi Cuenta</a></li>
+                        <li class="selected"><a href="/">Mi Cuenta</a></li>
                         <li><a href="Example.html">Mis Facturas</a></li>
                         <li><a href="page.html">Reclamar </a></li>
                         <li><a href="another_page.html">Novedades</a></li>
-                        <li><a href="contact.html">Contáctenos</a></li>
+                        <li><a href="/FacturasNorte/contact">Contáctenos</a></li>
                         </ul>
 
                     </div>

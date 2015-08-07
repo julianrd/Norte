@@ -41,9 +41,9 @@ urlpatterns = patterns('',
     url(r'^staff/del_cliente/(?P<pk>\d+)/$', views.ClienteDeleteView.as_view(), name = 'elim_cliente'),
     url(r'^staff/mod_cliente/(?P<pk>\d+)/$', views.ClienteModifView.as_view(), name = 'modif_cliente'),
 
-<<<<<<< HEAD
-    url(r'contact/$', views.ContactView.as_view(), name = 'contacto'),
 
+    url(r'contact/$', views.ContactView.as_view(), name = 'contacto'),
+    url(r'thankyou/$', views.ThankYou, name ='thankyou'),
 
 
 
@@ -54,6 +54,4 @@ urlpatterns = patterns('',
     url(r'^staff/mod_empleado/(?P<pk>\d+)/$', views.EmpModifView.as_view(), name = 'modif_empleado'),
 
 
-=======
->>>>>>> ae52ab16a66f0f80fd83c1dd3516a3a34859e7fd
 )

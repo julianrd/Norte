@@ -2,8 +2,12 @@
 
 {% block content %}
 
+    {% load staticfiles %}
+        <link rel="stylesheet" href="{% static "FacturasNorte/css/index_style.css" %}">
+        <link rel="stylesheet" href="{% static "FacturasNorte/img/img_index/diarioNorte.jpg" %}">
+
 {% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
+     <h2>Usuario o password incorrectos. Intente nuevamente</h2>
 {% endif %}
 
 <form method="post" action="{% url 'FacturasNorte:login' %}">
