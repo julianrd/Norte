@@ -1,8 +1,8 @@
 __author__ = 'Julian'
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.dispatch import receiver
-from django.db.models.signals import post_delete, pre_save
+from django.db.models.signals import post_delete, pre_save, post_save
 from django.utils import timezone
 
 
@@ -152,6 +152,7 @@ class Cliente(models.Model):
 
     class Meta:
         db_table = 'Clientes'
+        permissions = ()
 
 
 class Administrador(models.Model):
@@ -166,6 +167,43 @@ class Administrador(models.Model):
     class Meta:
         db_table = 'Administradores'
         verbose_name_plural = 'Administradores'
+        permissions = (('view_admin', 'Puede ver administrador'), ('update_admin', 'Puede modificar administrador'),
+                       ('add_admin', 'Puede agregar administrador'), ('del_admin', 'Puede eliminar administrador'),
+                       ('view_empleado', 'Puede ver empleado'), ('update_empleado', 'Puede modificar empleado'),
+                       ('add_empleado', 'Puede agregar empleado'), ('del_empleado', 'Puede eliminar empleado'),
+                       ('view_cliente', 'Puede ver cliente'), ('update_cliente', 'Puede modificar cliente'),
+                       ('add_cliente', 'Puede agregar cliente'), ('del_cliente', 'Puede eliminar cliente'))
+
+
+    def get_usuario(self):
+        return self.nroUsuario
+
+    def set_dni(self, dni):
+        self.dni = dni
+
+    def set_usuario(self, usuario):
+        self.nroUsuario = usuario
+
+    def get_password(self):
+        return self.nroUsuario.password
+
+    def set_nombre(self, nombre):
+        self.nombre = nombre
+
+    def set_fechaNacimiento(self, fechaNacimiento):
+        self.fechaNacimiento = fechaNacimiento
+
+    def set_email(self, email):
+        self.email = email
+
+    def set_domicilio(self, domicilio):
+        self.domicilio = domicilio
+
+    def set_telefono(self, telefono):
+        self.telefono = telefono
+
+    def __unicode__(self):
+        return self.nombre
 
 
 class Empleado(models.Model):
@@ -177,10 +215,11 @@ class Empleado(models.Model):
     domicilio = models.CharField(max_length=254, blank=True, default='')
     telefono = models.CharField(max_length=254, blank=True, default='')
 
-
     class Meta:
         db_table = 'Empleados'
         verbose_name_plural = 'Empleados'
+        permissions = (('view_cliente', 'Puede ver cliente'), ('update_cliente', 'Puede modificar cliente'),
+                       ('add_cliente', 'Puede agregar cliente'), ('del_cliente', 'Puede eliminar cliente'))
 
     """
     def __init__(self, dni, nombre, fechaNacimiento, domicilio, telefono):
@@ -222,21 +261,26 @@ class Empleado(models.Model):
     def __unicode__(self):
         return self.nombre
 
-
+"""
 @receiver(pre_save, sender=Cliente)
 def nuevo_Usuario(sender, **kwargs):
     cliente = kwargs.get('instance')
     #Obtener usuario existente
-    u = cliente.get_usuario()
-    #Si el usuario era anonimo, asignar uno nuevo
-    anonimo = User.objects.get(username='anonimo')
-    if u == anonimo:
-        crear_usuario_cliente(cliente)
+    try:
+        u = cliente.get_usuario()
 
-    #Si se modifica el email, actualizarlo en el usuario
-    elif cliente.email != User.objects.get(pk=cliente.nroUsuario.id).email:
-        u.email = cliente.get_email()
-        u.save()
+        #Si el usuario era anonimo, asignar uno nuevo
+        anonimo = User.objects.get(username='anonimo')
+        if u == anonimo:
+            crear_usuario_cliente(cliente)
+
+        #Si se modifica el email, actualizarlo en el usuario
+        elif cliente.email != User.objects.get(pk=cliente.nroUsuario.id).email:
+            u.email = cliente.get_email()
+            u.save()
+
+    except User.DoesNotExist:
+        crear_usuario_cliente(cliente)
 
 def crear_usuario_cliente(cliente):
     u = User(username=cliente.email.split("@")[0],
@@ -248,8 +292,21 @@ def crear_usuario_cliente(cliente):
     u.save()
     cliente.nroUsuario = u
     return
+"""
 
+@receiver(post_save, sender=User)
+def agregar_permisos(sender, **kwargs):
+    usuario = kwargs.get('instance')
+    if usuario.is_superuser:
+        permissions = Permission.objects.filter(name__startswith='Puede')
 
+    elif usuario.is_staff:
+        permissions = Permission.objects.filter(name__endswith='cliente')
+
+    else: permissions = []
+
+    for p in permissions:
+        usuario.user_permissions.add(p)
 
 @receiver(post_delete, sender=Administrador)
 def eliminar_usuario_admin(sender, **kwargs):

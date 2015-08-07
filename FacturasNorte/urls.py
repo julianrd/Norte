@@ -41,4 +41,7 @@ urlpatterns = patterns('',
     url(r'^staff/del_cliente/(?P<pk>\d+)/$', views.ClienteDeleteView.as_view(), name = 'elim_cliente'),
     url(r'^staff/mod_cliente/(?P<pk>\d+)/$', views.ClienteModifView.as_view(), name = 'modif_cliente'),
 
+    url(r'^cliente/reset_pass/$', views.reset_password_conf, name = 'regenerar_contrasena?'),
+    url(r'^cliente/reset_pass/conf/$', views.reset_password, name = 'regenerar_contrasena_hecho')
+
 )
