@@ -1,33 +1,48 @@
+from django.core import mail
 from django.http import HttpResponse
 
 __author__ = 'Julian'
 from django.utils import timezone
 
+<<<<<<< HEAD
 from FacturasNorte.forms import AdminRegisterForm, ClienteRegisterForm
 from FacturasNorte.models import Administrador, Cliente, Empleado
 from FacturasNorte.models import User
+=======
+from braces.views import LoginRequiredMixin, PermissionRequiredMixin
+>>>>>>> 380880826ac3d44d6aac928ebea5c8228b99f447
 
 from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
+<<<<<<< HEAD
 
 
 
 #Importaciones para configuracion de contacto
 import smtplib
+=======
+
+#Importaciones para conficuracion de contacto
+>>>>>>> 380880826ac3d44d6aac928ebea5c8228b99f447
 from django.core.urlresolvers import reverse_lazy
-from django.core.mail import send_mail, EmailMessage
+from django.core.mail import EmailMessage
 from django.contrib import messages
 from .forms import ContactUsuarioAnonimoForm, ContactUsuarioLoginForm
+from django.core.mail import send_mail
 
+<<<<<<< HEAD
 
 from django.core.mail import send_mail, BadHeaderError
 
 from FacturasNorte.models import Empleado
+=======
+>>>>>>> 380880826ac3d44d6aac928ebea5c8228b99f447
 from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
-from FacturasNorte.models import Administrador, Cliente
+from FacturasNorte.models import Administrador, Empleado, Cliente
 from FacturasNorte.models import User
+
 
 @login_required
 def index(request):
@@ -39,14 +54,19 @@ def logout_view(request):
     # Redirect to a success page.
 
 
+<<<<<<< HEAD
 def ThankYou (request):
     return render (request, 'FacturasNorte/thankyou.html')
 
 
 class AdminCreateView(FormView):
+=======
+class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
+>>>>>>> 380880826ac3d44d6aac928ebea5c8228b99f447
     template_name = "FacturasNorte/admin/add_admin.html"
     form_class = AdminRegisterForm
     success_url = reverse_lazy('FacturasNorte:lista_admin')
+    permission_required = 'FacturasNorte.add_admin'
 
     def form_valid(self, form):
 
@@ -66,40 +86,45 @@ class AdminCreateView(FormView):
 
         return super(AdminCreateView, self).form_valid(form)
 
-class AdminModifView(UpdateView):
+class AdminModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Administrador
     template_name = "FacturasNorte/admin/mod_admin.html"
     success_url = reverse_lazy('FacturasNorte:lista_admin')
+    permission_required = 'FacturasNorte.update_admin'
 
-class AdminDeleteView(DeleteView):
+class AdminDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Administrador
     template_name = "FacturasNorte/admin/del_admin.html"
     success_url = reverse_lazy('FacturasNorte:lista_admin')
     context_object_name = 'admin'
+    permission_required = 'FacturasNorte.del_admin'
 
-class AdminListView(ListView):
+class AdminListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     template_name = "FacturasNorte/admin/admin_list.html"
     model = Administrador
     context_object_name = 'admin_list'
+    permission_required = 'FacturasNorte.view_admin'
 
     def get_queryset(self):
         """Return the last five published questions (not including those set to be published in the future)."""
         return Administrador.objects.all
 
-class AdminDetailView(DetailView):
+class AdminDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/admin/admin_detail.html"
     model = Administrador
     context_object_name = 'admin'
+    permission_required = 'FacturasNorte.view_admin'
 
     def get_context_data(self, **kwargs):
         context = super(AdminDetailView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
         return context
 
-class EmpCreateView(FormView):
+class EmpCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/admin/add_emp.html"
     form_class = EmpleadoRegisterForm
     success_url = reverse_lazy('FacturasNorte:lista_empleado')
+    permission_required = 'FacturasNorte.add_empleado'
 
     def form_valid(self, form):
 
@@ -119,40 +144,47 @@ class EmpCreateView(FormView):
 
         return super(EmpCreateView, self).form_valid(form)
 
-class EmpModifView(UpdateView):
+class EmpModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Empleado
     template_name = "FacturasNorte/admin/mod_emp.html"
     success_url = reverse_lazy('FacturasNorte:lista_empleado')
+    permission_required = 'FacturasNorte.update_empleado'
 
-class EmpDeleteView(DeleteView):
+
+class EmpDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Empleado
     template_name = "FacturasNorte/admin/del_emp.html"
     success_url = reverse_lazy('FacturasNorte:lista_empleado')
     context_object_name = 'empleado'
+    permission_required = 'FacturasNorte.del_empleado'
 
-class EmpListView(ListView):
+class EmpListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     template_name = "FacturasNorte/admin/emp_list.html"
     model = Empleado
     context_object_name = 'emp_list'
+    permission_required = 'FacturasNorte.view_empleado'
 
     def get_queryset(self):
         """Return the last five published questions (not including those set to be published in the future)."""
         return Empleado.objects.all
 
-class EmpDetailView(DetailView):
+
+class EmpDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/admin/emp_detail.html"
     model = Empleado
     context_object_name = 'empleado'
+    permission_required = 'FacturasNorte.view_empleado'
 
     def get_context_data(self, **kwargs):
         context = super(EmpDetailView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
         return context
 
-class ClienteCreateView(FormView):
+class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/empleado/add_cliente.html"
     form_class = ClienteRegisterForm
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
+    permission_required = 'FacturasNorte.add_cliente'
 
     def form_valid(self, form):
 
@@ -172,35 +204,53 @@ class ClienteCreateView(FormView):
 
         return super(ClienteCreateView, self).form_valid(form)
 
-class ClienteModifView(UpdateView):
+
+class ClienteModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Cliente
     template_name = "FacturasNorte/empleado/mod_cliente.html"
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
+    permission_required = 'FacturasNorte.modif_cliente'
 
-class ClienteDeleteView(DeleteView):
+class ClienteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Cliente
     template_name = "FacturasNorte/empleado/del_cliente.html"
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
     context_object_name = 'cliente'
+    permission_required = 'FacturasNorte.del_cliente'
 
-class ClienteListView(ListView):
+class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     template_name = "FacturasNorte/empleado/cliente_list.html"
     model = Cliente
     context_object_name = 'cliente_list'
+    permission_required = 'FacturasNorte.view_cliente'
 
     def get_queryset(self):
         """Return the last five published questions (not including those set to be published in the future)."""
         return Cliente.objects.all
 
-class ClienteDetailView(DetailView):
+class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/empleado/cliente_detail.html"
     model = Cliente
     context_object_name = 'cliente'
+    permission_required = 'FacturasNorte.view_cliente'
 
     def get_context_data(self, **kwargs):
         context = super(ClienteDetailView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
         return context
+
+@login_required
+def reset_password(request):
+    usuario = request.user
+    password = User.objects.make_random_password()
+    usuario.set_password(password)
+    enviar_password_regenerada(usuario, password)
+    usuario.save()
+    return render(request, 'FacturasNorte/cliente/reset_contrasena_hecho.html', {})
+
+@login_required
+def reset_password_conf(request):
+    return render(request, 'FacturasNorte/cliente/reset_contrasena.html', {})
 
 def my_view(request):
     username = request.POST['username']
@@ -227,26 +277,23 @@ def crear_usuario(form, rol):
         nuevo_usuario.is_staff = True
         nuevo_usuario.is_superuser = True
         password = form.cleaned_data['password_field']
-        nuevo_usuario.set_password(password)
-        enviar_password(password)
 
     elif rol == 'empleado':
         nuevo_usuario.is_staff = True
         nuevo_usuario.is_superuser = False
         password = form.cleaned_data['password_field']
-        nuevo_usuario.set_password(password)
-        enviar_password(password)
 
     elif rol == 'cliente':
         nuevo_usuario.is_staff = False
         nuevo_usuario.is_superuser = False
         password = User.objects.make_random_password()
-        nuevo_usuario.set_password(password)
-        enviar_password(password)
 
+    nuevo_usuario.set_password(password)
+    enviar_password(password)
     nuevo_usuario.save()
     return nuevo_usuario
 
+<<<<<<< HEAD
 
 def send_email_contact(email, subject, body):
     import smtplib
@@ -260,6 +307,8 @@ def send_email_contact(email, subject, body):
 
 
 
+=======
+>>>>>>> 380880826ac3d44d6aac928ebea5c8228b99f447
 class ContactView(FormView):
 
     template_name = 'FacturasNorte/contact.html'
@@ -287,13 +336,22 @@ class ContactView(FormView):
 
         return super(ContactView, self).form_valid(form)
 
+def pdf_view(request):
+    with open('C:\Users\Julian\Documents\Diario Norte\Proyecto Norte\PDFs\Hola.pdf', 'rb') as pdf:
+        response = HttpResponse(pdf.read(), content_type='application/pdf')
+        response['Content-Disposition'] = 'inline;filename=some_file.pdf'
+        return response
+    pdf.closed
 
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> 380880826ac3d44d6aac928ebea5c8228b99f447
 def enviar_password(password):
-    import smtplib
-    #subject = 'Cuenta registrada'
     message = 'Su contrasena es: ' + str(password)
     sender = 'julian.rd7@gmail.com'
+<<<<<<< HEAD
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.ehlo()
     server.starttls()
@@ -302,4 +360,34 @@ def enviar_password(password):
     server.close()
 
 
+=======
+    email = EmailMessage('Cuenta Registrada', message, sender,
+            ['julian_rd7@hotmail.com'],
+            headers = {'Reply-To': 'julian.rd7@gmail.com'})
+    connection = mail.get_connection()
+    connection.open()
+    email.send()
+    connection.close()
+
+def enviar_password_regenerada(usuario, password):
+    message = 'Senor/a usuario/a: ' + str(usuario.username) + '.' ' Su nueva contrasena es: ' + str(password)
+    sender = 'julian.rd7@gmail.com'
+    email = EmailMessage('Contrasena regenerada', message, sender,
+            ['julian_rd7@hotmail.com'],
+            headers = {'Reply-To': 'julian.rd7@gmail.com'})
+
+    connection = mail.get_connection()
+    connection.open()
+    email.send()
+    connection.close()
+
+def send_email_contact(email, subject, body):
+    body = '{} ha enviado un email de contacto\n\n{}\n\n{}'.format(email, subject, body)
+    send_mail(
+        subject = 'Nuevo email de contacto',
+        message = body,
+        from_email = 'jor.lencina@gmail.com',
+        recipient_list =['jor.lencina@gmail.com'],
+            )
+>>>>>>> 380880826ac3d44d6aac928ebea5c8228b99f447
 

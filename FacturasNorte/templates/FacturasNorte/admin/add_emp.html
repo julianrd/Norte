@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+        {% load staticfiles %}
+
+              <link rel="stylesheet" href="{% static "FacturasNorte/css/style.css" %}">
+              <img src="{% static "FacturasNorte/img/bg_infobox.gif" %}" alt="asd"/>
+              <img src="{% static "FacturasNorte/img/h1.png" %}" alt=""/>
+              <img src="{% static "FacturasNorte/img/overlay.png" %}" alt=""/>
+    <head>
+        <title>Registro de Empleado</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <link rel="stylesheet" type="text/css" href="{% static "FacturasNorte/css/style.css" %}"/>
+    </head>
+
+    <body>
+        <form action="" class="register" method="post">
+
+            <fieldset class="row1">
+                <legend>Facturas Norte
+                </legend>
+                    {% load l10n %}
+                    <form action="" method="post">
+                        {% csrf_token %}
+                         <h1> Formulario de Registro Empleado</h1>
+                             {% for field in form %}
+
+                                 <div class="fieldWrapper">
+                                    <p> {{ field.label_tag }}
+
+                                        {{ field }} </p>
+
+                                 </div>
+                             {% endfor %}
+
+                              <p></p>
+                              <p></p>
+
+                         <div style="width: 170px; margin: 0 auto;" value="Guardar"/>
+                         <input type="submit" value="Guardar"/>
+
+                    </form>
+            </fieldset>
+        </form>
+    </body>
+</html>

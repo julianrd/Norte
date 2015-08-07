@@ -1,0 +1,16 @@
+{% extends "FacturasNorte/base/base.html" %}
+{% load staticfiles %}
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="{% static "FacturasNorte/css/index_style.css" %}">
+
+
+{% block content %}
+<form action="{% url 'FacturasNorte:regenerar_contrasena_hecho' %}" method="post">
+{% csrf_token %}
+    <h2>Regenerar contrasena</h2>
+    <p>Esta seguro?</p>
+<input type="submit" value="Continuar">
+</form>
+{% endblock %}

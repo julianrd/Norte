@@ -96,13 +96,11 @@ STATIC_URL = '/static/'
 
 #STATIC_ROOT = 'C:\Users\Julian\Documents\Diario Norte\Norte\static'
 
-STATICFILES_DIRS = (
-    'static',
+STATICFILES_DIRS = ('static',
     'FacturasNorte/static'
 )
 
-TEMPLATE_DIRS = (
-    'templates',
+TEMPLATE_DIRS = ('templates',
     'FacturasNorte/templates'
 )
 
@@ -128,8 +126,20 @@ LOGIN_URL = 'FacturasNorte:login'
 # ]
 
 
+<<<<<<< HEAD
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'jor.lencina@gmail.com'
 EMAIL_HOST_PASSWORD = 'jorgito2011'
 EMAIL_PORT = 25
+=======
+#EMAIL BACKEND
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+#EMAIL OPTIONS
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'julian.rd7@gmail.com'
+EMAIL_HOST_PASSWORD = 'tel563539'
+EMAIL_USE_TLS = True
+>>>>>>> 380880826ac3d44d6aac928ebea5c8228b99f447
