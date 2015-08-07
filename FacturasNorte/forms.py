@@ -1,6 +1,7 @@
 __author__ = 'Julian'
 from django import forms
 from Norte import formats
+from django.db import models
 
 class AdminRegisterForm(forms.Form):
     nombre_field = forms.CharField(label='Nombre', initial='Su nombre')
@@ -52,6 +53,34 @@ class EmpleadoRegisterForm(forms.Form):
         return self.cleaned_data
 
 
+
+class ContactUsuarioAnonimoForm(forms.Form):
+
+    email = forms.EmailField(
+        label='Email',
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
+    subject = forms.CharField(
+        label='Asunto',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    body = forms.CharField(
+        label='Mensaje',
+        widget=forms.Textarea(attrs={'class': 'form-control'})
+    )
+
+
+class ContactUsuarioLoginForm(forms.Form):
+
+    subject = forms.CharField(
+        label='Asunto',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    body = forms.CharField(
+        label='Mensaje',
+        widget=forms.Textarea(attrs={'class': 'form-control'})
+    )
+
 class ClienteRegisterForm(forms.Form):
     nombre_field = forms.CharField(label='Nombre', initial='Su nombre')
     dni_field = forms.IntegerField(label='DNI', max_value=99999999, min_value=1000000, initial='00000000')
@@ -59,4 +88,5 @@ class ClienteRegisterForm(forms.Form):
     fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', input_formats=formats.DATE_INPUT_FORMATS, widget=forms.DateInput(format= '%d-%m-%Y'))
     domicilio_field = forms.CharField(label='Domicilio', max_length=254, initial='Calle y altura')
     telefono_field = forms.CharField(label='Telefono', max_length=254, initial='Su numero sin comillas ni parentesis')
+
 

@@ -1,0 +1,9 @@
+{% load l10n %}
+
+<form action="" method="post">
+      {% load staticfiles %}
+    <link rel="stylesheet" href="{% static "FacturasNorte/css/index_style.css" %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Enviar Mensaje" />
+</form>

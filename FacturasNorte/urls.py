@@ -18,11 +18,6 @@ urlpatterns = patterns('',
     url(r'^index/$', views.index, name = 'index'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'FacturasNorte/registration/logged_out.html'}, name='logout'),
 
-    url(r'^password_change/$', auth_views.password_change, {'template_name': 'FacturasNorte/registration/change_password.html'}, name='password_change'),
-    url(r'^password_change/done/$', auth_views.password_change_done, {'template_name': 'FacturasNorte/registration/password_change_done.html'}, name='password_change_done'),
-    url(r'^password_reset/$', auth_views.password_reset, {'template_name': 'FacturasNorte/registration/password_reset_form.html'}, name='password_reset'),
-    url(r'^password_reset/done/$', auth_views.password_reset_done, {'template_name': 'FacturasNorte/registration/password_reset_done.html'}, name='password_reset_done'),
-
     url(r'^admin/nuevo_admin/$', views.AdminCreateView.as_view(), name = 'nuevo_admin'),
     url(r'^admin/(?P<pk>\d+)/$', views. AdminDetailView.as_view(), name = 'detalle_admin'),
     url(r'^admin/lista_admin/$', views.AdminListView.as_view(), name = 'lista_admin'),
@@ -42,6 +37,9 @@ urlpatterns = patterns('',
     url(r'^staff/mod_cliente/(?P<pk>\d+)/$', views.ClienteModifView.as_view(), name = 'modif_cliente'),
 
     url(r'^cliente/reset_pass/$', views.reset_password_conf, name = 'regenerar_contrasena?'),
-    url(r'^cliente/reset_pass/conf/$', views.reset_password, name = 'regenerar_contrasena_hecho')
+    url(r'^cliente/reset_pass/conf/$', views.reset_password, name = 'regenerar_contrasena_hecho'),
+    url(r'^cliente/factura/$', views.pdf_view, name = 'factura'),
+
+    url(r'contact/$', views.ContactView.as_view(), name = 'contacto'),
 
 )

@@ -1,14 +1,22 @@
-from django.contrib.auth.decorators import login_required
 from django.core import mail
-from django.core.mail import EmailMessage
+from django.http import HttpResponse
 
 __author__ = 'Julian'
 from django.utils import timezone
-from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView, TemplateView
-from django.core.urlresolvers import reverse_lazy, reverse
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
+
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
+
+from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
+
+#Importaciones para conficuracion de contacto
+from django.core.urlresolvers import reverse_lazy
+from django.core.mail import EmailMessage
+from django.contrib import messages
+from .forms import ContactUsuarioAnonimoForm, ContactUsuarioLoginForm
+from django.core.mail import send_mail
 
 from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
 from FacturasNorte.models import Administrador, Empleado, Cliente
@@ -23,6 +31,7 @@ def index(request):
 def logout_view(request):
     logout(request)
     # Redirect to a success page.
+
 
 class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/admin/add_admin.html"
@@ -255,6 +264,51 @@ def crear_usuario(form, rol):
     nuevo_usuario.save()
     return nuevo_usuario
 
+class ContactView(FormView):
+
+    template_name = 'FacturasNorte/contact.html'
+    success_url = reverse_lazy('contact.html')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            self.form_class = ContactUsuarioLoginForm
+        else:
+            self.form_class = ContactUsuarioAnonimoForm
+        return super(ContactView, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        subject = form.cleaned_data.get('subject')
+        body = form.cleaned_data.get('body')
+        email = form.cleaned_data.get('email')
+
+        if self.request.user.is_authenticated():
+            send_email_contact(self.request.user.email, subject, body)
+
+        else:
+            send_email_contact(email, subject, body)
+            messages.success(self.request, 'Email enviado con exito')
+
+
+        return super(ContactView, self).form_valid(form)
+
+def pdf_view(request):
+    with open('C:\Users\Julian\Documents\Diario Norte\Proyecto Norte\PDFs\Hola.pdf', 'rb') as pdf:
+        response = HttpResponse(pdf.read(), content_type='application/pdf')
+        response['Content-Disposition'] = 'inline;filename=some_file.pdf'
+        return response
+    pdf.closed
+
+
+def enviar_password(password):
+    message = 'Su contrasena es: ' + str(password)
+    sender = 'julian.rd7@gmail.com'
+    email = EmailMessage('Cuenta Registrada', message, sender,
+            ['julian_rd7@hotmail.com'],
+            headers = {'Reply-To': 'julian.rd7@gmail.com'})
+    connection = mail.get_connection()
+    connection.open()
+    email.send()
+    connection.close()
 
 def enviar_password_regenerada(usuario, password):
     message = 'Senor/a usuario/a: ' + str(usuario.username) + '.' ' Su nueva contrasena es: ' + str(password)
@@ -268,14 +322,12 @@ def enviar_password_regenerada(usuario, password):
     email.send()
     connection.close()
 
-def enviar_password(password):
-    message = 'Su contrasena es: ' + str(password)
-    sender = 'julian.rd7@gmail.com'
-    email = EmailMessage('Cuenta Registrada', message, sender,
-            ['julian_rd7@hotmail.com'],
-            headers = {'Reply-To': 'julian.rd7@gmail.com'})
+def send_email_contact(email, subject, body):
+    body = '{} ha enviado un email de contacto\n\n{}\n\n{}'.format(email, subject, body)
+    send_mail(
+        subject = 'Nuevo email de contacto',
+        message = body,
+        from_email = 'jor.lencina@gmail.com',
+        recipient_list =['jor.lencina@gmail.com'],
+            )
 
-    connection = mail.get_connection()
-    connection.open()
-    email.send()
-    connection.close()
