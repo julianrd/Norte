@@ -3,6 +3,7 @@ from django.http import HttpResponse
 
 __author__ = 'Julian'
 from django.utils import timezone
+from django import forms
 
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
@@ -15,10 +16,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.urlresolvers import reverse_lazy
 from django.core.mail import EmailMessage
 from django.contrib import messages
-from .forms import ContactUsuarioAnonimoForm, ContactUsuarioLoginForm
 from django.core.mail import send_mail
 
-from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
+from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm, ClienteCambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm
 from FacturasNorte.models import Administrador, Empleado, Cliente
 from FacturasNorte.models import User
 
@@ -175,6 +175,36 @@ class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
         return super(ClienteCreateView, self).form_valid(form)
 
+class ClienteCambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
+    template_name = "FacturasNorte/base/cambiar_contrasena.html"
+    form_class = ClienteCambiarContrasenaForm
+    success_url = reverse_lazy('FacturasNorte:cambiar_contrasena_hecho')
+    permission_required = 'FacturasNorte.cambiar_cont_cliente'
+
+    def get_context_data(self, **kwargs):
+    # Call the base implementation first to get a context
+        c = super(FormView, self).get_context_data(**kwargs)
+        c['user'] = self.request.user
+        return c
+
+    def get_form_kwargs(self):
+        kwargs = super(FormView, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
+    def form_valid(self, form):
+        usuario = self.get_context_data()['user']
+        if usuario.check_password(form.cleaned_data['contrasena_anterior']):
+            if form.cleaned_data['contrasena_nueva'] == form.cleaned_data['confirmar_contrasena']:
+                usuario.set_password(form.cleaned_data['contrasena_nueva'])
+                usuario.save()
+                return super(ClienteCambiarContrasenaView, self).form_valid(form)
+        else:
+            raise forms.ValidationError("La contrasena anterior ingresada es invalida", code='old_password')
+
+def cambiar_password_conf(request):
+    return render(request, 'FacturasNorte/base/cambiar_contrasena_hecho.html', {})
+
 
 class ClienteModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Cliente
@@ -235,7 +265,6 @@ def my_view(request):
             pass
     else:
         pass
-
 
 def crear_usuario(form, rol):
     nuevo_usuario = User()
@@ -302,7 +331,7 @@ def pdf_view(request):
 def enviar_password(password):
     message = 'Su contrasena es: ' + str(password)
     sender = 'julian.rd7@gmail.com'
-    email = EmailMessage('Cuenta Registrada', message, sender,
+    email = EmailMessage('Cuenta registrada', message, sender,
             ['julian_rd7@hotmail.com'],
             headers = {'Reply-To': 'julian.rd7@gmail.com'})
     connection = mail.get_connection()

@@ -89,4 +89,25 @@ class ClienteRegisterForm(forms.Form):
     domicilio_field = forms.CharField(label='Domicilio', max_length=254, initial='Calle y altura')
     telefono_field = forms.CharField(label='Telefono', max_length=254, initial='Su numero sin comillas ni parentesis')
 
+class ClienteCambiarContrasenaForm(forms.Form):
+    contrasena_anterior = forms.CharField(widget=forms.PasswordInput(), initial='')
+    contrasena_nueva = forms.CharField(widget=forms.PasswordInput(), initial='')
+    confirmar_contrasena = forms.CharField(widget=forms.PasswordInput(), initial='')
 
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
+        super(ClienteCambiarContrasenaForm, self).__init__(*args, **kwargs)
+        self.fields['contrasena_anterior'].required = False
+        self.fields['contrasena_nueva'].required = False
+        self.fields['confirmar_contrasena'].required = False
+        self.user = user
+
+    def clean(self):
+        if self.user.check_password(self.cleaned_data.get('contrasena_anterior')):
+            password1 = self.cleaned_data.get('contrasena_nueva')
+            password2 = self.cleaned_data.get('confirmar_contrasena')
+            if password1 and password1 != password2:
+                raise forms.ValidationError("Las nuevas contrasenas ingresadas no coinciden", code='match_passwords')
+            return self.cleaned_data
+        else:
+            raise forms.ValidationError("La contrasena anterior ingresada es invalida", code='old_password')

@@ -17,6 +17,10 @@ urlpatterns = patterns('',
     url(r'^cliente/$', views.index, name = 'index'),
     url(r'^index/$', views.index, name = 'index'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'FacturasNorte/registration/logged_out.html'}, name='logout'),
+    url(r'^cambiar_pass/$', views.ClienteCambiarContrasenaView.as_view(), name = 'cambiar_contrasena'),
+    url(r'^cambiar_pass/conf/$', views.cambiar_password_conf, name = 'cambiar_contrasena_hecho'),
+    url(r'^contacto/$', views.ContactView.as_view(), name = 'contacto'),
+
 
     url(r'^admin/nuevo_admin/$', views.AdminCreateView.as_view(), name = 'nuevo_admin'),
     url(r'^admin/(?P<pk>\d+)/$', views. AdminDetailView.as_view(), name = 'detalle_admin'),
@@ -39,7 +43,5 @@ urlpatterns = patterns('',
     url(r'^cliente/reset_pass/$', views.reset_password_conf, name = 'regenerar_contrasena?'),
     url(r'^cliente/reset_pass/conf/$', views.reset_password, name = 'regenerar_contrasena_hecho'),
     url(r'^cliente/factura/$', views.pdf_view, name = 'factura'),
-
-    url(r'contact/$', views.ContactView.as_view(), name = 'contacto'),
 
 )

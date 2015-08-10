@@ -152,7 +152,7 @@ class Cliente(models.Model):
 
     class Meta:
         db_table = 'Clientes'
-        permissions = ()
+        permissions = (('cambiar_cont_cliente', 'Puede cambiar contrasena de Cliente'))
 
 
 class Administrador(models.Model):
@@ -172,7 +172,10 @@ class Administrador(models.Model):
                        ('view_empleado', 'Puede ver empleado'), ('update_empleado', 'Puede modificar empleado'),
                        ('add_empleado', 'Puede agregar empleado'), ('del_empleado', 'Puede eliminar empleado'),
                        ('view_cliente', 'Puede ver cliente'), ('update_cliente', 'Puede modificar cliente'),
-                       ('add_cliente', 'Puede agregar cliente'), ('del_cliente', 'Puede eliminar cliente'))
+                       ('add_cliente', 'Puede agregar cliente'), ('del_cliente', 'Puede eliminar cliente'),
+                       ('cambiar_cont_cliente', 'Puede cambiar contrasena de Cliente'),
+                       ('cambiar_cont_empleado', 'Puede cambiar contrasena de Cliente'),
+                       ('cambiar_cont_admin', 'Puede cambiar contrasena de Cliente'))
 
 
     def get_usuario(self):
