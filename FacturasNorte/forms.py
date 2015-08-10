@@ -52,7 +52,14 @@ class EmpleadoRegisterForm(forms.Form):
 
         return self.cleaned_data
 
+def clean(self):
+        password1 = self.cleaned_data.get('password_field')
+        password2 = self.cleaned_data.get('password_again_field')
 
+        if password1 and password1 != password2:
+            raise forms.ValidationError("Passwords don't match")
+
+        return self.cleaned_data
 
 class ContactUsuarioAnonimoForm(forms.Form):
 
@@ -88,6 +95,7 @@ class ClienteRegisterForm(forms.Form):
     fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', input_formats=formats.DATE_INPUT_FORMATS, widget=forms.DateInput(format= '%d-%m-%Y'))
     domicilio_field = forms.CharField(label='Domicilio', max_length=254, initial='Calle y altura')
     telefono_field = forms.CharField(label='Telefono', max_length=254, initial='Su numero sin comillas ni parentesis')
+
 
 class ClienteCambiarContrasenaForm(forms.Form):
     contrasena_anterior = forms.CharField(widget=forms.PasswordInput(), initial='')

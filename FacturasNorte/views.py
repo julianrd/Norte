@@ -7,18 +7,26 @@ from django import forms
 
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
+
 from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 
+#Importaciones para configuracion de contacto
+import smtplib
+
+
 #Importaciones para conficuracion de contacto
+
 from django.core.urlresolvers import reverse_lazy
 from django.core.mail import EmailMessage
 from django.contrib import messages
+
+from FacturasNorte.forms import ClienteCambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
+
 from django.core.mail import send_mail
 
-from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm, ClienteCambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm
 from FacturasNorte.models import Administrador, Empleado, Cliente
 from FacturasNorte.models import User
 
@@ -31,6 +39,9 @@ def index(request):
 def logout_view(request):
     logout(request)
     # Redirect to a success page.
+
+def ThankYou (request):
+    return render (request, 'FacturasNorte/thankyou.html')
 
 
 class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
@@ -296,7 +307,7 @@ def crear_usuario(form, rol):
 class ContactView(FormView):
 
     template_name = 'FacturasNorte/contact.html'
-    success_url = reverse_lazy('contact.html')
+    success_url = reverse_lazy('FacturasNorte:thankyou')
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated():
@@ -327,11 +338,10 @@ def pdf_view(request):
         return response
     pdf.closed
 
-
 def enviar_password(password):
     message = 'Su contrasena es: ' + str(password)
     sender = 'julian.rd7@gmail.com'
-    email = EmailMessage('Cuenta registrada', message, sender,
+    email = EmailMessage('Cuenta Registrada', message, sender,
             ['julian_rd7@hotmail.com'],
             headers = {'Reply-To': 'julian.rd7@gmail.com'})
     connection = mail.get_connection()
@@ -356,7 +366,9 @@ def send_email_contact(email, subject, body):
     send_mail(
         subject = 'Nuevo email de contacto',
         message = body,
-        from_email = 'jor.lencina@gmail.com',
-        recipient_list =['jor.lencina@gmail.com'],
+        from_email = 'julian.rd7@gmail.com',
+        recipient_list =['julian_rd7@gmail.com'],
             )
+
+
 

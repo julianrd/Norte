@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     url(r'^cambiar_pass/$', views.ClienteCambiarContrasenaView.as_view(), name = 'cambiar_contrasena'),
     url(r'^cambiar_pass/conf/$', views.cambiar_password_conf, name = 'cambiar_contrasena_hecho'),
     url(r'^contacto/$', views.ContactView.as_view(), name = 'contacto'),
+    url(r'^thankyou/$', views.ThankYou, name ='thankyou'),
 
 
     url(r'^admin/nuevo_admin/$', views.AdminCreateView.as_view(), name = 'nuevo_admin'),
@@ -39,6 +40,12 @@ urlpatterns = patterns('',
     url(r'^staff/lista_cliente/$', views.ClienteListView.as_view(), name = 'lista_cliente'),
     url(r'^staff/del_cliente/(?P<pk>\d+)/$', views.ClienteDeleteView.as_view(), name = 'elim_cliente'),
     url(r'^staff/mod_cliente/(?P<pk>\d+)/$', views.ClienteModifView.as_view(), name = 'modif_cliente'),
+
+    url(r'^staff/nuevo_empleado/$', views.EmpCreateView.as_view(), name = 'nuevo_empleado'),
+    url(r'^staff/empleado/(?P<pk>\d+)/$', views.EmpDetailView.as_view(), name = 'detalle_empleado'),
+    url(r'^staff/lista_empleado/$', views.EmpListView.as_view(), name = 'lista_empleado'),
+    url(r'^staff/del_empleado/(?P<pk>\d+)/$', views.EmpDeleteView.as_view(), name = 'elim_empleado'),
+    url(r'^staff/mod_empleado/(?P<pk>\d+)/$', views.EmpModifView.as_view(), name = 'modif_empleado'),
 
     url(r'^cliente/reset_pass/$', views.reset_password_conf, name = 'regenerar_contrasena?'),
     url(r'^cliente/reset_pass/conf/$', views.reset_password, name = 'regenerar_contrasena_hecho'),
