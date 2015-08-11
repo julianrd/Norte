@@ -4,6 +4,7 @@
 {% extends "FacturasNorte/base/base.html" %}
 {% block content %}
 {% load staticfiles %}
+<<<<<<< HEAD
 <link rel="stylesheet" href="{% static "FacturasNorte/css/index_style.css" %}">
 
 
@@ -57,6 +58,46 @@
 
   <body>
 
+=======
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="{% static "FacturasNorte/icons/favicon.ico" %}">
+    <link href="feed/" rel="alternate" type="application/rss+xml" title="Q Blog Feed" />
+    <title>Blog Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static "FacturasNorte/css/index_style.css" %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static "FacturasNorte/css/style.css" %}" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="blog-masthead">
+      <div class="container">
+        <nav class="blog-nav">
+          <a class="blog-nav-item active" href="{% url "FacturasNorte:index" %}">Home</a>
+          <a class="blog-nav-item" href="#">New features</a>
+          <a class="blog-nav-item" href="#">Press</a>
+          <a class="blog-nav-item" href="#">New hires</a>
+          <a class="blog-nav-item" href="#">About</a>
+        </nav>
+      </div>
+    </div>
+>>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
 
     <div class="container">
 
@@ -101,8 +142,8 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="{% static "js/bootstrap.min.js" %}"></script>
-    <script src="{% static "js/docs.min.js" %}"></script>
+    <script src="{% static "FacturasNorte/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "FacturasNorte/js/docs.min.js" %}"></script>
   </body>
 
                         <p>Aun no hay novedades</p>

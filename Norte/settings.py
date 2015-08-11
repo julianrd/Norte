@@ -12,9 +12,6 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-
-
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
@@ -40,11 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'FacturasNorte',
     'django_markdown',
-
-
-
 )
-
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -130,6 +123,7 @@ LOGIN_URL = 'FacturasNorte:login'
 #     'FacturasNorte.formats',
 # ]
 
+<<<<<<< HEAD
 
 
 EMAIL_USE_TLS = True
@@ -139,6 +133,8 @@ EMAIL_HOST_PASSWORD = 'jorgito2011'
 EMAIL_PORT = 25
 
 
+=======
+>>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
 #EMAIL BACKEND
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 

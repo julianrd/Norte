@@ -1,7 +1,17 @@
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+
 __author__ = 'Julian'
 from django import forms
 from Norte import formats
 from django.db import models
+
+class IniciarSesionForm(forms.Form):
+    usuario = forms.EmailField(label='E-mail', show_hidden_initial='ejemplo@dominio.com')
+    password = forms.CharField(label='Contrasena', widget=forms.PasswordInput(), initial='')
+
+    def get_user(self):
+        return get_object_or_404(User, email=self.cleaned_data['usuario'])
 
 class AdminRegisterForm(forms.Form):
     nombre_field = forms.CharField(label='Nombre', initial='Su nombre')
@@ -37,7 +47,10 @@ class EmpleadoRegisterForm(forms.Form):
     password_field = forms.CharField(widget=forms.PasswordInput(), initial='')
     password_again_field = forms.CharField(widget=forms.PasswordInput(), initial='')
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
     def __init__(self, *args, **kwargs):
         super(EmpleadoRegisterForm, self).__init__(*args, **kwargs)
 
@@ -53,11 +66,15 @@ class EmpleadoRegisterForm(forms.Form):
 
         return self.cleaned_data
 
+<<<<<<< HEAD
 
         self.fields['password_field'].required = False
         self.fields['password_again_field'].required = False
 
 
+=======
+
+>>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
 def clean(self):
         password1 = self.cleaned_data.get('password_field')
         password2 = self.cleaned_data.get('password_again_field')

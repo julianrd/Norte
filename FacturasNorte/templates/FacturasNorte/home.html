@@ -4,8 +4,11 @@
 {% block blog_entries %}
 {% for object in object_list %}
   <div class="post">
+<<<<<<< HEAD
       {% load staticfiles %}
              <link rel="stylesheet" href="{% static "FacturasNorte/css/index_style.css" %}">
+=======
+>>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
     <h2><a href="{% url "FacturasNorte:entry_detail" slug=object.slug %}">{{ object.title }}</a></h2>
     <p class="meta">
       {{ object.created }} |
