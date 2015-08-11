@@ -1,27 +1,30 @@
-{% extends "FacturasNorte/base/base.html" %}
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-
-
+{% extends "FacturasNorte/base/base.html" %}
 {% block content %}
 {% load staticfiles %}
 <link rel="stylesheet" href="{% static "FacturasNorte/css/index_style.css" %}">
 
+
+   <form>
     {% if user.username != '' %}
-        <h1>Index</h1>
+
         {% if user.is_superuser %}
             <!--Admin-->
-            <h2>Admin</h2>
+            <h2>Perfil Administrador</h2>
         {% else %}
 
             {% if user.is_staff %}
                 <!--Empleado-->
-                <h2>Empleado</h2>
+                <h2>Perfil Empleado</h2>
             {% endif %}
         {% endif %}
 
         {% if not user.is_staff %}
-            <h2>Cliente</h2>
+            <h6>Perfil Cliente</h6>
+            </form>
+
             <body>
 
                 <div id="main">
@@ -43,7 +46,7 @@
                         <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
                         <li class="selected"><a href="/">Mi Cuenta</a></li>
                         <li><a href="Example.html">Mis Facturas</a></li>
-                        <li><a href="page.html">Reclamar </a></li>
+                        <li><a href="/FacturasNorte/contact">Reclamar </a></li>
                         <li><a href="another_page.html">Novedades</a></li>
                         <li><a href="/FacturasNorte/contact">Contáctenos</a></li>
                         </ul>

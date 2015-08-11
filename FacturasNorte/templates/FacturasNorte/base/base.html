@@ -11,13 +11,6 @@
 <body>
 
     <div class="container">
-        <div id="header" class="row">
-            <h1><a href="{% url 'FacturasNorte:index' %}">Diario Norte</a></h1>
-             <div id="branding">
-                {% block branding %}{% endblock %}
-             </div>
-        </div>
-
 
             {% if user.is_active %}
             <div id="user-tools">

@@ -2,7 +2,7 @@ __author__ = 'Julian'
 from django.conf.urls import patterns, include, url
 from django.contrib.auth import views as auth_views
 from django.contrib import admin
-from . import views
+from . import views, feed
 
 urlpatterns = patterns('',
     # Examples:
@@ -36,7 +36,7 @@ urlpatterns = patterns('',
     url(r'^staff/del_cliente/(?P<pk>\d+)/$', views.ClienteDeleteView.as_view(), name = 'elim_cliente'),
     url(r'^staff/mod_cliente/(?P<pk>\d+)/$', views.ClienteModifView.as_view(), name = 'modif_cliente'),
 
-<<<<<<< HEAD
+
 
     url(r'contact/$', views.ContactView.as_view(), name = 'contacto'),
     url(r'thankyou/$', views.ThankYou, name ='thankyou'),
@@ -48,12 +48,16 @@ urlpatterns = patterns('',
     url(r'^staff/lista_empleado/$', views.EmpListView.as_view(), name = 'lista_empleado'),
     url(r'^staff/del_empleado/(?P<pk>\d+)/$', views.EmpDeleteView.as_view(), name = 'elim_empleado'),
     url(r'^staff/mod_empleado/(?P<pk>\d+)/$', views.EmpModifView.as_view(), name = 'modif_empleado'),
-=======
+
     url(r'^cliente/reset_pass/$', views.reset_password_conf, name = 'regenerar_contrasena?'),
     url(r'^cliente/reset_pass/conf/$', views.reset_password, name = 'regenerar_contrasena_hecho'),
     url(r'^cliente/factura/$', views.pdf_view, name = 'factura'),
->>>>>>> 380880826ac3d44d6aac928ebea5c8228b99f447
 
     url(r'contact/$', views.ContactView.as_view(), name = 'contacto'),
+
+    url(r'^feed/$', feed.LatestPosts(), name="feed"),
+    url(r'^home/$', views.BlogIndex.as_view(), name="index"),
+    url(r'^entry/(?P<slug>\S+)$', views.BlogDetail.as_view(), name="entry_detail"),
+
 
 )

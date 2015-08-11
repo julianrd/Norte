@@ -4,7 +4,8 @@
 {% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'FacturasNorte:index' %}">Inicio</a></div>{% endblock %}
 
 {% block content %}
-
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static "FacturasNorte/css/index_style.css" %}">
 <p>Gracias por visitarnos.</p>
 
 <p><a href="{% url 'FacturasNorte:login' %}">Volver a iniciar sesion</a></p>

@@ -11,4 +11,5 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^FacturasNorte/', include('FacturasNorte.urls', namespace='FacturasNorte')),
+    url(r'^markdown/', include("django_markdown.urls")),
 )

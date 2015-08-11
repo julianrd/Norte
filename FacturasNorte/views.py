@@ -4,41 +4,39 @@ from django.http import HttpResponse
 __author__ = 'Julian'
 from django.utils import timezone
 
-<<<<<<< HEAD
+
 from FacturasNorte.forms import AdminRegisterForm, ClienteRegisterForm
 from FacturasNorte.models import Administrador, Cliente, Empleado
 from FacturasNorte.models import User
-=======
+
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
->>>>>>> 380880826ac3d44d6aac928ebea5c8228b99f447
 
 from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-<<<<<<< HEAD
 
+from django.views import generic
+from . import models
 
 
 #Importaciones para configuracion de contacto
 import smtplib
-=======
+
 
 #Importaciones para conficuracion de contacto
->>>>>>> 380880826ac3d44d6aac928ebea5c8228b99f447
+
 from django.core.urlresolvers import reverse_lazy
 from django.core.mail import EmailMessage
 from django.contrib import messages
 from .forms import ContactUsuarioAnonimoForm, ContactUsuarioLoginForm
 from django.core.mail import send_mail
 
-<<<<<<< HEAD
 
 from django.core.mail import send_mail, BadHeaderError
 
 from FacturasNorte.models import Empleado
-=======
->>>>>>> 380880826ac3d44d6aac928ebea5c8228b99f447
+
 from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
 from FacturasNorte.models import Administrador, Empleado, Cliente
 from FacturasNorte.models import User
@@ -54,15 +52,14 @@ def logout_view(request):
     # Redirect to a success page.
 
 
-<<<<<<< HEAD
+
 def ThankYou (request):
     return render (request, 'FacturasNorte/thankyou.html')
 
 
-class AdminCreateView(FormView):
-=======
+
 class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
->>>>>>> 380880826ac3d44d6aac928ebea5c8228b99f447
+
     template_name = "FacturasNorte/admin/add_admin.html"
     form_class = AdminRegisterForm
     success_url = reverse_lazy('FacturasNorte:lista_admin')
@@ -293,7 +290,7 @@ def crear_usuario(form, rol):
     nuevo_usuario.save()
     return nuevo_usuario
 
-<<<<<<< HEAD
+
 
 def send_email_contact(email, subject, body):
     import smtplib
@@ -306,9 +303,6 @@ def send_email_contact(email, subject, body):
             )
 
 
-
-=======
->>>>>>> 380880826ac3d44d6aac928ebea5c8228b99f447
 class ContactView(FormView):
 
     template_name = 'FacturasNorte/contact.html'
@@ -344,14 +338,13 @@ def pdf_view(request):
     pdf.closed
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 380880826ac3d44d6aac928ebea5c8228b99f447
+
+
 def enviar_password(password):
     message = 'Su contrasena es: ' + str(password)
     sender = 'julian.rd7@gmail.com'
-<<<<<<< HEAD
+
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.ehlo()
     server.starttls()
@@ -360,7 +353,7 @@ def enviar_password(password):
     server.close()
 
 
-=======
+
     email = EmailMessage('Cuenta Registrada', message, sender,
             ['julian_rd7@hotmail.com'],
             headers = {'Reply-To': 'julian.rd7@gmail.com'})
@@ -389,5 +382,14 @@ def send_email_contact(email, subject, body):
         from_email = 'jor.lencina@gmail.com',
         recipient_list =['jor.lencina@gmail.com'],
             )
->>>>>>> 380880826ac3d44d6aac928ebea5c8228b99f447
 
+
+
+class BlogIndex(generic.ListView):
+    queryset = models.Entry.objects.published()
+    template_name = "FacturasNorte/home.html"
+    paginate_by = 2
+
+class BlogDetail(generic.DetailView):
+    model = models.Entry
+    template_name = "FacturasNorte/post.html"

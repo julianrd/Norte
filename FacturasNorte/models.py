@@ -4,7 +4,7 @@ from django.contrib.auth.models import User, Permission
 from django.dispatch import receiver
 from django.db.models.signals import post_delete, pre_save, post_save
 from django.utils import timezone
-
+from django.core.urlresolvers import reverse
 
 class Cliente(models.Model):
     nroUsuario = models.OneToOneField(User)
@@ -376,3 +376,37 @@ def agregar_usuario_cliente_existente(sender, **kwargs):
             cliente.nroUsuario = nuevo_usuario
             cliente.save()
 """
+
+class Tag(models.Model):
+    slug = models.SlugField(max_length=200, unique=True)
+
+    def __str__(self):
+        return self.slug
+
+
+class EntryQuerySet(models.QuerySet):
+    def published(self):
+        return self.filter(publish=True)
+
+
+class Entry(models.Model):
+    title = models.CharField(max_length=200)
+    body = models.TextField()
+    slug = models.SlugField(max_length=200, unique=True)
+    publish = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    tags = models.ManyToManyField(Tag)
+
+    objects = EntryQuerySet.as_manager()
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse("entry_detail", kwargs={"slug": self.slug})
+
+    class Meta:
+        verbose_name = "Blog Entry"
+        verbose_name_plural = "Blog Entries"
+        ordering = ["-created"]
