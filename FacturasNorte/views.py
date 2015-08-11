@@ -5,29 +5,28 @@ __author__ = 'Julian'
 from django.utils import timezone
 from django import forms
 
-<<<<<<< HEAD
+
 
 from FacturasNorte.forms import AdminRegisterForm, ClienteRegisterForm
 from FacturasNorte.models import Administrador, Cliente, Empleado
 from FacturasNorte.models import User
 
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
-=======
+
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
+
 
 from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-<<<<<<< HEAD
+
 
 from django.views import generic
 from . import models
 
-=======
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
+
 
 #Importaciones para configuracion de contacto
 import smtplib
@@ -35,23 +34,22 @@ import smtplib
 
 #Importaciones para conficuracion de contacto
 
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.core.mail import EmailMessage
 from django.contrib import messages
 
-<<<<<<< HEAD
-=======
+
 from FacturasNorte.forms import ClienteCambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
+
 
 from django.core.mail import send_mail
 
-<<<<<<< HEAD
+
 from FacturasNorte.models import Empleado
 
 from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
-=======
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
+
+
 from FacturasNorte.models import Administrador, Empleado, Cliente
 from FacturasNorte.models import User
 
@@ -65,22 +63,14 @@ def logout_view(request):
     logout(request)
     # Redirect to a success page.
 
-<<<<<<< HEAD
 
-
-=======
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
 def ThankYou (request):
     return render (request, 'FacturasNorte/thankyou.html')
 
 
-<<<<<<< HEAD
 
 class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
-=======
-class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
     template_name = "FacturasNorte/admin/add_admin.html"
     form_class = AdminRegisterForm
     success_url = reverse_lazy('FacturasNorte:lista_admin')
@@ -340,7 +330,6 @@ def crear_usuario(form, rol):
     nuevo_usuario.save()
     return nuevo_usuario
 
-<<<<<<< HEAD
 
 
 def send_email_contact(email, subject, body):
@@ -353,9 +342,6 @@ def send_email_contact(email, subject, body):
         recipient_list =['jor.lencina@gmail.com'],
             )
 
-
-=======
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
 class ContactView(FormView):
 
     template_name = 'FacturasNorte/contact.html'
@@ -390,8 +376,6 @@ def pdf_view(request):
         return response
     pdf.closed
 
-<<<<<<< HEAD
-
 
 
 
@@ -408,11 +392,10 @@ def enviar_password(password):
 
 
 
-=======
 def enviar_password(password):
     message = 'Su contrasena es: ' + str(password)
     sender = 'julian.rd7@gmail.com'
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
+
     email = EmailMessage('Cuenta Registrada', message, sender,
             ['julian_rd7@hotmail.com'],
             headers = {'Reply-To': 'julian.rd7@gmail.com'})
@@ -441,11 +424,6 @@ def send_email_contact(email, subject, body):
         from_email = 'julian.rd7@gmail.com',
         recipient_list =['julian_rd7@gmail.com'],
             )
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
 
 
 
