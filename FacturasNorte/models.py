@@ -152,7 +152,7 @@ class Cliente(models.Model):
 
     class Meta:
         db_table = 'Clientes'
-        permissions = (('cambiar_cont_cliente', 'Puede cambiar contrasena de Cliente'))
+        permissions = ('cambiar_cont_cliente', 'Puede cambiar contrasena de Cliente')
 
 
 class Administrador(models.Model):
@@ -175,7 +175,8 @@ class Administrador(models.Model):
                        ('add_cliente', 'Puede agregar cliente'), ('del_cliente', 'Puede eliminar cliente'),
                        ('cambiar_cont_cliente', 'Puede cambiar contrasena de Cliente'),
                        ('cambiar_cont_empleado', 'Puede cambiar contrasena de Cliente'),
-                       ('cambiar_cont_admin', 'Puede cambiar contrasena de Cliente'))
+                       ('cambiar_cont_admin', 'Puede cambiar contrasena de Cliente')
+                       )
 
 
     def get_usuario(self):
@@ -222,17 +223,9 @@ class Empleado(models.Model):
         db_table = 'Empleados'
         verbose_name_plural = 'Empleados'
         permissions = (('view_cliente', 'Puede ver cliente'), ('update_cliente', 'Puede modificar cliente'),
-                       ('add_cliente', 'Puede agregar cliente'), ('del_cliente', 'Puede eliminar cliente'))
+                       ('add_cliente', 'Puede agregar cliente'), ('del_cliente', 'Puede eliminar cliente')
+                       )
 
-    """
-    def __init__(self, dni, nombre, fechaNacimiento, domicilio, telefono):
-        super(Administrador, self).__init__()
-        self.dni = dni
-        self.nombre = nombre
-        self.fechaNacimiento = fechaNacimiento
-        self.domicilio = domicilio
-        self.telefono = telefono
-    """
 
     def get_usuario(self):
         return self.nroUsuario
@@ -264,38 +257,43 @@ class Empleado(models.Model):
     def __unicode__(self):
         return self.nombre
 
-"""
-@receiver(pre_save, sender=Cliente)
-def nuevo_Usuario(sender, **kwargs):
-    cliente = kwargs.get('instance')
-    #Obtener usuario existente
-    try:
-        u = cliente.get_usuario()
+class Tag(models.Model):
+    slug = models.SlugField(max_length=200, unique=True)
 
-        #Si el usuario era anonimo, asignar uno nuevo
-        anonimo = User.objects.get(username='anonimo')
-        if u == anonimo:
-            crear_usuario_cliente(cliente)
+    def __str__(self):
+        return self.slug
 
-        #Si se modifica el email, actualizarlo en el usuario
-        elif cliente.email != User.objects.get(pk=cliente.nroUsuario.id).email:
-            u.email = cliente.get_email()
-            u.save()
+    class Meta:
+        db_table = 'Tags'
+        verbose_name = "Tag"
+        verbose_name_plural = "Tags"
 
-    except User.DoesNotExist:
-        crear_usuario_cliente(cliente)
+class EntryQuerySet(models.QuerySet):
+        def published(self):
+            return self.filter(publish=True)
 
-def crear_usuario_cliente(cliente):
-    u = User(username=cliente.email.split("@")[0],
-             email=cliente.email,
-             date_joined = timezone.now(),
-             is_superuser=False,
-             is_staff=False,
-             is_active=True)
-    u.save()
-    cliente.nroUsuario = u
-    return
-"""
+
+class Entry(models.Model):
+    title = models.CharField(max_length=200)
+    body = models.TextField()
+    slug = models.SlugField(max_length=200, unique=True)
+    publish = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    tags = models.ManyToManyField(Tag)
+
+    objects = EntryQuerySet.as_manager()
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse("entry_detail", kwargs={"slug": self.slug})
+
+    class Meta:
+        db_table = 'Entradas'
+        verbose_name = "Blog Entry"
+        verbose_name_plural = "Blog Entries"
 
 @receiver(post_save, sender=User)
 def agregar_permisos(sender, **kwargs):
@@ -331,85 +329,3 @@ def eliminar_usuario(**kwargs):
         return
     u.delete()
     return
-
-"""
-@receiver(pre_save, sender=Cliente)
-def nuevo_Usuario(sender, **kwargs):
-    cliente = kwargs.get('instance')
-    try:
-        u = cliente.get_usuario()
-    except User.DoesNotExist:
-        u = User(username=cliente.nombre,
-                 email=cliente.email,
-                 is_superuser=False,
-                 is_staff=False,
-                 is_active=True)
-        u.save()
-        cliente.nroUsuario = u
-
-
-@receiver(pre_save, sender=Administrador)
-def nuevo_Usuario(sender, **kwargs):
-    admin = kwargs.get('instance')
-    try:
-        u = admin.get_usuario()
-    except User.DoesNotExist:
-        u = User(username=admin.nombre,
-                 email=admin.email,
-                 is_staff=True,
-                 is_superuser=True,
-                 is_active=True)
-        u.save()
-        admin.nroUsuario = u
-"""
-
-"""
-@receiver(pre_save, sender=Cliente)
-def agregar_usuario_cliente_existente(sender, **kwargs):
-    if kwargs.get('created', True):
-        cliente = kwargs.get('instance')
-        if cliente.nroUsuario.username == 'anonimo':
-            nuevo_usuario = User(username=cliente.email.split("@")[0],
-                                 email=cliente.email,
-                                 is_superuser=False,
-                                 is_staff=False,
-                                 is_active=True,
-                                 date_joined=timezone.now())
-            nuevo_usuario.save()
-            cliente.nroUsuario = nuevo_usuario
-            cliente.save()
-"""
-
-class Tag(models.Model):
-    slug = models.SlugField(max_length=200, unique=True)
-
-    def __str__(self):
-        return self.slug
-
-
-class EntryQuerySet(models.QuerySet):
-    def published(self):
-        return self.filter(publish=True)
-
-
-class Entry(models.Model):
-    title = models.CharField(max_length=200)
-    body = models.TextField()
-    slug = models.SlugField(max_length=200, unique=True)
-    publish = models.BooleanField(default=True)
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    tags = models.ManyToManyField(Tag)
-
-    objects = EntryQuerySet.as_manager()
-
-    def __str__(self):
-        return self.title
-
-    def get_absolute_url(self):
-        return reverse("entry_detail", kwargs={"slug": self.slug})
-
-    class Meta:
-        verbose_name = "Blog Entry"
-        verbose_name_plural = "Blog Entries"
-        ordering = ["-created"]

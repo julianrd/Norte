@@ -1,7 +1,17 @@
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+
 __author__ = 'Julian'
 from django import forms
 from Norte import formats
 from django.db import models
+
+class IniciarSesionForm(forms.Form):
+    usuario = forms.EmailField(label='E-mail', show_hidden_initial='ejemplo@dominio.com')
+    password = forms.CharField(label='Contrasena', widget=forms.PasswordInput(), initial='')
+
+    def get_user(self):
+        return get_object_or_404(User, email=self.cleaned_data['usuario'])
 
 class AdminRegisterForm(forms.Form):
     nombre_field = forms.CharField(label='Nombre', initial='Su nombre')
@@ -37,10 +47,6 @@ class EmpleadoRegisterForm(forms.Form):
     password_field = forms.CharField(widget=forms.PasswordInput(), initial='')
     password_again_field = forms.CharField(widget=forms.PasswordInput(), initial='')
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
     def __init__(self, *args, **kwargs):
         super(EmpleadoRegisterForm, self).__init__(*args, **kwargs)
 
@@ -56,14 +62,7 @@ class EmpleadoRegisterForm(forms.Form):
 
         return self.cleaned_data
 
-<<<<<<< HEAD
 
-
-        self.fields['password_field'].required = False
-        self.fields['password_again_field'].required = False
-
-=======
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
 def clean(self):
         password1 = self.cleaned_data.get('password_field')
         password2 = self.cleaned_data.get('password_again_field')
@@ -100,10 +99,7 @@ class ContactUsuarioLoginForm(forms.Form):
         widget=forms.Textarea(attrs={'class': 'form-control'})
     )
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
 class ClienteRegisterForm(forms.Form):
     nombre_field = forms.CharField(label='Nombre', initial='Su nombre')
     dni_field = forms.IntegerField(label='DNI', max_value=99999999, min_value=1000000, initial='00000000')
@@ -111,10 +107,7 @@ class ClienteRegisterForm(forms.Form):
     fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', input_formats=formats.DATE_INPUT_FORMATS, widget=forms.DateInput(format= '%d-%m-%Y'))
     domicilio_field = forms.CharField(label='Domicilio', max_length=254, initial='Calle y altura')
     telefono_field = forms.CharField(label='Telefono', max_length=254, initial='Su numero sin comillas ni parentesis')
-<<<<<<< HEAD
-=======
 
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
 
 class ClienteCambiarContrasenaForm(forms.Form):
     contrasena_anterior = forms.CharField(widget=forms.PasswordInput(), initial='')

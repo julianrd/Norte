@@ -1,36 +1,28 @@
+import urlparse
 from django.core import mail
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
 
 __author__ = 'Julian'
 from django.utils import timezone
 from django import forms
-
-<<<<<<< HEAD
-
-from FacturasNorte.forms import AdminRegisterForm, ClienteRegisterForm
-from FacturasNorte.models import Administrador, Cliente, Empleado
-from FacturasNorte.models import User
+from Norte import settings
 
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
-=======
-from braces.views import LoginRequiredMixin, PermissionRequiredMixin
-
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
 
 from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login, logout
-<<<<<<< HEAD
+from django.contrib.auth import login, logout, authenticate
 
 from django.views import generic
 from . import models
 
-=======
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
+
 
 #Importaciones para configuracion de contacto
-import smtplib
 
 
 #Importaciones para conficuracion de contacto
@@ -39,48 +31,95 @@ from django.core.urlresolvers import reverse_lazy
 from django.core.mail import EmailMessage
 from django.contrib import messages
 
-<<<<<<< HEAD
-=======
-from FacturasNorte.forms import ClienteCambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
+
+
+from FacturasNorte.forms import ClienteCambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
+    IniciarSesionForm
 
 from django.core.mail import send_mail
 
-<<<<<<< HEAD
-from FacturasNorte.models import Empleado
-
 from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
-=======
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
+
 from FacturasNorte.models import Administrador, Empleado, Cliente
 from FacturasNorte.models import User
 
 
 @login_required
 def index(request):
-        return render(request, 'FacturasNorte/base/index.html')
+    return render(request, 'FacturasNorte/base/index.html')
+
+class LoginView(FormView):
+    form_class = IniciarSesionForm
+    success_url = reverse_lazy('FacturasNorte:index')
+    template_name = 'FacturasNorte/registration/login.html'
+
+    @method_decorator(csrf_protect)
+    @method_decorator(never_cache)
+    def dispatch(self, *args, **kwargs):
+        return super(LoginView, self).dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        """
+        The user has provided valid credentials (this was checked in AuthenticationForm.is_valid()). So now we
+        can log him in.
+        """
+        user = authenticate(username=form.cleaned_data['usuario'], password=form.cleaned_data['password'])
+        login(self.request, user)
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        if self.success_url:
+            redirect_to = self.success_url
+        else:
+            redirect_to = self.request.REQUEST.get(self.redirect_field_name, '')
+
+        netloc = urlparse.urlparse(redirect_to)[1]
+        if not redirect_to:
+            redirect_to = settings.LOGIN_REDIRECT_URL
+        # Security check -- don't allow redirection to a different host.
+        elif netloc and netloc != self.request.get_host():
+            redirect_to = settings.LOGIN_REDIRECT_URL
+        return redirect_to
+
+    def set_test_cookie(self):
+        self.request.session.set_test_cookie()
+
+    def check_and_delete_test_cookie(self):
+        if self.request.session.test_cookie_worked():
+            self.request.session.delete_test_cookie()
+            return True
+        return False
+
+    def get(self, request, *args, **kwargs):
+        """
+        Same as django.views.generic.edit.ProcessFormView.get(), but adds test cookie stuff
+        """
+        self.set_test_cookie()
+        return super(LoginView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Same as django.views.generic.edit.ProcessFormView.post(), but adds test cookie stuff
+        """
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            self.check_and_delete_test_cookie()
+            return self.form_valid(form)
+        else:
+            self.set_test_cookie()
+            return self.form_invalid(form)
 
 @login_required
 def logout_view(request):
     logout(request)
-    # Redirect to a success page.
+    return render(request,'FacturasNorte/registration/logged_out.html' )
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
 def ThankYou (request):
     return render (request, 'FacturasNorte/thankyou.html')
 
 
-<<<<<<< HEAD
-
 class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
-
-=======
-class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
     template_name = "FacturasNorte/admin/add_admin.html"
     form_class = AdminRegisterForm
     success_url = reverse_lazy('FacturasNorte:lista_admin')
@@ -300,19 +339,6 @@ def reset_password(request):
 def reset_password_conf(request):
     return render(request, 'FacturasNorte/cliente/reset_contrasena.html', {})
 
-def my_view(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        if user.is_active:
-            login(request, user)
-            # Redirect to a success page.
-        else:
-            pass
-    else:
-        pass
-
 def crear_usuario(form, rol):
     nuevo_usuario = User()
     nuevo_usuario.username = form.cleaned_data['email_field'].split("@")[0]
@@ -340,11 +366,7 @@ def crear_usuario(form, rol):
     nuevo_usuario.save()
     return nuevo_usuario
 
-<<<<<<< HEAD
-
-
 def send_email_contact(email, subject, body):
-    import smtplib
     body = '{} ha enviado un email de contacto\n\n{}\n\n{}'.format(email, subject, body)
     send_mail(
         subject = 'Nuevo email de contacto',
@@ -353,9 +375,6 @@ def send_email_contact(email, subject, body):
         recipient_list =['jor.lencina@gmail.com'],
             )
 
-
-=======
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
 class ContactView(FormView):
 
     template_name = 'FacturasNorte/contact.html'
@@ -388,31 +407,12 @@ def pdf_view(request):
         response = HttpResponse(pdf.read(), content_type='application/pdf')
         response['Content-Disposition'] = 'inline;filename=some_file.pdf'
         return response
-    pdf.closed
-
-<<<<<<< HEAD
-
-
+    pdf.close
 
 
 def enviar_password(password):
     message = 'Su contrasena es: ' + str(password)
     sender = 'julian.rd7@gmail.com'
-
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.ehlo()
-    server.starttls()
-    server.login(sender, 'tel563539')
-    server.sendmail(sender, ['julian_rd7@hotmail.com'], message)
-    server.close()
-
-
-
-=======
-def enviar_password(password):
-    message = 'Su contrasena es: ' + str(password)
-    sender = 'julian.rd7@gmail.com'
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
     email = EmailMessage('Cuenta Registrada', message, sender,
             ['julian_rd7@hotmail.com'],
             headers = {'Reply-To': 'julian.rd7@gmail.com'})
@@ -441,13 +441,6 @@ def send_email_contact(email, subject, body):
         from_email = 'julian.rd7@gmail.com',
         recipient_list =['julian_rd7@gmail.com'],
             )
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
-
-
 
 class BlogIndex(generic.ListView):
     queryset = models.Entry.objects.published()
