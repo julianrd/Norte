@@ -17,6 +17,11 @@ urlpatterns = patterns('',
     url(r'^cliente/$', views.index, name = 'index'),
     url(r'^index/$', views.index, name = 'index'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'FacturasNorte/registration/logged_out.html'}, name='logout'),
+    url(r'^cambiar_pass/$', views.ClienteCambiarContrasenaView.as_view(), name = 'cambiar_contrasena'),
+    url(r'^cambiar_pass/conf/$', views.cambiar_password_conf, name = 'cambiar_contrasena_hecho'),
+    url(r'^contacto/$', views.ContactView.as_view(), name = 'contacto'),
+    url(r'^thankyou/$', views.ThankYou, name ='thankyou'),
+
 
     url(r'^admin/nuevo_admin/$', views.AdminCreateView.as_view(), name = 'nuevo_admin'),
     url(r'^admin/(?P<pk>\d+)/$', views. AdminDetailView.as_view(), name = 'detalle_admin'),
@@ -36,6 +41,7 @@ urlpatterns = patterns('',
     url(r'^staff/del_cliente/(?P<pk>\d+)/$', views.ClienteDeleteView.as_view(), name = 'elim_cliente'),
     url(r'^staff/mod_cliente/(?P<pk>\d+)/$', views.ClienteModifView.as_view(), name = 'modif_cliente'),
 
+<<<<<<< HEAD
 
 
     url(r'contact/$', views.ContactView.as_view(), name = 'contacto'),
@@ -43,6 +49,8 @@ urlpatterns = patterns('',
 
 
 
+=======
+>>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
     url(r'^staff/nuevo_empleado/$', views.EmpCreateView.as_view(), name = 'nuevo_empleado'),
     url(r'^staff/empleado/(?P<pk>\d+)/$', views.EmpDetailView.as_view(), name = 'detalle_empleado'),
     url(r'^staff/lista_empleado/$', views.EmpListView.as_view(), name = 'lista_empleado'),
@@ -52,8 +60,11 @@ urlpatterns = patterns('',
     url(r'^cliente/reset_pass/$', views.reset_password_conf, name = 'regenerar_contrasena?'),
     url(r'^cliente/reset_pass/conf/$', views.reset_password, name = 'regenerar_contrasena_hecho'),
     url(r'^cliente/factura/$', views.pdf_view, name = 'factura'),
+<<<<<<< HEAD
 
     url(r'contact/$', views.ContactView.as_view(), name = 'contacto'),
+=======
+>>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
 
     url(r'^feed/$', feed.LatestPosts(), name="feed"),
     url(r'^home/$', views.BlogIndex.as_view(), name="index"),

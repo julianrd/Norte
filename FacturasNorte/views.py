@@ -3,22 +3,31 @@ from django.http import HttpResponse
 
 __author__ = 'Julian'
 from django.utils import timezone
+from django import forms
 
+<<<<<<< HEAD
 
 from FacturasNorte.forms import AdminRegisterForm, ClienteRegisterForm
 from FacturasNorte.models import Administrador, Cliente, Empleado
 from FacturasNorte.models import User
 
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
+=======
+from braces.views import LoginRequiredMixin, PermissionRequiredMixin
+
+>>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
 
 from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
+<<<<<<< HEAD
 
 from django.views import generic
 from . import models
 
+=======
+>>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
 
 #Importaciones para configuracion de contacto
 import smtplib
@@ -29,15 +38,20 @@ import smtplib
 from django.core.urlresolvers import reverse_lazy
 from django.core.mail import EmailMessage
 from django.contrib import messages
-from .forms import ContactUsuarioAnonimoForm, ContactUsuarioLoginForm
+
+<<<<<<< HEAD
+=======
+from FacturasNorte.forms import ClienteCambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
+>>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
+
 from django.core.mail import send_mail
 
-
-from django.core.mail import send_mail, BadHeaderError
-
+<<<<<<< HEAD
 from FacturasNorte.models import Empleado
 
 from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
+=======
+>>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
 from FacturasNorte.models import Administrador, Empleado, Cliente
 from FacturasNorte.models import User
 
@@ -51,15 +65,22 @@ def logout_view(request):
     logout(request)
     # Redirect to a success page.
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
 def ThankYou (request):
     return render (request, 'FacturasNorte/thankyou.html')
 
 
+<<<<<<< HEAD
 
 class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
+=======
+class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
+>>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
     template_name = "FacturasNorte/admin/add_admin.html"
     form_class = AdminRegisterForm
     success_url = reverse_lazy('FacturasNorte:lista_admin')
@@ -201,6 +222,36 @@ class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
         return super(ClienteCreateView, self).form_valid(form)
 
+class ClienteCambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
+    template_name = "FacturasNorte/base/cambiar_contrasena.html"
+    form_class = ClienteCambiarContrasenaForm
+    success_url = reverse_lazy('FacturasNorte:cambiar_contrasena_hecho')
+    permission_required = 'FacturasNorte.cambiar_cont_cliente'
+
+    def get_context_data(self, **kwargs):
+    # Call the base implementation first to get a context
+        c = super(FormView, self).get_context_data(**kwargs)
+        c['user'] = self.request.user
+        return c
+
+    def get_form_kwargs(self):
+        kwargs = super(FormView, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
+    def form_valid(self, form):
+        usuario = self.get_context_data()['user']
+        if usuario.check_password(form.cleaned_data['contrasena_anterior']):
+            if form.cleaned_data['contrasena_nueva'] == form.cleaned_data['confirmar_contrasena']:
+                usuario.set_password(form.cleaned_data['contrasena_nueva'])
+                usuario.save()
+                return super(ClienteCambiarContrasenaView, self).form_valid(form)
+        else:
+            raise forms.ValidationError("La contrasena anterior ingresada es invalida", code='old_password')
+
+def cambiar_password_conf(request):
+    return render(request, 'FacturasNorte/base/cambiar_contrasena_hecho.html', {})
+
 
 class ClienteModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Cliente
@@ -262,7 +313,6 @@ def my_view(request):
     else:
         pass
 
-
 def crear_usuario(form, rol):
     nuevo_usuario = User()
     nuevo_usuario.username = form.cleaned_data['email_field'].split("@")[0]
@@ -290,6 +340,7 @@ def crear_usuario(form, rol):
     nuevo_usuario.save()
     return nuevo_usuario
 
+<<<<<<< HEAD
 
 
 def send_email_contact(email, subject, body):
@@ -303,6 +354,8 @@ def send_email_contact(email, subject, body):
             )
 
 
+=======
+>>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
 class ContactView(FormView):
 
     template_name = 'FacturasNorte/contact.html'
@@ -337,6 +390,7 @@ def pdf_view(request):
         return response
     pdf.closed
 
+<<<<<<< HEAD
 
 
 
@@ -354,6 +408,11 @@ def enviar_password(password):
 
 
 
+=======
+def enviar_password(password):
+    message = 'Su contrasena es: ' + str(password)
+    sender = 'julian.rd7@gmail.com'
+>>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
     email = EmailMessage('Cuenta Registrada', message, sender,
             ['julian_rd7@hotmail.com'],
             headers = {'Reply-To': 'julian.rd7@gmail.com'})
@@ -379,9 +438,14 @@ def send_email_contact(email, subject, body):
     send_mail(
         subject = 'Nuevo email de contacto',
         message = body,
-        from_email = 'jor.lencina@gmail.com',
-        recipient_list =['jor.lencina@gmail.com'],
+        from_email = 'julian.rd7@gmail.com',
+        recipient_list =['julian_rd7@gmail.com'],
             )
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 1b9d904f82a7210d44dc7c56447f4fa573275629
 
 
 
