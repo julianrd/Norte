@@ -1,47 +1,73 @@
-{% load staticfiles %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>{% block title %}Norte Online{% endblock %}</title>
 </head>
+
+
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static "FacturasNorte/css/base.css" %}">
+
 <body>
 
-    <div class="container">
+    <div id="main">
+        <div id="header">
 
             {% if user.is_active %}
+
             <div id="user-tools">
                 {% block welcome-msg %}
                     <p>Bienvenido, <strong>{% firstof user.get_short_name user.get_username %}</strong>.
                 {% endblock %}
-            <!--
 
+                <!--
                 {% if user.has_usable_password %}
                     {% block user-account %}
                     <a href="">Cambiar contrasena</a>
                     {% endblock %}
                 {% endif %}
-            -->
+                -->
+
                 <a href="{% url 'FacturasNorte:logout' %}">Cerrar sesion</a></p>
             </div>
             {% endif %}
 
-            {% block nav-global %}{% endblock %}
+            <div id="logo">
+                <div id="logo_text">
+                    <!-- class="logo_colour", allows you to change the colour of the text -->
+                    <h1><a href="{% url 'FacturasNorte:index' %}">Sistema De Facturación <span class="logo_colour">Norte</span></a></h1>
+                    <h2>Sistema de Facturación Electronica de Clientes</h2>
+                </div>
+            </div>
+
+            {% block nav-global %}
+                <div>
+                   <ul id="menu">
+                       <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+                       <li class="selected"><a href="{% url 'FacturasNorte:index' %}">Inicio</a></li>
+                       {% if user.is_active %}
+                       <li><a href="{% url 'FacturasNorte:detalle_cliente' user.id %}">Mis Facturas</a></li>
+                       {% endif %}
+                       <li><a href="{% url 'FacturasNorte:home' %}">Novedades</a></li>
+                       <li><a href="{% url 'FacturasNorte:contacto' %}">Contáctenos</a></li>
+                   </ul>
+                </div>
+            {% endblock %}
+
         </div><!-- header -->
+    </div>
 
-        <div id="content" class="row">
-        {% block content %}{% endblock %}
-        </div><!-- content -->
+     <div id="content" class="row">
+            {% block content %}{% endblock %}
+     </div><!-- content -->
 
-        <div id="footer" class="row">
+
+    <div id="footer" class="row">
         Copyright &copy; {% now "Y" %}
-        </div><!-- footer -->
-
-    </div><!-- containter -->
-
-
+    </div><!-- footer -->
 </body>
 </html>

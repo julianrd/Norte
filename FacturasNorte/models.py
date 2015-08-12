@@ -152,7 +152,7 @@ class Cliente(models.Model):
 
     class Meta:
         db_table = 'Clientes'
-        permissions = ('cambiar_cont_cliente', 'Puede cambiar contrasena de Cliente')
+        permissions = [('cambiar_cont_cliente', 'Puede cambiar contrasena de Cliente')]
 
 
 class Administrador(models.Model):
@@ -167,7 +167,7 @@ class Administrador(models.Model):
     class Meta:
         db_table = 'Administradores'
         verbose_name_plural = 'Administradores'
-        permissions = (('view_admin', 'Puede ver administrador'), ('update_admin', 'Puede modificar administrador'),
+        permissions = [('view_admin', 'Puede ver administrador'), ('update_admin', 'Puede modificar administrador'),
                        ('add_admin', 'Puede agregar administrador'), ('del_admin', 'Puede eliminar administrador'),
                        ('view_empleado', 'Puede ver empleado'), ('update_empleado', 'Puede modificar empleado'),
                        ('add_empleado', 'Puede agregar empleado'), ('del_empleado', 'Puede eliminar empleado'),
@@ -176,7 +176,7 @@ class Administrador(models.Model):
                        ('cambiar_cont_cliente', 'Puede cambiar contrasena de Cliente'),
                        ('cambiar_cont_empleado', 'Puede cambiar contrasena de Cliente'),
                        ('cambiar_cont_admin', 'Puede cambiar contrasena de Cliente')
-                       )
+                       ]
 
 
     def get_usuario(self):
@@ -222,9 +222,9 @@ class Empleado(models.Model):
     class Meta:
         db_table = 'Empleados'
         verbose_name_plural = 'Empleados'
-        permissions = (('view_cliente', 'Puede ver cliente'), ('update_cliente', 'Puede modificar cliente'),
+        permissions = [('view_cliente', 'Puede ver cliente'), ('update_cliente', 'Puede modificar cliente'),
                        ('add_cliente', 'Puede agregar cliente'), ('del_cliente', 'Puede eliminar cliente')
-                       )
+                       ]
 
 
     def get_usuario(self):
@@ -294,8 +294,8 @@ class Entry(models.Model):
         db_table = 'Entradas'
         verbose_name = "Blog Entry"
         verbose_name_plural = "Blog Entries"
-
-@receiver(post_save, sender=User)
+"""
+@receiver(pre_save, sender=User)
 def agregar_permisos(sender, **kwargs):
     usuario = kwargs.get('instance')
     if usuario.is_superuser:
@@ -308,6 +308,7 @@ def agregar_permisos(sender, **kwargs):
 
     for p in permissions:
         usuario.user_permissions.add(p)
+"""
 
 @receiver(post_delete, sender=Administrador)
 def eliminar_usuario_admin(sender, **kwargs):
@@ -328,91 +329,4 @@ def eliminar_usuario(**kwargs):
     except User.DoesNotExist:
         return
     u.delete()
-<<<<<<< HEAD
     return
-
-"""
-@receiver(pre_save, sender=Cliente)
-def nuevo_Usuario(sender, **kwargs):
-    cliente = kwargs.get('instance')
-    try:
-        u = cliente.get_usuario()
-    except User.DoesNotExist:
-        u = User(username=cliente.nombre,
-                 email=cliente.email,
-                 is_superuser=False,
-                 is_staff=False,
-                 is_active=True)
-        u.save()
-        cliente.nroUsuario = u
-
-
-@receiver(pre_save, sender=Administrador)
-def nuevo_Usuario(sender, **kwargs):
-    admin = kwargs.get('instance')
-    try:
-        u = admin.get_usuario()
-    except User.DoesNotExist:
-        u = User(username=admin.nombre,
-                 email=admin.email,
-                 is_staff=True,
-                 is_superuser=True,
-                 is_active=True)
-        u.save()
-        admin.nroUsuario = u
-"""
-
-"""
-@receiver(pre_save, sender=Cliente)
-def agregar_usuario_cliente_existente(sender, **kwargs):
-    if kwargs.get('created', True):
-        cliente = kwargs.get('instance')
-        if cliente.nroUsuario.username == 'anonimo':
-            nuevo_usuario = User(username=cliente.email.split("@")[0],
-                                 email=cliente.email,
-                                 is_superuser=False,
-                                 is_staff=False,
-                                 is_active=True,
-                                 date_joined=timezone.now())
-            nuevo_usuario.save()
-            cliente.nroUsuario = nuevo_usuario
-            cliente.save()
-"""
-
-class Tag(models.Model):
-    slug = models.SlugField(max_length=200, unique=True)
-
-    def __str__(self):
-        return self.slug
-
-
-class EntryQuerySet(models.QuerySet):
-    def published(self):
-        return self.filter(publish=True)
-
-
-class Entry(models.Model):
-    title = models.CharField(max_length=200)
-    body = models.TextField()
-    slug = models.SlugField(max_length=200, unique=True)
-    publish = models.BooleanField(default=True)
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    tags = models.ManyToManyField(Tag)
-
-    objects = EntryQuerySet.as_manager()
-
-    def __str__(self):
-        return self.title
-
-
-    def get_absolute_url(self):
-        return reverse("entry_detail", kwargs={"slug": self.slug})
-
-    class Meta:
-        verbose_name = "Blog Entry"
-        verbose_name_plural = "Blog Entries"
-        ordering = ["-created"]
-=======
-    return
->>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b

@@ -92,13 +92,14 @@ ol li
   margin-right: auto;}
 
 #main
-{   padding-bottom: 20px;
-    display: inline;
-    height: auto;
+{   padding-bottom: 0px;
+    display: inline-block;
+    background: #3a332d;
+    width: 100%;
 }
 
 #header
-{ background: #3A332D;
+{ background: #3a332d;
   display: inline;
   margin-bottom: 30px;}
 
@@ -139,7 +140,9 @@ ol li
   margin: 1px auto 0 auto;}
 
 ul#menu
-{ float: right;}
+{   float: left;
+    padding-bottom: 0px;
+    margin-bottom: 0}
 
 ul#menu li
 { float: left;
@@ -321,8 +324,10 @@ table tr td
   border-top: 1px solid #FFF;}
 
 #user-tools
-{ float: right;
+{   color: #ECEF01;
+    float: right;
   padding: 1.2em 10px;
   font-size: 11px;
   text-align: right;
+  font-style: italic;
 }

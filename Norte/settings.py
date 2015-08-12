@@ -62,9 +62,9 @@ DATABASES = {
         'ENGINE': 'sqlserver_ado',
         'NAME': 'FacturasNorte',
 
-        'HOST': 'JORGIED',#'JORGIED',
-        'USER': '',
-        'PASSWORD': '',#'dni36017874',
+        'HOST': 'PABLOHP',#'JORGIED',
+        'USER': 'sa',
+        'PASSWORD': 'Norte1234',#'dni36017874',
 
         'OPTIONS': {
             'provider': 'SQLNCLI',
@@ -123,18 +123,6 @@ LOGIN_URL = 'FacturasNorte:login'
 #     'FacturasNorte.formats',
 # ]
 
-<<<<<<< HEAD
-
-
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'jor.lencina@gmail.com'
-EMAIL_HOST_PASSWORD = 'jorgito2011'
-EMAIL_PORT = 25
-
-
-=======
->>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
 #EMAIL BACKEND
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 

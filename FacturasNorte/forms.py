@@ -47,10 +47,6 @@ class EmpleadoRegisterForm(forms.Form):
     password_field = forms.CharField(widget=forms.PasswordInput(), initial='')
     password_again_field = forms.CharField(widget=forms.PasswordInput(), initial='')
 
-<<<<<<< HEAD
-
-=======
->>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
     def __init__(self, *args, **kwargs):
         super(EmpleadoRegisterForm, self).__init__(*args, **kwargs)
 
@@ -66,23 +62,9 @@ class EmpleadoRegisterForm(forms.Form):
 
         return self.cleaned_data
 
-<<<<<<< HEAD
 
         self.fields['password_field'].required = False
         self.fields['password_again_field'].required = False
-
-
-=======
-
->>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
-def clean(self):
-        password1 = self.cleaned_data.get('password_field')
-        password2 = self.cleaned_data.get('password_again_field')
-
-        if password1 and password1 != password2:
-            raise forms.ValidationError("Passwords don't match")
-
-        return self.cleaned_data
 
 class ContactUsuarioAnonimoForm(forms.Form):
 

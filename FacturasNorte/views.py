@@ -1,72 +1,36 @@
 import urlparse
+
+from django.contrib.auth.models import Permission
 from django.core import mail
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 
+from FacturasNorte.custom_classes import CustomDetailView
+
 __author__ = 'Julian'
 from django.utils import timezone
 from django import forms
-<<<<<<< HEAD
 
-
-
-from FacturasNorte.forms import AdminRegisterForm, ClienteRegisterForm
-from FacturasNorte.models import Administrador, Cliente, Empleado
-from FacturasNorte.models import User
-
-from braces.views import LoginRequiredMixin, PermissionRequiredMixin
-
-from braces.views import LoginRequiredMixin, PermissionRequiredMixin
-
-
-=======
 from Norte import settings
 
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
->>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
-
 from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render
-<<<<<<< HEAD
-from django.contrib.auth import authenticate, login, logout
 
-=======
 from django.contrib.auth import login, logout, authenticate
->>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
 
 from django.views import generic
 from . import models
 
-
-
-#Importaciones para configuracion de contacto
-
-
 #Importaciones para conficuracion de contacto
 
-from django.core.urlresolvers import reverse_lazy, reverse
+from django.core.urlresolvers import reverse_lazy
 from django.core.mail import EmailMessage
 from django.contrib import messages
 
-<<<<<<< HEAD
-
-from FacturasNorte.forms import ClienteCambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
-
-=======
->>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
-
-
-<<<<<<< HEAD
-
-from FacturasNorte.models import Empleado
-
-from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
-
-
-=======
 from FacturasNorte.forms import ClienteCambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
     IniciarSesionForm
 
@@ -74,10 +38,22 @@ from django.core.mail import send_mail
 
 from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
 
->>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
 from FacturasNorte.models import Administrador, Empleado, Cliente
 from FacturasNorte.models import User
 
+#Pruebas de Usuario
+def is_admin(user):
+    return user.is_superuser
+
+def is_admin_o_emp(user):
+    return user.is_superuser or user.is_staff
+
+def is_admin_o_cliente(user):
+    return user.is_superuser or not user.is_staff
+
+
+def base(request):
+    return render(request, 'FacturasNorte/base/base.html')
 
 @login_required
 def index(request):
@@ -92,6 +68,7 @@ class LoginView(FormView):
     @method_decorator(never_cache)
     def dispatch(self, *args, **kwargs):
         return super(LoginView, self).dispatch(*args, **kwargs)
+
 
     def form_valid(self, form):
         """
@@ -148,24 +125,15 @@ class LoginView(FormView):
 @login_required
 def logout_view(request):
     logout(request)
-<<<<<<< HEAD
     # Redirect to a success page.
-
-=======
     return render(request,'FacturasNorte/registration/logged_out.html' )
->>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
 
 def ThankYou (request):
     return render (request, 'FacturasNorte/thankyou.html')
 
 
-<<<<<<< HEAD
 
 class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
-
-=======
-class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
->>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
     template_name = "FacturasNorte/admin/add_admin.html"
     form_class = AdminRegisterForm
     success_url = reverse_lazy('FacturasNorte:lista_admin')
@@ -195,12 +163,14 @@ class AdminModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     success_url = reverse_lazy('FacturasNorte:lista_admin')
     permission_required = 'FacturasNorte.update_admin'
 
+
 class AdminDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Administrador
     template_name = "FacturasNorte/admin/del_admin.html"
     success_url = reverse_lazy('FacturasNorte:lista_admin')
     context_object_name = 'admin'
     permission_required = 'FacturasNorte.del_admin'
+
 
 class AdminListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     template_name = "FacturasNorte/admin/admin_list.html"
@@ -212,7 +182,8 @@ class AdminListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         """Return the last five published questions (not including those set to be published in the future)."""
         return Administrador.objects.all
 
-class AdminDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+
+class AdminDetailView(LoginRequiredMixin, PermissionRequiredMixin, CustomDetailView):
     template_name = "FacturasNorte/admin/admin_detail.html"
     model = Administrador
     context_object_name = 'admin'
@@ -222,6 +193,7 @@ class AdminDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         context = super(AdminDetailView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
         return context
+
 
 class EmpCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/admin/add_emp.html"
@@ -247,6 +219,7 @@ class EmpCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
         return super(EmpCreateView, self).form_valid(form)
 
+
 class EmpModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Empleado
     template_name = "FacturasNorte/admin/mod_emp.html"
@@ -260,6 +233,7 @@ class EmpDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     success_url = reverse_lazy('FacturasNorte:lista_empleado')
     context_object_name = 'empleado'
     permission_required = 'FacturasNorte.del_empleado'
+
 
 class EmpListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     template_name = "FacturasNorte/admin/emp_list.html"
@@ -275,6 +249,7 @@ class EmpListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 class EmpDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/admin/emp_detail.html"
     model = Empleado
+    queryset = Empleado.objects.all
     context_object_name = 'empleado'
     permission_required = 'FacturasNorte.view_empleado'
 
@@ -282,6 +257,7 @@ class EmpDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         context = super(EmpDetailView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
         return context
+
 
 class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/empleado/add_cliente.html"
@@ -306,6 +282,7 @@ class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         nuevo_cliente.save()
 
         return super(ClienteCreateView, self).form_valid(form)
+
 
 class ClienteCambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/base/cambiar_contrasena.html"
@@ -344,12 +321,14 @@ class ClienteModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
     permission_required = 'FacturasNorte.modif_cliente'
 
+
 class ClienteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Cliente
     template_name = "FacturasNorte/empleado/del_cliente.html"
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
     context_object_name = 'cliente'
     permission_required = 'FacturasNorte.del_cliente'
+
 
 class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     template_name = "FacturasNorte/empleado/cliente_list.html"
@@ -361,7 +340,8 @@ class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         """Return the last five published questions (not including those set to be published in the future)."""
         return Cliente.objects.all
 
-class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+
+class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, CustomDetailView):
     template_name = "FacturasNorte/empleado/cliente_detail.html"
     model = Cliente
     context_object_name = 'cliente'
@@ -373,6 +353,7 @@ class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
         return context
 
 @login_required
+@user_passes_test(is_admin_o_emp)
 def reset_password(request):
     usuario = request.user
     password = User.objects.make_random_password()
@@ -382,6 +363,7 @@ def reset_password(request):
     return render(request, 'FacturasNorte/cliente/reset_contrasena_hecho.html', {})
 
 @login_required
+@user_passes_test(is_admin_o_emp)
 def reset_password_conf(request):
     return render(request, 'FacturasNorte/cliente/reset_contrasena.html', {})
 
@@ -396,35 +378,30 @@ def crear_usuario(form, rol):
         nuevo_usuario.is_staff = True
         nuevo_usuario.is_superuser = True
         password = form.cleaned_data['password_field']
+        permissions = Permission.objects.filter(name__startswith='Puede')
 
     elif rol == 'empleado':
         nuevo_usuario.is_staff = True
         nuevo_usuario.is_superuser = False
         password = form.cleaned_data['password_field']
+        permissions = Permission.objects.filter(name__endswith='cliente')
 
     elif rol == 'cliente':
         nuevo_usuario.is_staff = False
         nuevo_usuario.is_superuser = False
         password = User.objects.make_random_password()
+        permissions = []
 
     nuevo_usuario.set_password(password)
     enviar_password(password)
+
+    nuevo_usuario.save()
+
+    for perm in permissions:
+        nuevo_usuario.user_permissions.add(perm)
+
     nuevo_usuario.save()
     return nuevo_usuario
-
-<<<<<<< HEAD
-
-
-=======
->>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
-def send_email_contact(email, subject, body):
-    body = '{} ha enviado un email de contacto\n\n{}\n\n{}'.format(email, subject, body)
-    send_mail(
-        subject = 'Nuevo email de contacto',
-        message = body,
-        from_email = 'jor.lencina@gmail.com',
-        recipient_list =['jor.lencina@gmail.com'],
-            )
 
 class ContactView(FormView):
 
@@ -458,37 +435,12 @@ def pdf_view(request):
         response = HttpResponse(pdf.read(), content_type='application/pdf')
         response['Content-Disposition'] = 'inline;filename=some_file.pdf'
         return response
-<<<<<<< HEAD
     pdf.closed
 
 
-
-
 def enviar_password(password):
     message = 'Su contrasena es: ' + str(password)
     sender = 'julian.rd7@gmail.com'
-
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.ehlo()
-    server.starttls()
-    server.login(sender, 'tel563539')
-    server.sendmail(sender, ['julian_rd7@hotmail.com'], message)
-    server.close()
-
-
-
-def enviar_password(password):
-    message = 'Su contrasena es: ' + str(password)
-    sender = 'julian.rd7@gmail.com'
-
-=======
-    pdf.close
-
-
-def enviar_password(password):
-    message = 'Su contrasena es: ' + str(password)
-    sender = 'julian.rd7@gmail.com'
->>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
     email = EmailMessage('Cuenta Registrada', message, sender,
             ['julian_rd7@hotmail.com'],
             headers = {'Reply-To': 'julian.rd7@gmail.com'})
@@ -517,11 +469,6 @@ def send_email_contact(email, subject, body):
         from_email = 'julian.rd7@gmail.com',
         recipient_list =['julian_rd7@gmail.com'],
             )
-<<<<<<< HEAD
-
-
-=======
->>>>>>> f02b1cbba66bad06038a6e33a729f1c58de9467b
 
 class BlogIndex(generic.ListView):
     queryset = models.Entry.objects.published()
@@ -531,3 +478,4 @@ class BlogIndex(generic.ListView):
 class BlogDetail(generic.DetailView):
     model = models.Entry
     template_name = "FacturasNorte/post.html"
+
