@@ -133,3 +133,8 @@ EMAIL_HOST_USER = 'julian.rd7@gmail.com'
 EMAIL_HOST_PASSWORD = 'tel563539'
 EMAIL_USE_TLS = True
 
+
+#MEDIA
+MEDIA_ROOT = 'C:/Users/Julian/Documents/Diario Norte/Proyecto Norte/PDFs/'
+
+MEDIA_ULR = '/pdf/'

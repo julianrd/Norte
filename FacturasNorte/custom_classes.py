@@ -47,3 +47,29 @@ class CustomDetailView(SingleObjectTemplateResponseMixin, BaseDetailView):
             raise Http404(("No %(verbose_name)s found matching the query") %
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
+
+class Factura(object):
+    ruta = None
+    cliente = None
+    fecha = None
+
+    def get_ruta(self):
+        return self.ruta
+
+    def get_cliente(self):
+        return self.cliente
+
+    def get_fecha(self):
+        return self.fecha()
+
+    def set_ruta(self, ruta):
+        self.ruta = ruta
+        return
+
+    def set_cliente(self, cliente):
+        self.cliente = cliente
+        return
+
+    def set_fecha(self, fecha):
+        self.fecha = fecha
+        return

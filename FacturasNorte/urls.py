@@ -1,3 +1,5 @@
+from Norte import settings
+
 __author__ = 'Julian'
 from django.conf.urls import patterns, include, url
 from django.contrib.auth import views as auth_views
@@ -45,6 +47,7 @@ urlpatterns = patterns('',
     url(r'^cliente/reset_pass/$', views.reset_password_conf, name = 'regenerar_contrasena?'),
     url(r'^cliente/reset_pass/conf/$', views.reset_password, name = 'regenerar_contrasena_hecho'),
     url(r'^cliente/factura/$', views.pdf_view, name = 'factura'),
+    url(r'^cliente/facturas/(?P<pk>\d+)/$', views.ClienteFacturasView.as_view(), name = 'facturas_cliente'),
 
     url(r'contact/$', views.ContactView.as_view(), name = 'contacto'),
     url(r'thankyou/$', views.ThankYou, name ='thankyou'),
@@ -52,5 +55,10 @@ urlpatterns = patterns('',
     url(r'^home/$', views.BlogIndex.as_view(), name="home"),
     url(r'^entry/(?P<slug>\S+)$', views.BlogDetail.as_view(), name="entry_detail"),
 
-
+    url(r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name = 'media')
 )
+
+# static files (images, css, javascript, etc.)
+urlpatterns += patterns('',
+    (r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {
+    'document_root': settings.MEDIA_ROOT}))

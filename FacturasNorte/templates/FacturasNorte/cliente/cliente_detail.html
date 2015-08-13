@@ -5,5 +5,3 @@
 <p>Fecha nacimiento: {{ cliente.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</p>
 <p>Domicilio: {{ cliente.domicilio }}</p>
 <p>Telefono: {{ cliente.telefono }}</p>
-
-<p><a href="{% url 'FacturasNorte:facturas_cliente' cliente.numero %}">Ver Facturas</a><p>

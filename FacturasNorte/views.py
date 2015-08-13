@@ -2,12 +2,13 @@ import urlparse
 
 from django.contrib.auth.models import Permission
 from django.core import mail
+from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 
-from FacturasNorte.custom_classes import CustomDetailView
+from FacturasNorte.custom_classes import CustomDetailView, Factura
 
 __author__ = 'Julian'
 from django.utils import timezone
@@ -18,7 +19,7 @@ from Norte import settings
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from django.contrib.auth import login, logout, authenticate
 
@@ -68,7 +69,6 @@ class LoginView(FormView):
     @method_decorator(never_cache)
     def dispatch(self, *args, **kwargs):
         return super(LoginView, self).dispatch(*args, **kwargs)
-
 
     def form_valid(self, form):
         """
@@ -131,8 +131,6 @@ def logout_view(request):
 def ThankYou (request):
     return render (request, 'FacturasNorte/thankyou.html')
 
-
-
 class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/admin/add_admin.html"
     form_class = AdminRegisterForm
@@ -182,7 +180,6 @@ class AdminListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         """Return the last five published questions (not including those set to be published in the future)."""
         return Administrador.objects.all
 
-
 class AdminDetailView(LoginRequiredMixin, PermissionRequiredMixin, CustomDetailView):
     template_name = "FacturasNorte/admin/admin_detail.html"
     model = Administrador
@@ -193,7 +190,6 @@ class AdminDetailView(LoginRequiredMixin, PermissionRequiredMixin, CustomDetailV
         context = super(AdminDetailView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
         return context
-
 
 class EmpCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/admin/add_emp.html"
@@ -219,13 +215,11 @@ class EmpCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
         return super(EmpCreateView, self).form_valid(form)
 
-
 class EmpModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Empleado
     template_name = "FacturasNorte/admin/mod_emp.html"
     success_url = reverse_lazy('FacturasNorte:lista_empleado')
     permission_required = 'FacturasNorte.update_empleado'
-
 
 class EmpDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Empleado
@@ -233,7 +227,6 @@ class EmpDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     success_url = reverse_lazy('FacturasNorte:lista_empleado')
     context_object_name = 'empleado'
     permission_required = 'FacturasNorte.del_empleado'
-
 
 class EmpListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     template_name = "FacturasNorte/admin/emp_list.html"
@@ -244,7 +237,6 @@ class EmpListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     def get_queryset(self):
         """Return the last five published questions (not including those set to be published in the future)."""
         return Empleado.objects.all
-
 
 class EmpDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/admin/emp_detail.html"
@@ -257,7 +249,6 @@ class EmpDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         context = super(EmpDetailView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
         return context
-
 
 class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/empleado/add_cliente.html"
@@ -282,7 +273,6 @@ class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         nuevo_cliente.save()
 
         return super(ClienteCreateView, self).form_valid(form)
-
 
 class ClienteCambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/base/cambiar_contrasena.html"
@@ -321,14 +311,12 @@ class ClienteModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
     permission_required = 'FacturasNorte.modif_cliente'
 
-
 class ClienteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Cliente
     template_name = "FacturasNorte/empleado/del_cliente.html"
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
     context_object_name = 'cliente'
     permission_required = 'FacturasNorte.del_cliente'
-
 
 class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     template_name = "FacturasNorte/empleado/cliente_list.html"
@@ -340,8 +328,7 @@ class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         """Return the last five published questions (not including those set to be published in the future)."""
         return Cliente.objects.all
 
-
-class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, CustomDetailView):
+class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/empleado/cliente_detail.html"
     model = Cliente
     context_object_name = 'cliente'
@@ -350,6 +337,16 @@ class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, CustomDetai
     def get_context_data(self, **kwargs):
         context = super(ClienteDetailView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
+        return context
+
+class ClienteFacturasView(LoginRequiredMixin, DetailView):
+    template_name = "FacturasNorte/cliente/cliente_home.html"
+    model = Cliente
+    context_object_name = 'cliente'
+
+    def get_context_data(self, **kwargs):
+        context = super(ClienteFacturasView, self).get_context_data(**kwargs)
+        context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg))
         return context
 
 @login_required
@@ -437,13 +434,13 @@ def pdf_view(request):
         return response
     pdf.closed
 
-
 def enviar_password(password):
     message = 'Su contrasena es: ' + str(password)
     sender = 'julian.rd7@gmail.com'
     email = EmailMessage('Cuenta Registrada', message, sender,
             ['julian_rd7@hotmail.com'],
             headers = {'Reply-To': 'julian.rd7@gmail.com'})
+
     connection = mail.get_connection()
     connection.open()
     email.send()
@@ -478,4 +475,21 @@ class BlogIndex(generic.ListView):
 class BlogDetail(generic.DetailView):
     model = models.Entry
     template_name = "FacturasNorte/post.html"
+
+def buscar_pdfs(pk):
+     cliente = get_object_or_404(Cliente, numero=pk)
+     storageManager = FileSystemStorage()
+     archivos = storageManager.listdir(settings.MEDIA_ROOT)[1]
+     facturas = []
+
+     for a in archivos:
+         doc = a.split('-')[1]
+         fec = a.split('-')[2].split('.')[0]
+         if (doc == cliente.nroDoc):
+             f = Factura()
+             f.set_ruta(a)
+             f.set_fecha(fec)
+             facturas.append(f)
+
+     return facturas
 
