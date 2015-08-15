@@ -1,5 +1,7 @@
+{% extends "FacturasNorte/base/base.html" %}
 {% load l10n %}
 
+{% block content %}
 <form action="" method="post">
 
       {% load staticfiles %}
@@ -13,6 +15,7 @@
     {{ form.as_p }}
         <input type="submit" value="Enviar Mensaje" />
 </form>
+{% endblock %}
 
 
 

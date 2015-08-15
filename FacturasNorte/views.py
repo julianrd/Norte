@@ -8,7 +8,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 
-from FacturasNorte.custom_classes import CustomDetailView, Factura
+from FacturasNorte.custom_classes import AdminDetailView, EmpleadoDetailView, ClienteDetailView, Factura
 
 __author__ = 'Julian'
 from django.utils import timezone
@@ -131,6 +131,12 @@ def logout_view(request):
 def ThankYou (request):
     return render (request, 'FacturasNorte/thankyou.html')
 
+class AdminPerfilView(LoginRequiredMixin, PermissionRequiredMixin, AdminDetailView):
+    template_name = "FacturasNorte/admin/perfil_admin.html"
+    model = Administrador
+    context_object_name = 'admin'
+    permission_required = 'FacturasNorte.view_admin'
+
 class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/admin/add_admin.html"
     form_class = AdminRegisterForm
@@ -180,7 +186,7 @@ class AdminListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         """Return the last five published questions (not including those set to be published in the future)."""
         return Administrador.objects.all
 
-class AdminDetailView(LoginRequiredMixin, PermissionRequiredMixin, CustomDetailView):
+class AdminDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/admin/admin_detail.html"
     model = Administrador
     context_object_name = 'admin'
@@ -190,6 +196,13 @@ class AdminDetailView(LoginRequiredMixin, PermissionRequiredMixin, CustomDetailV
         context = super(AdminDetailView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
         return context
+
+
+class EmpleadoPerfilView(LoginRequiredMixin, PermissionRequiredMixin, EmpleadoDetailView):
+    template_name = "FacturasNorte/empleado/perfil_emp.html"
+    model = Empleado
+    context_object_name = 'empleado'
+    permission_required = 'FacturasNorteview_empleado'
 
 class EmpCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/admin/add_emp.html"
@@ -241,7 +254,6 @@ class EmpListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 class EmpDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/admin/emp_detail.html"
     model = Empleado
-    queryset = Empleado.objects.all
     context_object_name = 'empleado'
     permission_required = 'FacturasNorte.view_empleado'
 
@@ -249,6 +261,12 @@ class EmpDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         context = super(EmpDetailView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
         return context
+
+class ClientePerfilView(LoginRequiredMixin, PermissionRequiredMixin, ClienteDetailView):
+    template_name = "FacturasNorte/cliente/perfil_cliente.html"
+    model = Cliente
+    context_object_name = 'cliente'
+    permission_required = 'FacturasNorte.view_cliente'
 
 class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/empleado/add_cliente.html"
@@ -339,6 +357,13 @@ class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
         context['now'] = timezone.now()
         return context
 
+class ClientePerfilView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    template_name = "FacturasNorte/empleado/cliente_detail.html"
+    model = Cliente
+    context_object_name = 'cliente'
+    permission_required = 'FacturasNorte.view_cliente'
+
+
 class ClienteFacturasView(LoginRequiredMixin, DetailView):
     template_name = "FacturasNorte/cliente/cliente_home.html"
     model = Cliente
@@ -382,6 +407,7 @@ def crear_usuario(form, rol):
         nuevo_usuario.is_superuser = False
         password = form.cleaned_data['password_field']
         permissions = Permission.objects.filter(name__endswith='cliente')
+        permissions.append(Permission.objects.get(name='view_empleado'))
 
     elif rol == 'cliente':
         nuevo_usuario.is_staff = False

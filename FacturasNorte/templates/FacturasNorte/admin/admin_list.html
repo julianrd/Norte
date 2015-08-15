@@ -1,3 +1,6 @@
+{% extends "FacturasNorte/base/base.html" %}
+{% load l10n %}
+{% block content %}
 <h1>Administradores</h1>
 <ul>
 {% for admin in object_list %}
@@ -6,3 +9,4 @@
     <li> No hay administradores disponibles.</li>
 {% endfor %}
 </ul>
+{% endblock %}

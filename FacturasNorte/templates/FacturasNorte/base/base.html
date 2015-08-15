@@ -6,11 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}Norte Online{% endblock %}</title>
+
 </head>
 
-
 {% load staticfiles %}
-<link rel="stylesheet" href="{% static "FacturasNorte/css/base.css" %}">
+<link rel="stylesheet" href="{% static "FacturasNorte/css/base_style.css" %}">
 
 <body>
 
@@ -29,7 +29,7 @@
                     {% block user-account %}
                     <a href="">Cambiar contrasena</a>
                     {% endblock %}
-                {% endif %}
+            {% endif %}
                 -->
 
                 <a href="{% url 'FacturasNorte:logout' %}">Cerrar sesion</a></p>
@@ -44,27 +44,38 @@
                 </div>
             </div>
 
-            {% block nav-global %}
-                <div>
-                   <ul id="menu">
-                       <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
-                       <li class="selected"><a href="{% url 'FacturasNorte:index' %}">Inicio</a></li>
-                       {% if user.is_active %}
-                       <li><a href="{% url 'FacturasNorte:detalle_cliente' user.id %}">Mis Facturas</a></li>
-                       {% endif %}
-                       <li><a href="{% url 'FacturasNorte:home' %}">Novedades</a></li>
-                       <li><a href="{% url 'FacturasNorte:contacto' %}">Contáctenos</a></li>
-                   </ul>
-                </div>
-            {% endblock %}
+
+            <div id="nav">
+                {% block nav-global %}
+                <ul id="menu">
+                    <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
+                    <li class="selected"><a href="{% url 'FacturasNorte:index' %}">Inicio</a></li>
+                    {% if user.is_active %}
+                        {% if user.is_superuser %}
+                            <li><a href="{% url 'FacturasNorte:perfil_admin' user.id %}">Mi Perfil</a></li>
+                            <li><a href="{% url 'FacturasNorte:lista_empleado'%}">Empleados</a></li>
+                            <li><a href="{% url 'FacturasNorte:lista_cliente'%}">Clientes</a></li>
+                        {% elif user.is_staff %}
+                            <li><a href="{% url 'FacturasNorte:perfil_empleado' user.id %}">Mi Perfil</a></li>
+                            <li><a href="{% url 'FacturasNorte:lista_cliente' %}">Clientes</a></li>
+                        {% else %}
+                            <li><a href="{% url 'FacturasNorte:perfil_cliente' user.id %}">Mi Perfil</a></li>
+                            <li><a href="{% url 'FacturasNorte:facturas_cliente' user.id %}">Mis Facturas</a></li>
+                        {% endif %}
+                    {% endif %}
+                    <li><a href="{% url 'FacturasNorte:home' %}">Novedades</a></li>
+                    <li><a href="{% url 'FacturasNorte:contacto' %}">Contáctenos</a></li>
+                </ul>
+                {% endblock %}
+            </div>
 
         </div><!-- header -->
+
     </div>
 
-     <div id="content" class="row">
-            {% block content %}{% endblock %}
-     </div><!-- content -->
-
+    <div id="site_content">
+        {% block content %}{% endblock %}
+    </div><!-- content -->
 
     <div id="footer" class="row">
         Copyright &copy; {% now "Y" %}

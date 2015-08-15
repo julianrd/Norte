@@ -1,3 +1,5 @@
+{% extends "FacturasNorte/base/base.html" %}
+{% block content %}
 <h1>Clientes</h1>
 <ul>
 {% for cliente in cliente_list %}
@@ -6,3 +8,4 @@
     <li> No hay clientes disponibles.</li>
 {% endfor %}
 </ul>
+{% endblock %}

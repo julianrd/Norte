@@ -1,4 +1,6 @@
+{% extends "FacturasNorte/base/base.html" %}
 {% load l10n %}
+{% block content %}
 <h1>{{ cliente.nombre}}</h1>
 
 <p>DNI: {{ cliente.dni }}</p>
@@ -7,3 +9,4 @@
 <p>Telefono: {{ cliente.telefono }}</p>
 
 <p><a href="{% url 'FacturasNorte:facturas_cliente' cliente.numero %}">Ver Facturas</a><p>
+{% endblock %}

@@ -1,4 +1,8 @@
+{% extends "FacturasNorte/base/base.html" %}
+{% load l10n %}
+{% block content %}
 <form action="" method="post">{% csrf_token %}
     <p>¿Esta seguro de querer eliminar al Administrador "{{ admin.nombre }}"?</p>
     <input type="submit" value="Aceptar" />
 </form>
+{% endblock %}

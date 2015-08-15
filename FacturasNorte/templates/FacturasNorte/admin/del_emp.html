@@ -1,4 +1,9 @@
+{% extends "FacturasNorte/base/base.html" %}
+{% load l10n %}
+{% block content %}
+{% load l10n %}
 <form action="" method="post">{% csrf_token %}
     <p>¿Esta seguro de querer eliminar al empleado "{{ empleado.nombre }}"?</p>
     <input type="submit" value="Aceptar" />
 </form>
+{% endblock %}

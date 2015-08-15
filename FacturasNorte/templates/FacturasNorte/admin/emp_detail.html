@@ -1,3 +1,6 @@
+{% extends "FacturasNorte/base/base.html" %}
+{% load l10n %}
+{% block content %}
 {% load l10n %}
 <h1>{{ empleado.nombre}}</h1>
 
@@ -5,3 +8,4 @@
 <p>Fecha nacimiento: {{ empleado.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</p>
 <p>Domicilio: {{ empleado.domicilio }}</p>
 <p>Telefono: {{ empleado.telefono }}</p>
+{% endblock %}

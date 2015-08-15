@@ -1,3 +1,6 @@
+{% extends "FacturasNorte/base/base.html" %}
+{% load l10n %}
+{% block content %}
 <h1>Empleados</h1>
 <ul>
 {% for empleado in emp_list %}
@@ -6,3 +9,4 @@
     <li> No hay empleados disponibles.</li>
 {% endfor %}
 </ul>
+{% endblock %}
