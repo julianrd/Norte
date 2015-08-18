@@ -1,0 +1,16 @@
+{% extends "FacturasNorte/base/base.html" %}
+{% load l10n %}
+{% block content %}
+<h1>{{ cliente.nombre}}</h1>
+
+<p>DNI: {{ cliente.nroDoc }}</p>
+<p>Fecha nacimiento: {{ cliente.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</p>
+<p>Domicilio: {{ cliente.domicilio }}</p>
+<p>Telefono: {{ cliente.telefono }}</p>
+
+<form method="post" action="{% url 'FacturasNorte:cambiar_contrasena' %}">
+{% csrf_token %}
+<input type="submit" value="Cambiar contrasena" />
+</form>
+
+{% endblock %}

@@ -6,7 +6,7 @@ from FacturasNorte.models import Administrador, Empleado, Cliente
 
 __author__ = 'Julian'
 
-class AdminDetailView(DetailView):
+class CustomAdminDetailView(DetailView):
     """
     Render a "detail" view of an object.
 
@@ -49,7 +49,7 @@ class AdminDetailView(DetailView):
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
 
-class EmpleadoDetailView(DetailView):
+class CustomEmpleadoDetailView(DetailView):
     """
     Render a "detail" view of an object.
 
@@ -92,7 +92,7 @@ class EmpleadoDetailView(DetailView):
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
 
-class ClienteDetailView(DetailView):
+class CustomClienteDetailView(DetailView):
     """
     Render a "detail" view of an object.
 

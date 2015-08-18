@@ -1,0 +1,10 @@
+{% extends "FacturasNorte/base/base.html" %}
+{% load l10n %}
+{% block content %}
+<h1>{{ admin.nombre}}</h1>
+
+<p>DNI: {{ admin.dni }}</p>
+<p>Fecha nacimiento: {{ admin.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</p>
+<p>Domicilio: {{ admin.domicilio }}</p>
+<p>Telefono: {{ admin.telefono }}</p>
+{% endblock %}

@@ -8,7 +8,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 
-from FacturasNorte.custom_classes import AdminDetailView, EmpleadoDetailView, ClienteDetailView, Factura
+from FacturasNorte.custom_classes import  Factura, \
+    CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView
 
 __author__ = 'Julian'
 from django.utils import timezone
@@ -131,7 +132,7 @@ def logout_view(request):
 def ThankYou (request):
     return render (request, 'FacturasNorte/thankyou.html')
 
-class AdminPerfilView(LoginRequiredMixin, PermissionRequiredMixin, AdminDetailView):
+class AdminPerfilView(LoginRequiredMixin, PermissionRequiredMixin, CustomAdminDetailView):
     template_name = "FacturasNorte/admin/perfil_admin.html"
     model = Administrador
     context_object_name = 'admin'
@@ -198,7 +199,7 @@ class AdminDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         return context
 
 
-class EmpleadoPerfilView(LoginRequiredMixin, PermissionRequiredMixin, EmpleadoDetailView):
+class EmpleadoPerfilView(LoginRequiredMixin, PermissionRequiredMixin, CustomEmpleadoDetailView):
     template_name = "FacturasNorte/empleado/perfil_emp.html"
     model = Empleado
     context_object_name = 'empleado'
@@ -262,7 +263,7 @@ class EmpDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         context['now'] = timezone.now()
         return context
 
-class ClientePerfilView(LoginRequiredMixin, PermissionRequiredMixin, ClienteDetailView):
+class ClientePerfilView(LoginRequiredMixin, PermissionRequiredMixin, CustomClienteDetailView):
     template_name = "FacturasNorte/cliente/perfil_cliente.html"
     model = Cliente
     context_object_name = 'cliente'
@@ -342,6 +343,7 @@ class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     context_object_name = 'cliente_list'
     permission_required = 'FacturasNorte.view_cliente'
 
+
     def get_queryset(self):
         """Return the last five published questions (not including those set to be published in the future)."""
         return Cliente.objects.all
@@ -357,17 +359,11 @@ class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
         context['now'] = timezone.now()
         return context
 
-class ClientePerfilView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
-    template_name = "FacturasNorte/empleado/cliente_detail.html"
-    model = Cliente
-    context_object_name = 'cliente'
-    permission_required = 'FacturasNorte.view_cliente'
-
-
-class ClienteFacturasView(LoginRequiredMixin, DetailView):
+class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomClienteDetailView):
     template_name = "FacturasNorte/cliente/cliente_home.html"
     model = Cliente
     context_object_name = 'cliente'
+    permission_required = 'FacturasNorte.view_cliente'
 
     def get_context_data(self, **kwargs):
         context = super(ClienteFacturasView, self).get_context_data(**kwargs)
@@ -413,12 +409,11 @@ def crear_usuario(form, rol):
         nuevo_usuario.is_staff = False
         nuevo_usuario.is_superuser = False
         password = User.objects.make_random_password()
-        permissions = []
+        permissions = Permission.objects.filter(name='view_cliente')
 
     nuevo_usuario.set_password(password)
-    enviar_password(password)
-
     nuevo_usuario.save()
+    enviar_password(password)
 
     for perm in permissions:
         nuevo_usuario.user_permissions.add(perm)
@@ -490,7 +485,7 @@ def send_email_contact(email, subject, body):
         subject = 'Nuevo email de contacto',
         message = body,
         from_email = 'julian.rd7@gmail.com',
-        recipient_list =['julian_rd7@gmail.com'],
+        recipient_list =['julian_rd7@hotmail.com'],
             )
 
 class BlogIndex(generic.ListView):
@@ -503,7 +498,7 @@ class BlogDetail(generic.DetailView):
     template_name = "FacturasNorte/post.html"
 
 def buscar_pdfs(pk):
-     cliente = get_object_or_404(Cliente, numero=pk)
+     cliente = get_object_or_404(Cliente, nroUsuario=pk)
      storageManager = FileSystemStorage()
      archivos = storageManager.listdir(settings.MEDIA_ROOT)[1]
      facturas = []

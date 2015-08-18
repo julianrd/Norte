@@ -1,13 +1,9 @@
 {% extends "FacturasNorte/basefeed.html" %}
 {% load django_markdown %}
 
-{% block blog_entries %}
+{% block content%}
 {% for object in object_list %}
   <div class="post">
-
-      {% load staticfiles %}
-             <link rel="stylesheet" href="{% static "FacturasNorte/css/../../static/FacturasNorte/img/index_style.css" %}">
-
 
     <h2><a href="{% url "FacturasNorte:entry_detail" slug=object.slug %}">{{ object.title }}</a></h2>
     <p class="meta">
