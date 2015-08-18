@@ -1,18 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-        {% load staticfiles %}
-
-              <link rel="stylesheet" href="{% static "FacturasNorte/css/style.css" %}">
-              <img src="{% static "FacturasNorte/img/bg_infobox.gif" %}" alt="asd"/>
-              <img src="{% static "FacturasNorte/img/h1.png" %}" alt=""/>
-              <img src="{% static "FacturasNorte/img/overlay.png" %}" alt=""/>
-    <head>
-        <title>Registro de Administrador</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <link rel="stylesheet" type="text/css" href="{% static "FacturasNorte/css/style.css" %}"/>
-    </head>
-
-    <body>
+{% extends "FacturasNorte/base/base.html" %}
+{% load l10n %}
+{% block content %}
         <form action="" class="register" method="post">
 
             <fieldset class="row1">
@@ -27,5 +15,4 @@
                     </form>
             </fieldset>
         </form>
-    </body>
-</html>
+{% endblock %}

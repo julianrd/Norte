@@ -348,3 +348,7 @@ table tr td
   text-align: right;
   font-style: italic;
 }
+
+.links form {
+    display: inline;
+}

@@ -92,7 +92,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-#STATIC_ROOT = 'C:\Users\Julian\Documents\Diario Norte\Norte\static'
+STATIC_ROOT = 'C:\Users\Julian\Documents\Diario Norte\Proyecto Norte\Norte\FacturasNorte\static'
 
 STATICFILES_DIRS = ('static',
     'FacturasNorte/static'
