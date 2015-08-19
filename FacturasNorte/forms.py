@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 __author__ = 'Julian'
 from django import forms
 from Norte import formats
-from django.db import models
+
 
 class IniciarSesionForm(forms.Form):
     usuario = forms.EmailField(label='E-mail', show_hidden_initial='ejemplo@dominio.com')
@@ -125,3 +125,7 @@ class ClienteCambiarContrasenaForm(forms.Form):
             return self.cleaned_data
         else:
             raise forms.ValidationError("La contrasena anterior ingresada es invalida", code='old_password')
+
+
+class FiltroNombreForm(forms.Form):
+    nombre = forms.CharField(label='Nombre', initial='Ej. Messi')

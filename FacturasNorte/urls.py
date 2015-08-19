@@ -1,3 +1,4 @@
+from FacturasNorte.views import ClienteListView
 from Norte import settings
 
 __author__ = 'Julian'
@@ -5,6 +6,8 @@ from django.conf.urls import patterns, include, url
 from django.contrib.auth import views as auth_views
 from django.contrib import admin
 from . import views, feed
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
 
 urlpatterns = patterns('',
     # Examples:
@@ -52,6 +55,7 @@ urlpatterns = patterns('',
     url(r'^cliente/factura/$', views.pdf_view, name = 'factura'),
     url(r'^cliente/facturas/(?P<pk>\d+)/$', views.ClienteFacturasView.as_view(), name = 'facturas_cliente'),
 
+
     url(r'contact/$', views.ContactView.as_view(), name = 'contacto'),
     url(r'thankyou/$', views.ThankYou, name ='thankyou'),
     url(r'^feed/$', feed.LatestPosts(), name="feed"),
@@ -65,3 +69,5 @@ urlpatterns = patterns('',
 urlpatterns += patterns('',
     (r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {
     'document_root': settings.MEDIA_ROOT}))
+
+urlpatterns += staticfiles_urlpatterns()

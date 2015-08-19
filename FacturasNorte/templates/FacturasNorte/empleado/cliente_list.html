@@ -24,11 +24,45 @@
 
 {% block content %}
 <h1>Clientes</h1>
+
+<form action="" id="filter" method="post">
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="fieldWrapper">
+            <p> {{ field.label_tag }}
+            {{ field }} </p>
+        </div>
+    {% endfor %}
+    <button type="submit">Buscar</button>
+</form>
+<br/>
+<br/>
+
+<div id="list">
 <ul>
 {% for cliente in cliente_list %}
     <li><a href={% url 'FacturasNorte:detalle_cliente' cliente.numero %}>{{ cliente.nombre }} -- {{ cliente.email }}</a> -- <a href={% url 'FacturasNorte:modif_cliente' cliente.numero %}>Modificar</a> -- <a href={% url 'FacturasNorte:elim_cliente' cliente.numero %}>Eliminar</a></li>
 {% empty %}
     <li> No hay clientes disponibles.</li>
 {% endfor %}
+
 </ul>
+</div>
+
+    {% if is_paginated %}
+        <div class="pagination">
+            <span class="page-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}">anterior</a>
+                {% endif %}
+                <span class="page-current">
+                    Pagina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">siguiente</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+
 {% endblock %}

@@ -9,7 +9,7 @@
     <p>Domicilio: {{ cliente.domicilio }}</p>
     <p>Telefono: {{ cliente.telefono }}</p>
 
-    <div class="links">
+    <div id="links">
         <form action="{% url 'FacturasNorte:facturas_cliente' cliente.nroUsuario.id %}">
             <input type="submit" value="Ver Facturas">
         </form>

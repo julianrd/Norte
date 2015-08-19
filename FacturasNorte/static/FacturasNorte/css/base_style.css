@@ -189,9 +189,8 @@ ul#menu li a:hover
 #content_footer
 { background: url(../img/img_index/content_footer.png) no-repeat;}
 
-#form
-{
-
+#links form {
+  display: inline;
 }
 
 #nav
@@ -349,6 +348,13 @@ table tr td
   font-style: italic;
 }
 
-.links form {
-    display: inline;
+#filter .fieldWrapper, #filter p , #filter button
+{
+  float: left
 }
+
+#list ul
+{
+  display: inline;
+}
+

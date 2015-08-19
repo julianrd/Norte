@@ -3,10 +3,11 @@ import urlparse
 from django.contrib.auth.models import Permission
 from django.core import mail
 from django.core.files.storage import FileSystemStorage
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
+from django.views.generic.edit import FormMixin
 
 from FacturasNorte.custom_classes import  Factura, \
     CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView
@@ -20,7 +21,7 @@ from Norte import settings
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 
 from django.contrib.auth import login, logout, authenticate
 
@@ -34,7 +35,7 @@ from django.core.mail import EmailMessage
 from django.contrib import messages
 
 from FacturasNorte.forms import ClienteCambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
-    IniciarSesionForm
+    IniciarSesionForm, FiltroNombreForm
 
 from django.core.mail import send_mail
 
@@ -52,6 +53,25 @@ def is_admin_o_emp(user):
 
 def is_admin_o_cliente(user):
     return user.is_superuser or not user.is_staff
+
+class FormListView(ListView, FormMixin):
+    def get(self, request, *args, **kwargs):
+        # From ProcessFormMixin
+        form_class = self.get_form_class()
+        self.form = self.get_form(form_class)
+
+        # From BaseListView
+        self.object_list = self.get_queryset()
+        allow_empty = self.get_allow_empty()
+        if not allow_empty and len(self.object_list) == 0:
+            raise Http404(_(u"Empty list and '%(class_name)s.allow_empty' is False.")
+                          % {'class_name': self.__class__.__name__})
+
+        context = self.get_context_data(object_list=self.object_list, form=self.form)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
 
 
 def base(request):
@@ -337,16 +357,25 @@ class ClienteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
     context_object_name = 'cliente'
     permission_required = 'FacturasNorte.del_cliente'
 
-class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     template_name = "FacturasNorte/empleado/cliente_list.html"
     model = Cliente
     context_object_name = 'cliente_list'
+    paginate_by = 10
     permission_required = 'FacturasNorte.view_cliente'
 
+    form_class = FiltroNombreForm
+
+    def form_valid(self, form):
+        redirect('FacturasNorte:lista_cliente', {'nombre' : form.cleaned_data['nombre']})
 
     def get_queryset(self):
-        """Return the last five published questions (not including those set to be published in the future)."""
-        return Cliente.objects.all
+        try:
+            string = self.request.POST['nombre']
+        except KeyError:
+            string = ''
+        return Cliente.objects.filter(nombre__icontains=string)
+
 
 class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/empleado/cliente_detail.html"
