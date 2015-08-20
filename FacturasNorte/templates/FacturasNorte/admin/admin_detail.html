@@ -8,4 +8,13 @@
 <p>Fecha nacimiento: {{ admin.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</p>
 <p>Domicilio: {{ admin.domicilio }}</p>
 <p>Telefono: {{ admin.telefono }}</p>
+
+    <div id="links">
+        <form action="{% url 'FacturasNorte:modif_admin' admin.id %}">
+            <input type="submit" value="Modificar">
+        </form>
+        <form action="{% url 'FacturasNorte:elim_admin' admin.id %}">
+            <input type="submit" value="Eliminar">
+        </form>
+    </div>
 {% endblock %}

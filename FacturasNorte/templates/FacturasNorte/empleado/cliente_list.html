@@ -1,53 +1,53 @@
 {% extends "FacturasNorte/base/base.html" %}
 
-{% block nav-global %}
-                <ul id="menu">
-                    <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
-                    <li><a href="{% url 'FacturasNorte:index' %}">Inicio</a></li>
-                    {% if user.is_active %}
-                        {% if user.is_superuser %}
-                            <li><a href="{% url 'FacturasNorte:perfil_admin' user.id %}">Mi Perfil</a></li>
-                            <li><a href="{% url 'FacturasNorte:lista_empleado'%}">Empleados</a></li>
-                            <li><a href="{% url 'FacturasNorte:lista_cliente'%}">Clientes</a></li>
-                        {% elif user.is_staff %}
-                            <li><a href="{% url 'FacturasNorte:perfil_empleado' user.id %}">Mi Perfil</a></li>
-                            <li class="selected"><a href="{% url 'FacturasNorte:lista_cliente' %}">Clientes</a></li>
-                        {% else %}
-                            <li><a href="{% url 'FacturasNorte:perfil_cliente' user.id %}">Mi Perfil</a></li>
-                            <li><a href="{% url 'FacturasNorte:facturas_cliente' user.id %}">Mis Facturas</a></li>
-                        {% endif %}
-                    {% endif %}
-                    <li><a href="{% url 'FacturasNorte:home' %}">Novedades</a></li>
-                    <li><a href="{% url 'FacturasNorte:contacto' %}">Contactenos</a></li>
-                </ul>
-{% endblock %}
-
 {% block content %}
 <h1>Clientes</h1>
 
-<form action="" id="filter" method="post">
-    {% csrf_token %}
-    {% for field in form %}
-        <div class="fieldWrapper">
-            <p> {{ field.label_tag }}
-            {{ field }} </p>
-        </div>
-    {% endfor %}
-    <button type="submit">Buscar</button>
-</form>
+    <div id="searchbar">
+        <form action="" id="filter" method="post">
+        {% csrf_token %}
+
+            <div class="fieldWrapper">
+
+                <p> {{ form.query.label_tag }} {{ form.query }}   {{ form.tipo.label_tag }} {{ form.tipo }}</p>
+
+            </div>
+            <button id="boton" type="submit">Filtrar</button>
+        </form>
+    </div>
+    <div id="nuevo">
+        <p><a href={% url 'FacturasNorte:nuevo_cliente' %}>Nuevo cliente</a></p>
+    </div>
 <br/>
 <br/>
 
-<div id="list">
-<ul>
-{% for cliente in cliente_list %}
-    <li><a href={% url 'FacturasNorte:detalle_cliente' cliente.numero %}>{{ cliente.nombre }} -- {{ cliente.email }}</a> -- <a href={% url 'FacturasNorte:modif_cliente' cliente.numero %}>Modificar</a> -- <a href={% url 'FacturasNorte:elim_cliente' cliente.numero %}>Eliminar</a></li>
-{% empty %}
-    <li> No hay clientes disponibles.</li>
-{% endfor %}
+{% if not cliente_list %}
+      <h3> No se han encontrado resultados.</h3>
+  {% else %}
 
-</ul>
-</div>
+ <table style="width:100%">
+
+  <tr>
+    <th>DNI</th>
+    <th>Nombre</th>
+    <th>Email</th>
+    <th></th>
+    <th></th>
+  </tr>
+     {% for cliente in cliente_list %}
+
+        <tr>
+            <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.numero %}>{{ cliente.nroDoc }}</a></td>
+            <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.numero %}>{{ cliente.nombre }}</a></td>
+            <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.numero %}>{{ cliente.email }}</a></td>
+            <td><a href={% url 'FacturasNorte:modif_cliente' cliente.numero %}>Modificar</a></td>
+            <td><a href={% url 'FacturasNorte:elim_cliente' cliente.numero %}>Eliminar</a></td>
+        </tr>
+
+     {% endfor %}
+  {% endif %}
+</table>
+
 
     {% if is_paginated %}
         <div class="pagination">

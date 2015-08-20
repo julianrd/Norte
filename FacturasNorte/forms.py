@@ -128,4 +128,14 @@ class ClienteCambiarContrasenaForm(forms.Form):
 
 
 class FiltroNombreForm(forms.Form):
-    nombre = forms.CharField(label='Nombre', initial='Ej. Messi')
+    query = forms.CharField(label='Buscar', initial='Ej. Messi')
+    tipo = forms.ChoiceField(
+                                required=True,
+                                choices = ( ('0',u'Nombre'),
+                                            ('1',u'DNI'),
+                                            ('2',u'Email'),
+                                )
+    )
+
+
+

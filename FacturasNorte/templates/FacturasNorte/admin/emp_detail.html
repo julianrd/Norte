@@ -8,4 +8,13 @@
 <p>Fecha nacimiento: {{ empleado.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</p>
 <p>Domicilio: {{ empleado.domicilio }}</p>
 <p>Telefono: {{ empleado.telefono }}</p>
+
+    <div id="links">
+        <form action="{% url 'FacturasNorte:modif_empleado' empleado.id %}">
+            <input type="submit" value="Modificar">
+        </form>
+        <form action="{% url 'FacturasNorte:elim_empleado' empleado.id %}">
+            <input type="submit" value="Eliminar">
+        </form>
+    </div>
 {% endblock %}

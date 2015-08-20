@@ -197,15 +197,30 @@ class AdminDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     permission_required = 'FacturasNorte.del_admin'
 
 
-class AdminListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class AdminListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     template_name = "FacturasNorte/admin/admin_list.html"
     model = Administrador
     context_object_name = 'admin_list'
     permission_required = 'FacturasNorte.view_admin'
 
+    form_class = FiltroNombreForm
+
+    def form_valid(self, form):
+        redirect('FacturasNorte:lista_cliente', {'query' : form.cleaned_data['query'],
+                                                 'tipo': form.cleaned_data['tipo']})
+
     def get_queryset(self):
-        """Return the last five published questions (not including those set to be published in the future)."""
-        return Administrador.objects.all
+        try:
+            query = self.request.POST['query']
+            tipo = self.request.POST['tipo']
+        except KeyError:
+            return Administrador.objects.all()
+        if tipo == '0':
+            return Administrador.objects.filter(nombre__icontains=query)
+        elif tipo == '2':
+            return Administrador.objects.filter(email__icontains=query)
+        else:
+            return Administrador.objects.filter(dni__startswith=int(query))
 
 class AdminDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/admin/admin_detail.html"
@@ -262,15 +277,30 @@ class EmpDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     context_object_name = 'empleado'
     permission_required = 'FacturasNorte.del_empleado'
 
-class EmpListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class EmpListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     template_name = "FacturasNorte/admin/emp_list.html"
     model = Empleado
     context_object_name = 'emp_list'
     permission_required = 'FacturasNorte.view_empleado'
 
+    form_class = FiltroNombreForm
+
+    def form_valid(self, form):
+        redirect('FacturasNorte:lista_cliente', {'query' : form.cleaned_data['query'],
+                                                 'tipo': form.cleaned_data['tipo']})
+
     def get_queryset(self):
-        """Return the last five published questions (not including those set to be published in the future)."""
-        return Empleado.objects.all
+        try:
+            query = self.request.POST['query']
+            tipo = self.request.POST['tipo']
+        except KeyError:
+            return Empleado.objects.all()
+        if tipo == '0':
+            return Empleado.objects.filter(nombre__icontains=query)
+        elif tipo == '2':
+            return Empleado.objects.filter(email__icontains=query)
+        else:
+            return Empleado.objects.filter(dni__startswith=int(query))
 
 class EmpDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/admin/emp_detail.html"
@@ -367,14 +397,21 @@ class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView)
     form_class = FiltroNombreForm
 
     def form_valid(self, form):
-        redirect('FacturasNorte:lista_cliente', {'nombre' : form.cleaned_data['nombre']})
+        redirect('FacturasNorte:lista_cliente', {'query' : form.cleaned_data['query'],
+                                                 'tipo': form.cleaned_data['tipo']})
 
     def get_queryset(self):
         try:
-            string = self.request.POST['nombre']
+            query = self.request.POST['query']
+            tipo = self.request.POST['tipo']
         except KeyError:
-            string = ''
-        return Cliente.objects.filter(nombre__icontains=string)
+            return Cliente.objects.all()
+        if tipo == '0':
+            return Cliente.objects.filter(nombre__icontains=query)
+        elif tipo == '2':
+            return Cliente.objects.filter(email__icontains=query)
+        else:
+            return Cliente.objects.filter(nroDoc__startswith=int(query))
 
 
 class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):

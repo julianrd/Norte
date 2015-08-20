@@ -2,11 +2,67 @@
 {% load l10n %}
 {% block content %}
 <h1>Administradores</h1>
-<ul>
-{% for admin in object_list %}
-    <li><a href={% url 'FacturasNorte:detalle_admin' admin.id %}>{{ admin.nombre }} - {{ admin.email }}</a> -- <a href={% url 'FacturasNorte:modif_admin' admin.id %}>Modificar</a> -- <a href={% url 'FacturasNorte:elim_admin' admin.id %}>Eliminar</a></li>
-{% empty %}
-    <li> No hay administradores disponibles.</li>
-{% endfor %}
-</ul>
+
+     <div id="searchbar">
+        <form action="" id="filter" method="post">
+        {% csrf_token %}
+
+            <div class="fieldWrapper">
+
+                <p> {{ form.query.label_tag }} {{ form.query }}   {{ form.tipo.label_tag }} {{ form.tipo }}</p>
+
+            </div>
+            <button id="boton" type="submit">Filtrar</button>
+        </form>
+    </div>
+    <div id="nuevo">
+        <p><a href={% url 'FacturasNorte:nuevo_admin' %}>Nuevo administrador</a></p>
+    </div>
+<br/>
+<br/>
+
+{% if not admin_list %}
+      <h3> No se han encontrado resultados.</h3>
+  {% else %}
+
+ <table style="width:100%">
+
+  <tr>
+    <th>DNI</th>
+    <th>Nombre</th>
+    <th>Email</th>
+    <th></th>
+    <th></th>
+  </tr>
+     {% for admin in admin_list %}
+
+        <tr>
+            <td><a href={% url 'FacturasNorte:detalle_admin' admin.id %}>{{ admin.dni }}</a></td>
+            <td><a href={% url 'FacturasNorte:detalle_admin' admin.id %}>{{ admin.nombre }}</a></td>
+            <td><a href={% url 'FacturasNorte:detalle_admin' admin.id %}>{{ admin.email }}</a></td>
+            <td><a href={% url 'FacturasNorte:modif_admin' admin.id %}>Modificar</a></td>
+            <td><a href={% url 'FacturasNorte:elim_admin' admin.id %}>Eliminar</a></td>
+        </tr>
+
+
+     {% endfor %}
+  {% endif %}
+</table>
+
+    {% if is_paginated %}
+        <div class="pagination">
+            <span class="page-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}">anterior</a>
+                {% endif %}
+                <span class="page-current">
+                    Pagina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">siguiente</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+
 {% endblock %}

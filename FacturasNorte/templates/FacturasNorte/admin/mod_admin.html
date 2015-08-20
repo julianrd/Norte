@@ -3,7 +3,12 @@
 {% block content %}
 <form action="" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Modificar" />
+    <p>Nombre: {{ form.nombre }}</p>
+    <p>DNI: {{ form.dni }}</p>
+    <p>Email: {{ form.email }}</p>
+    <p>Fecha nacimiento: {{ form.fechaNacimiento }}</p>
+    <p>Domicilio: {{ form.domicilio }}</p>
+    <p>Telefono: {{ form.telefono }}</p>
+    <input type="submit" value="Guardar" />
 </form>
 {% endblock %}
