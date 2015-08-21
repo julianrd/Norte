@@ -1,12 +1,14 @@
 {% extends "FacturasNorte/base/base.html" %}
 {% load l10n %}
+
+
 {% block content %}
         <form action="" class="register" method="post">
 
             <fieldset class="row1">
                 <legend>Facturas Norte
                 </legend>
-                    {% load l10n %}
+
                     <form action="" method="post">
                         {% csrf_token %}
                          <h1> Formulario de Registro Empleado</h1>
@@ -15,7 +17,8 @@
                                  <div class="fieldWrapper">
                                     <p> {{ field.label_tag }}
 
-                                        {{ field }} </p>
+                                        {{ field }}
+                                         </p>
 
                                  </div>
                              {% endfor %}

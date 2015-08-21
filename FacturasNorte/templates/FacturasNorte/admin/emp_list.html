@@ -1,5 +1,6 @@
 {% extends "FacturasNorte/base/base.html" %}
 {% load l10n %}
+{% load staticfiles %}
 {% block content %}
 <h1>Empleados</h1>
 
@@ -12,7 +13,7 @@
                 <p> {{ form.query.label_tag }} {{ form.query }}   {{ form.tipo.label_tag }} {{ form.tipo }}</p>
 
             </div>
-            <button id="boton" type="submit">Filtrar</button>
+            <button id="boton" type="submit", style = margin:-4px;padding:2px;border-right-width:3px;> Filtrar  </button>
         </form>
     </div>
     <div id="nuevo">
@@ -40,8 +41,10 @@
             <td><a href={% url 'FacturasNorte:detalle_empleado' empleado.id %}>{{ empleado.dni }}</a></td>
             <td><a href={% url 'FacturasNorte:detalle_empleado' empleado.id %}>{{ empleado.nombre }}</a></td>
             <td><a href={% url 'FacturasNorte:detalle_empleado' empleado.id %}>{{ empleado.email }}</a></td>
-            <td><a href={% url 'FacturasNorte:modif_empleado' empleado.id %}>Modificar</a></td>
-            <td><a href={% url 'FacturasNorte:elim_empleado' empleado.id %}>Eliminar</a></td>
+            <td><a href={% url 'FacturasNorte:modif_empleado' empleado.id %}>
+                 <img src="{% static "FacturasNorte/img/editar.jpg" %}" width="12", alt="Editar"/>Editar</a></td>
+            <td><a href={% url 'FacturasNorte:elim_empleado' empleado.id %}>
+                 <img src="{% static "FacturasNorte/img/eliminar.png" %}" width="12", alt="Editar"/>Borrar</a></td>
         </tr>
 
      {% endfor %}

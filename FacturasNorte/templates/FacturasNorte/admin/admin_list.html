@@ -1,5 +1,6 @@
 {% extends "FacturasNorte/base/base.html" %}
 {% load l10n %}
+{% load staticfiles %}
 {% block content %}
 <h1>Administradores</h1>
 
@@ -12,7 +13,7 @@
                 <p> {{ form.query.label_tag }} {{ form.query }}   {{ form.tipo.label_tag }} {{ form.tipo }}</p>
 
             </div>
-            <button id="boton" type="submit">Filtrar</button>
+            <button id="boton" type="submit", style = margin:-4px;padding:2px;border-right-width:3px;> Filtrar  </button>
         </form>
     </div>
     <div id="nuevo">
@@ -40,8 +41,12 @@
             <td><a href={% url 'FacturasNorte:detalle_admin' admin.id %}>{{ admin.dni }}</a></td>
             <td><a href={% url 'FacturasNorte:detalle_admin' admin.id %}>{{ admin.nombre }}</a></td>
             <td><a href={% url 'FacturasNorte:detalle_admin' admin.id %}>{{ admin.email }}</a></td>
-            <td><a href={% url 'FacturasNorte:modif_admin' admin.id %}>Modificar</a></td>
-            <td><a href={% url 'FacturasNorte:elim_admin' admin.id %}>Eliminar</a></td>
+
+            <td><a href={% url 'FacturasNorte:modif_admin' admin.id %}>
+                 <img src="{% static "FacturasNorte/img/editar.jpg" %}" width="12", alt="Editar"/>Editar</a></td>
+
+            <td><a href={% url 'FacturasNorte:elim_admin' admin.id %}>
+                 <img src="{% static "FacturasNorte/img/eliminar.png" %}" width="12", alt="Editar"/>Borrar</a></td>
         </tr>
 
 

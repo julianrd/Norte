@@ -62,9 +62,9 @@ DATABASES = {
         'ENGINE': 'sqlserver_ado',
         'NAME': 'FacturasNorte',
 
-        'HOST': 'PABLOHP',#'JORGIED',
-        'USER': 'sa',
-        'PASSWORD': 'Norte1234',#'dni36017874',
+        'HOST': 'JORGIED',#'JORGIED',
+        'USER': '',
+        'PASSWORD': '',#'dni36017874',
 
         'OPTIONS': {
             'provider': 'SQLNCLI',
@@ -107,7 +107,9 @@ STATIC_URL = '/static/'
 STATIC_ROOT = ''
 
 TEMPLATE_DIRS = ('templates',
-    'FacturasNorte/templates'
+    'FacturasNorte/templates',
+    'FacturasNorte/templates/admin/base_sites.html',
+
 )
 
 #AUTHENTICATION
@@ -146,3 +148,5 @@ EMAIL_USE_TLS = True
 MEDIA_ROOT = 'C:/Users/Julian/Documents/Diario Norte/Proyecto Norte/PDFs/'
 
 MEDIA_ULR = '/pdf/'
+
+

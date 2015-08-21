@@ -1,5 +1,5 @@
 {% extends "FacturasNorte/base/base.html" %}
-
+  {% load staticfiles %}
 {% block content %}
 <h1>Clientes</h1>
 
@@ -12,10 +12,12 @@
                 <p> {{ form.query.label_tag }} {{ form.query }}   {{ form.tipo.label_tag }} {{ form.tipo }}</p>
 
             </div>
-            <button id="boton" type="submit">Filtrar</button>
+            <button id="boton" type="submit", style = margin:-4px;padding:2px;border-right-width:3px;> Filtrar  </button>
+
         </form>
     </div>
     <div id="nuevo">
+
         <p><a href={% url 'FacturasNorte:nuevo_cliente' %}>Nuevo cliente</a></p>
     </div>
 <br/>
@@ -33,15 +35,19 @@
     <th>Email</th>
     <th></th>
     <th></th>
-  </tr>
+     </tr>
      {% for cliente in cliente_list %}
 
         <tr>
             <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.numero %}>{{ cliente.nroDoc }}</a></td>
             <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.numero %}>{{ cliente.nombre }}</a></td>
             <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.numero %}>{{ cliente.email }}</a></td>
-            <td><a href={% url 'FacturasNorte:modif_cliente' cliente.numero %}>Modificar</a></td>
-            <td><a href={% url 'FacturasNorte:elim_cliente' cliente.numero %}>Eliminar</a></td>
+
+            <td><a href={% url 'FacturasNorte:modif_cliente' cliente.numero %}>
+                <img src="{% static "FacturasNorte/img/editar.jpg" %}" width="12", alt="Editar"/> Editar</a></td>
+
+            <td><a href={% url 'FacturasNorte:elim_cliente' cliente.numero %}>
+                <img src="{% static "FacturasNorte/img/eliminar.png" %}" width="12", alt="Borrar"/> Borrar</a></td>
         </tr>
 
      {% endfor %}
