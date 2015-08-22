@@ -1,0 +1,16 @@
+{% extends "FacturasNorte/base/base.html" %}
+
+{% block content %}
+<form method="post" action="">
+{% csrf_token %}
+
+  <div class="form-group">
+    <label for="email">{{ form.email.label_tag }}</label>
+    {{ form.email }}
+  </div>
+
+<input type="submit" value="Regenerar" />
+</form>
+
+
+{% endblock %}

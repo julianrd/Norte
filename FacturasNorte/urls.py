@@ -49,9 +49,10 @@ urlpatterns = patterns('',
     url(r'^staff/del_empleado/(?P<pk>\d+)/$', views.EmpDeleteView.as_view(), name = 'elim_empleado'),
     url(r'^staff/mod_empleado/(?P<pk>\d+)/$', views.EmpModifView.as_view(), name = 'modif_empleado'),
 
-    url(r'^cliente/perfil/(?P<pk>\d+)/$', views. ClientePerfilView.as_view(), name = 'perfil_cliente'),
-    url(r'^cliente/reset_pass/$', views.reset_password_conf, name = 'regenerar_contrasena?'),
-    url(r'^cliente/reset_pass/conf/$', views.reset_password, name = 'regenerar_contrasena_hecho'),
+    url(r'^cliente/perfil/(?P<pk>\d+)/$', views.ClientePerfilView.as_view(), name = 'perfil_cliente'),
+    url(r'^cliente/reset_pass/$', views.ClienteRegenerarContrasenaView.as_view(), name = 'regenerar_contrasena_form'),
+    url(r'^cliente/reset_pass/(?P<pk>\d+)/$', views.reset_password_conf, name = 'regenerar_contrasena?'),
+    url(r'^cliente/reset_pass/(?P<pk>\d+)/conf/$', views.reset_password, name = 'regenerar_contrasena_hecho'),
     url(r'^cliente/factura/$', views.pdf_view, name = 'factura'),
     url(r'^cliente/facturas/(?P<pk>\d+)/$', views.ClienteFacturasView.as_view(), name = 'facturas_cliente'),
 

@@ -4,7 +4,7 @@
 {% block content %}
 <h1>{{ cliente.nombre}}</h1>
 
-    <p>DNI: {{ cliente.dni }}</p>
+    <p>DNI: {{ cliente.nroDoc }}</p>
     <p>Fecha nacimiento: {{ cliente.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</p>
     <p>Domicilio: {{ cliente.domicilio }}</p>
     <p>Telefono: {{ cliente.telefono }}</p>
@@ -15,6 +15,9 @@
         </form>
         <form action="{% url 'FacturasNorte:modif_cliente' cliente.numero %}">
             <input type="submit" value="Modificar">
+        </form>
+        <form action="{% url 'FacturasNorte:regenerar_contrasena?' cliente.numero %}">
+            <input type="submit" value="Reestablecer contrasena">
         </form>
         <form action="{% url 'FacturasNorte:elim_cliente' cliente.numero %}">
             <input type="submit" value="Eliminar">

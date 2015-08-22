@@ -35,7 +35,7 @@ from django.core.mail import EmailMessage
 from django.contrib import messages
 
 from FacturasNorte.forms import ClienteCambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
-    IniciarSesionForm, FiltroNombreForm
+    IniciarSesionForm, FiltroNombreForm, RegenerarContrasenaForm
 
 from django.core.mail import send_mail
 
@@ -426,7 +426,7 @@ class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
         return context
 
 class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomClienteDetailView):
-    template_name = "FacturasNorte/cliente/cliente_home.html"
+    template_name = "FacturasNorte/cliente/facturas_list.html"
     model = Cliente
     context_object_name = 'cliente'
     permission_required = 'FacturasNorte.view_cliente'
@@ -436,20 +436,27 @@ class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomCli
         context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg))
         return context
 
+class ClienteRegenerarContrasenaView(FormView):
+    template_name = 'FacturasNorte/base/reset_contrasena_form.html'
+    form_class = RegenerarContrasenaForm
+
+    def form_valid(self, form):
+        usuario = User.objects.get(email=form.cleaned_data['email'])
+        reset_password(usuario)
+        return render(self.request, 'FacturasNorte/cliente/reset_contrasena_hecho.html', {})
+
 @login_required
 @user_passes_test(is_admin_o_emp)
-def reset_password(request):
-    usuario = request.user
-    password = User.objects.make_random_password()
-    usuario.set_password(password)
-    enviar_password_regenerada(usuario, password)
-    usuario.save()
+def reset_password_view(request, pk):
+    usuario = get_object_or_404(User,id=pk)
+    reset_password(usuario)
     return render(request, 'FacturasNorte/cliente/reset_contrasena_hecho.html', {})
 
 @login_required
 @user_passes_test(is_admin_o_emp)
-def reset_password_conf(request):
-    return render(request, 'FacturasNorte/cliente/reset_contrasena.html', {})
+def reset_password_conf(request, pk):
+    usuario = get_object_or_404(Cliente, numero=pk).nroUsuario
+    return render(request, 'FacturasNorte/cliente/reset_contrasena.html', {'usuario': usuario})
 
 def crear_usuario(form, rol):
     nuevo_usuario = User()
@@ -580,3 +587,9 @@ def buscar_pdfs(pk):
 
      return facturas
 
+def reset_password(usuario):
+    password = User.objects.make_random_password()
+    usuario.set_password(password)
+    enviar_password_regenerada(usuario, password)
+    usuario.save()
+    return

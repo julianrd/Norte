@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {% block content %}
-<form action="{% url 'FacturasNorte:regenerar_contrasena_hecho' %}" method="post">
+<form action="{% url 'FacturasNorte:regenerar_contrasena_hecho' usuario.id %}" method="post">
 {% csrf_token %}
     <h2>Regenerar contrasena</h2>
     <p>Esta seguro?</p>

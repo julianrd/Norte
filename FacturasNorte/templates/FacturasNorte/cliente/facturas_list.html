@@ -1,0 +1,25 @@
+{% extends "FacturasNorte/base/base.html" %}
+{% load l10n %}
+{% block content %}
+
+{% if not lista_facturas %}
+      <h3> No se han encontrado resultados.</h3>
+  {% else %}
+
+ <table style="width:100%">
+
+  <tr>
+    <th>Nro Pedido</th>
+    <th>Fecha</th>
+    </tr>
+     {% for fac in lista_facturas %}
+
+        <tr>
+            <td><a href={% url 'FacturasNorte:media' fac.ruta %}></a></td>
+            <td><a href={% url 'FacturasNorte:media' fac.ruta %}>{{ fac.fecha }}</a></td>
+        </tr>
+
+     {% endfor %}
+  {% endif %}
+</table>
+{% endblock %}
