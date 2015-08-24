@@ -45,10 +45,15 @@
             <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.numero %}>{{ cliente.email }}</a></td>
 
             <td><a href={% url 'FacturasNorte:modif_cliente' cliente.numero %}>
+
                 <img src="{% static "FacturasNorte/img/edit.gif" %}" width="12", alt="Editar"/> Editar</a></td>
 
             <td><a href={% url 'FacturasNorte:elim_cliente' cliente.numero %}>
                 <img src="{% static "FacturasNorte/img/delete.gif" %}" width="12", alt="Borrar"/> Borrar</a></td>
+
+
+
+
         </tr>
 
      {% endfor %}

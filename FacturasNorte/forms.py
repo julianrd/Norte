@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
+from FacturasNorte.models import Cliente
 
 __author__ = 'Julian'
 from django import forms
@@ -127,6 +129,16 @@ class ClienteCambiarContrasenaForm(forms.Form):
             return self.cleaned_data
         else:
             raise forms.ValidationError("La contrasena anterior ingresada es invalida", code='old_password')
+
+class RegenerarContrasenaForm(forms.Form):
+    email = forms.EmailField(initial='ejemplo@dominio.com')
+
+    def clean(self):
+        try:
+            User.objects.get(email=self.cleaned_data.get('email'))
+        except ObjectDoesNotExist:
+            raise forms.ValidationError("El email ingresado no se encuentra registrado")
+
 
 
 class FiltroNombreForm(forms.Form):

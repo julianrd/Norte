@@ -23,17 +23,14 @@
                 {% block welcome-msg %}
                     <p>Bienvenido, <strong>{% firstof user.get_short_name user.get_username %}</strong>.
                 {% endblock %}
-
-                <!--
-                {% if user.has_usable_password %}
-                    {% block user-account %}
-                    <a href="">Cambiar contrasena</a>
-                    {% endblock %}
-            {% endif %}
-                -->
-
                 <a href="{% url 'FacturasNorte:logout' %}">Cerrar sesion</a></p>
             </div>
+            {% else %}
+                <div id="user-tools">
+                    <p>Bienvenido.
+                <a href="{% url 'FacturasNorte:login' %}">Inicie sesion</a></p>
+            </div>
+
             {% endif %}
 
             <div id="logo">
