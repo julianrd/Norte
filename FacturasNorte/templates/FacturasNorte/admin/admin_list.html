@@ -17,7 +17,8 @@
         </form>
     </div>
     <div id="nuevo">
-        <p><a href={% url 'FacturasNorte:nuevo_admin' %}>Nuevo administrador</a></p>
+        <p><a href={% url 'FacturasNorte:nuevo_admin' %}>
+             <img src="{% static "FacturasNorte/img/add.gif" %}" width="12", alt="Nuevo"/> Nuevo administrador</a></p>
     </div>
 <br/>
 <br/>
@@ -43,10 +44,10 @@
             <td><a href={% url 'FacturasNorte:detalle_admin' admin.id %}>{{ admin.email }}</a></td>
 
             <td><a href={% url 'FacturasNorte:modif_admin' admin.id %}>
-                 <img src="{% static "FacturasNorte/img/editar.jpg" %}" width="12", alt="Editar"/>Editar</a></td>
+                 <img src="{% static "FacturasNorte/img/edit.gif" %}" width="12", alt="Editar"/> Editar</a></td>
 
             <td><a href={% url 'FacturasNorte:elim_admin' admin.id %}>
-                 <img src="{% static "FacturasNorte/img/eliminar.png" %}" width="12", alt="Editar"/>Borrar</a></td>
+                 <img src="{% static "FacturasNorte/img/delete.gif" %}" width="12", alt="Editar"/> Borrar</a></td>
         </tr>
 
 
@@ -55,19 +56,25 @@
 </table>
 
     {% if is_paginated %}
-        <div class="pagination">
-            <span class="page-links">
+       <div class="pagination">
+
+               <span class="page-links" style="margin: 500px;">
                 {% if page_obj.has_previous %}
-                    <a href="?page={{ page_obj.previous_page_number }}">anterior</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">
+                        <button> <img src="{% static "FacturasNorte/img/anterior.jpg" %}" width="14", alt=""/>  Anterior </button>
+                    </a>
                 {% endif %}
                 <span class="page-current">
-                    Pagina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+                    Pagina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
                 </span>
                 {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}">siguiente</a>
+                   <a href="?page={{ page_obj.next_page_number }}">
+                       <button> <img src="{% static "FacturasNorte/img/siguiente.jpg" %}" width="14", alt=""/>  Siguiente </button>
+                    </a>
+
                 {% endif %}
             </span>
         </div>
-    {% endif %}
 
+    {% endif %}
 {% endblock %}
