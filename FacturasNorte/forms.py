@@ -48,8 +48,8 @@ class EmpleadoRegisterForm(forms.Form):
     fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget(years=range(1900, datetime.date.today().year-16)))
     domicilio_field = forms.CharField(label='Domicilio', max_length=254, initial='Calle y altura')
     telefono_field = forms.CharField(label='Telefono', max_length=254, initial='Su numero sin comillas ni parentesis')
-    password_field = forms.CharField(widget=forms.PasswordInput(), initial='')
-    password_again_field = forms.CharField(widget=forms.PasswordInput(), initial='')
+    password_field = forms.CharField(label='Contrasena', widget=forms.PasswordInput(), initial='')
+    password_again_field = forms.CharField(label='Repita contrasena', widget=forms.PasswordInput(), initial='')
 
     def __init__(self, *args, **kwargs):
         super(EmpleadoRegisterForm, self).__init__(*args, **kwargs)
@@ -107,14 +107,14 @@ class ClienteRegisterForm(forms.Form):
     telefono_field = forms.CharField(label='Telefono', max_length=254, initial='Su numero sin comillas ni parentesis')
 
 
-class ClienteCambiarContrasenaForm(forms.Form):
+class CambiarContrasenaForm(forms.Form):
     contrasena_anterior = forms.CharField(widget=forms.PasswordInput(), initial='')
     contrasena_nueva = forms.CharField(widget=forms.PasswordInput(), initial='')
     confirmar_contrasena = forms.CharField(widget=forms.PasswordInput(), initial='')
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
-        super(ClienteCambiarContrasenaForm, self).__init__(*args, **kwargs)
+        super(CambiarContrasenaForm, self).__init__(*args, **kwargs)
         self.fields['contrasena_anterior'].required = False
         self.fields['contrasena_nueva'].required = False
         self.fields['confirmar_contrasena'].required = False

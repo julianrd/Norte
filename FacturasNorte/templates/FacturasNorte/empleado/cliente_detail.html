@@ -16,7 +16,7 @@
         <form action="{% url 'FacturasNorte:modif_cliente' cliente.numero %}">
             <input type="submit" value="Modificar">
         </form>
-        <form action="{% url 'FacturasNorte:regenerar_contrasena?' cliente.numero %}">
+        <form action="{% url 'FacturasNorte:reestablecer_contrasena' cliente.numero %}">
             <input type="submit" value="Reestablecer contrasena">
         </form>
         <form action="{% url 'FacturasNorte:elim_cliente' cliente.numero %}">

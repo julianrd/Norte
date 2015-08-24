@@ -1,8 +1,11 @@
 import urlparse
+from django.contrib.admin.views.decorators import staff_member_required
 
 from django.contrib.auth.models import Permission
 from django.core import mail
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.storage import FileSystemStorage
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
@@ -20,7 +23,7 @@ from Norte import settings
 
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
 from django.shortcuts import render, get_object_or_404, redirect
 
 from django.contrib.auth import login, logout, authenticate
@@ -34,7 +37,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.core.mail import EmailMessage
 from django.contrib import messages
 
-from FacturasNorte.forms import ClienteCambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
+from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
     IniciarSesionForm, FiltroNombreForm, RegenerarContrasenaForm
 
 from django.core.mail import send_mail
@@ -51,8 +54,22 @@ def is_admin(user):
 def is_admin_o_emp(user):
     return user.is_superuser or user.is_staff
 
+def is_emp(request):
+    return request.user.is_staff
+
 def is_admin_o_cliente(user):
     return user.is_superuser or not user.is_staff
+
+class AdminTestRequiredMixin(object):
+    @permission_required('is_superuser')
+    def as_view(cls, **initkwargs):
+        view = super(AdminTestRequiredMixin, cls).as_view(**initkwargs)
+        return login_required(view)
+
+class EmpleadoTestRequiredMixin(object):
+    @staff_member_required
+    def dispatch(self, *args, **kwargs):
+        return super(EmpleadoTestRequiredMixin, self).dispatch(*args, **kwargs)
 
 class FormListView(ListView, FormMixin):
     def get(self, request, *args, **kwargs):
@@ -238,7 +255,7 @@ class EmpleadoPerfilView(LoginRequiredMixin, PermissionRequiredMixin, CustomEmpl
     template_name = "FacturasNorte/empleado/perfil_emp.html"
     model = Empleado
     context_object_name = 'empleado'
-    permission_required = 'FacturasNorteview_empleado'
+    permission_required = 'FacturasNorte.view_empleado'
 
 class EmpCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/admin/add_emp.html"
@@ -343,9 +360,9 @@ class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
         return super(ClienteCreateView, self).form_valid(form)
 
-class ClienteCambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
+class CambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/base/cambiar_contrasena.html"
-    form_class = ClienteCambiarContrasenaForm
+    form_class = CambiarContrasenaForm
     success_url = reverse_lazy('FacturasNorte:cambiar_contrasena_hecho')
     permission_required = 'FacturasNorte.cambiar_cont_cliente'
 
@@ -366,7 +383,7 @@ class ClienteCambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, 
             if form.cleaned_data['contrasena_nueva'] == form.cleaned_data['confirmar_contrasena']:
                 usuario.set_password(form.cleaned_data['contrasena_nueva'])
                 usuario.save()
-                return super(ClienteCambiarContrasenaView, self).form_valid(form)
+                return super(CambiarContrasenaView, self).form_valid(form)
         else:
             raise forms.ValidationError("La contrasena anterior ingresada es invalida", code='old_password')
 
@@ -443,20 +460,27 @@ class ClienteRegenerarContrasenaView(FormView):
     def form_valid(self, form):
         usuario = User.objects.get(email=form.cleaned_data['email'])
         reset_password(usuario)
-        return render(self.request, 'FacturasNorte/cliente/reset_contrasena_hecho.html', {})
+        return render(self.request, 'FacturasNorte/base/reset_contrasena_hecho.html', {})
 
 @login_required
 @user_passes_test(is_admin_o_emp)
 def reset_password_view(request, pk):
     usuario = get_object_or_404(User,id=pk)
     reset_password(usuario)
-    return render(request, 'FacturasNorte/cliente/reset_contrasena_hecho.html', {})
+    return render(request, 'FacturasNorte/base/reset_contrasena_hecho.html', {})
 
 @login_required
 @user_passes_test(is_admin_o_emp)
 def reset_password_conf(request, pk):
-    usuario = get_object_or_404(Cliente, numero=pk).nroUsuario
-    return render(request, 'FacturasNorte/cliente/reset_contrasena.html', {'usuario': usuario})
+    try:
+        usuario = get_object_or_404(Cliente, numero=pk).nroUsuario
+    except ObjectDoesNotExist:
+        try:
+            usuario = get_object_or_404(Empleado, id=pk).nroUsuario
+        except ObjectDoesNotExist:
+            usuario = get_object_or_404(Administrador, id=pk).nroUsuario
+
+    return render(request, 'FacturasNorte/base/reset_contrasena.html', {'usuario':usuario})
 
 def crear_usuario(form, rol):
     nuevo_usuario = User()
@@ -469,20 +493,19 @@ def crear_usuario(form, rol):
         nuevo_usuario.is_staff = True
         nuevo_usuario.is_superuser = True
         password = form.cleaned_data['password_field']
-        permissions = Permission.objects.filter(name__startswith='Puede')
+        permissions = []
 
     elif rol == 'empleado':
         nuevo_usuario.is_staff = True
         nuevo_usuario.is_superuser = False
         password = form.cleaned_data['password_field']
-        permissions = Permission.objects.filter(name__endswith='cliente')
-        permissions.append(Permission.objects.get(name='view_empleado'))
+        permissions = Permission.objects.filter(Q(codename='view_empleado')| Q(codename__endswith='cliente'))
 
     elif rol == 'cliente':
         nuevo_usuario.is_staff = False
         nuevo_usuario.is_superuser = False
         password = User.objects.make_random_password()
-        permissions = Permission.objects.filter(name='view_cliente')
+        permissions = Permission.objects.filter(codename='view_cliente')
 
     nuevo_usuario.set_password(password)
     nuevo_usuario.save()
@@ -586,6 +609,11 @@ def buscar_pdfs(pk):
              facturas.append(f)
 
      return facturas
+
+def reestablecer_password(request, pk):
+    usuario = get_object_or_404(User, id=pk)
+    reset_password(usuario)
+    return render(request, 'FacturasNorte/base/reset_contrasena_hecho.html', {})
 
 def reset_password(usuario):
     password = User.objects.make_random_password()

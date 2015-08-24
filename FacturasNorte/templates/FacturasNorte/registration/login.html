@@ -25,7 +25,7 @@
 <input type="hidden" name="next" value="{{ next }}" />
 </form>
 
-<form method="post" action="{% url 'FacturasNorte:regenerar_contrasena_form' %}">
+<form method="post" action="{% url 'FacturasNorte:reestablecer_contrasena_form' %}">
     {% csrf_token %}
 <input type="submit" value="Olvido su contrasena?" />
 </form>

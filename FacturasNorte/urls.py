@@ -20,10 +20,16 @@ urlpatterns = patterns('',
 
     url(r'^login/$', views.LoginView.as_view(), name='login'),
     url(r'^logout/$', views.logout_view, name='logout'),
-    url(r'^cambiar_pass/$', views.ClienteCambiarContrasenaView.as_view(), name = 'cambiar_contrasena'),
+    url(r'^cambiar_pass/$', views.CambiarContrasenaView.as_view(), name = 'cambiar_contrasena'),
     url(r'^cambiar_pass/conf/$', views.cambiar_password_conf, name = 'cambiar_contrasena_hecho'),
+    url(r'^reset_pass/$', views.ClienteRegenerarContrasenaView.as_view(), name = 'reestablecer_contrasena_form'),
+    url(r'^reset_user_pass/(?P<pk>\d+)/$', views.reset_password_conf, name = 'reestablecer_contrasena'),
+    url(r'^reset_pass/conf/(?P<pk>\d+)/$', views.reestablecer_password, name = 'reestablecer_contrasena_hecho'),
     url(r'^contacto/$', views.ContactView.as_view(), name = 'contacto'),
     url(r'^thankyou/$', views.ThankYou, name ='thankyou'),
+    url(r'^feed/$', feed.LatestPosts(), name="feed"),
+    url(r'^home/$', views.BlogIndex.as_view(), name="home"),
+    url(r'^entry/(?P<slug>\S+)$', views.BlogDetail.as_view(), name="entry_detail"),
 
     url(r'^admin/perfil/(?P<pk>\d+)/$', views. AdminPerfilView.as_view(), name = 'perfil_admin'),
     url(r'^admin/nuevo_admin/$', views.AdminCreateView.as_view(), name = 'nuevo_admin'),
@@ -50,18 +56,8 @@ urlpatterns = patterns('',
     url(r'^staff/mod_empleado/(?P<pk>\d+)/$', views.EmpModifView.as_view(), name = 'modif_empleado'),
 
     url(r'^cliente/perfil/(?P<pk>\d+)/$', views.ClientePerfilView.as_view(), name = 'perfil_cliente'),
-    url(r'^cliente/reset_pass/$', views.ClienteRegenerarContrasenaView.as_view(), name = 'regenerar_contrasena_form'),
-    url(r'^cliente/reset_pass/(?P<pk>\d+)/$', views.reset_password_conf, name = 'regenerar_contrasena?'),
-    url(r'^cliente/reset_pass/(?P<pk>\d+)/conf/$', views.reset_password, name = 'regenerar_contrasena_hecho'),
     url(r'^cliente/factura/$', views.pdf_view, name = 'factura'),
     url(r'^cliente/facturas/(?P<pk>\d+)/$', views.ClienteFacturasView.as_view(), name = 'facturas_cliente'),
-
-
-    url(r'contact/$', views.ContactView.as_view(), name = 'contacto'),
-    url(r'thankyou/$', views.ThankYou, name ='thankyou'),
-    url(r'^feed/$', feed.LatestPosts(), name="feed"),
-    url(r'^home/$', views.BlogIndex.as_view(), name="home"),
-    url(r'^entry/(?P<slug>\S+)$', views.BlogDetail.as_view(), name="entry_detail"),
 
     url(r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name = 'media')
 )
