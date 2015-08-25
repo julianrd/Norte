@@ -24,7 +24,7 @@
 <br/>
 <br/>
 
-{% if not cliente_list %}
+{% if not page_obj.object_list %}
       <h3> No se han encontrado resultados.</h3>
   {% else %}
 
@@ -50,10 +50,6 @@
 
             <td><a href={% url 'FacturasNorte:elim_cliente' cliente.numero %}>
                 <img src="{% static "FacturasNorte/img/delete.gif" %}" width="12", alt="Borrar"/> Borrar</a></td>
-
-
-
-
         </tr>
 
      {% endfor %}

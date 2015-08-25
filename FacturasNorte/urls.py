@@ -46,7 +46,7 @@ urlpatterns = patterns('',
     url(r'^staff/perfil/(?P<pk>\d+)/$', views. EmpleadoPerfilView.as_view(), name = 'perfil_empleado'),
     url(r'^staff/nuevo_cliente/$', views.ClienteCreateView.as_view(), name = 'nuevo_cliente'),
     url(r'^staff/cliente/(?P<pk>\d+)/$', views. ClienteDetailView.as_view(), name = 'detalle_cliente'),
-    url(r'^staff/lista_cliente/$', views.ClienteListView.as_view(), name = 'lista_cliente'),
+    url(r'^staff/clientes/$', views.ClienteListView.as_view(), name = 'lista_cliente'),
     url(r'^staff/del_cliente/(?P<pk>\d+)/$', views.ClienteDeleteView.as_view(), name = 'elim_cliente'),
     url(r'^staff/mod_cliente/(?P<pk>\d+)/$', views.ClienteModifView.as_view(), name = 'modif_cliente'),
     url(r'^staff/nuevo_empleado/$', views.EmpCreateView.as_view(), name = 'nuevo_empleado'),
@@ -59,7 +59,11 @@ urlpatterns = patterns('',
     url(r'^cliente/factura/$', views.pdf_view, name = 'factura'),
     url(r'^cliente/facturas/(?P<pk>\d+)/$', views.ClienteFacturasView.as_view(), name = 'facturas_cliente'),
 
-    url(r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name = 'media')
+    url(r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name = 'media'),
+
+    url('^staff/clientes/0=(?P<nombre>.+)/$', views.ClienteListView.as_view(), name = 'clientes_nombre'),
+    url('^staff/clientes/1=(?P<dni>.+)/$', views.ClienteListView.as_view(), name = 'clientes_dni'),
+    url('^staff/clientes/2=(?P<email>.+)/$', views.ClienteListView.as_view(), name = 'clientes_email')
 )
 
 # static files (images, css, javascript, etc.)

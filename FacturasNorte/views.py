@@ -1,6 +1,6 @@
 import urlparse
-from django.contrib.admin.views.decorators import staff_member_required
 
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import Permission
 from django.core import mail
 from django.core.exceptions import ObjectDoesNotExist
@@ -33,12 +33,12 @@ from . import models
 
 #Importaciones para conficuracion de contacto
 
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.core.mail import EmailMessage
 from django.contrib import messages
 
 from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
-    IniciarSesionForm, FiltroNombreForm, RegenerarContrasenaForm
+    IniciarSesionForm, RegenerarContrasenaForm, FiltroForm
 
 from django.core.mail import send_mail
 
@@ -71,7 +71,7 @@ class EmpleadoTestRequiredMixin(object):
     def dispatch(self, *args, **kwargs):
         return super(EmpleadoTestRequiredMixin, self).dispatch(*args, **kwargs)
 
-class FormListView(ListView, FormMixin):
+class FormListView(FormMixin, ListView):
     def get(self, request, *args, **kwargs):
         # From ProcessFormMixin
         form_class = self.get_form_class()
@@ -220,7 +220,7 @@ class AdminListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     context_object_name = 'admin_list'
     permission_required = 'FacturasNorte.view_admin'
 
-    form_class = FiltroNombreForm
+    form_class = FiltroForm
 
     def form_valid(self, form):
         redirect('FacturasNorte:lista_cliente', {'query' : form.cleaned_data['query'],
@@ -300,7 +300,7 @@ class EmpListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     context_object_name = 'emp_list'
     permission_required = 'FacturasNorte.view_empleado'
 
-    form_class = FiltroNombreForm
+    form_class = FiltroForm
 
     def form_valid(self, form):
         redirect('FacturasNorte:lista_cliente', {'query' : form.cleaned_data['query'],
@@ -411,24 +411,28 @@ class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView)
     paginate_by = 10
     permission_required = 'FacturasNorte.view_cliente'
 
-    form_class = FiltroNombreForm
+    form_class = FiltroForm
 
-    def form_valid(self, form):
-        redirect('FacturasNorte:lista_cliente', {'query' : form.cleaned_data['query'],
-                                                 'tipo': form.cleaned_data['tipo']})
+    def post(self, request, *args, **kwargs):
+        URL = 'FacturasNorte/staff/clientes/'
+        form = self.get_form(FiltroForm)
+        return redirect('/' + URL + form.cleaned_data['tipo'] + '=' + form.cleaned_data['query'])
+
 
     def get_queryset(self):
         try:
-            query = self.request.POST['query']
-            tipo = self.request.POST['tipo']
+            nombre = self.kwargs['nombre']
+            return Cliente.objects.filter(nombre__icontains=nombre)
         except KeyError:
-            return Cliente.objects.all()
-        if tipo == '0':
-            return Cliente.objects.filter(nombre__icontains=query)
-        elif tipo == '2':
-            return Cliente.objects.filter(email__icontains=query)
-        else:
-            return Cliente.objects.filter(nroDoc__startswith=int(query))
+            try:
+                dni = self.kwargs['dni']
+                return Cliente.objects.filter(nroDoc__icontains=int(dni))
+            except KeyError:
+                try:
+                    email = self.kwargs['email']
+                    return Cliente.objects.filter(email__icontains=email)
+                except KeyError:
+                    return Cliente.objects.all()
 
 
 class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):

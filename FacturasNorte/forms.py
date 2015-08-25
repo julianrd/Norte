@@ -141,7 +141,7 @@ class RegenerarContrasenaForm(forms.Form):
 
 
 
-class FiltroNombreForm(forms.Form):
+class FiltroForm(forms.Form):
     query = forms.CharField(label='Buscar', initial='Ej. Messi')
     tipo = forms.ChoiceField(
                                 required=True,
