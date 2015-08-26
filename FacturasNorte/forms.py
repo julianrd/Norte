@@ -126,9 +126,9 @@ class CambiarContrasenaForm(forms.Form):
             password2 = self.cleaned_data.get('confirmar_contrasena')
             if password1 and password1 != password2:
                 raise forms.ValidationError("Las nuevas contrasenas ingresadas no coinciden", code='match_passwords')
-            return self.cleaned_data
         else:
             raise forms.ValidationError("La contrasena anterior ingresada es invalida", code='old_password')
+        return self.cleaned_data
 
 class RegenerarContrasenaForm(forms.Form):
     email = forms.EmailField(initial='ejemplo@dominio.com')
@@ -141,13 +141,22 @@ class RegenerarContrasenaForm(forms.Form):
 
 
 
-class FiltroForm(forms.Form):
+class FiltroPersonaForm(forms.Form):
     query = forms.CharField(label='Buscar', initial='Ej. Messi')
     tipo = forms.ChoiceField(
                                 required=True,
-                                choices = ( ('0',u'Nombre'),
-                                            ('1',u'DNI'),
-                                            ('2',u'Email'),
+                                choices = ( ('nombre',u'Nombre'),
+                                            ('dni',u'DNI'),
+                                            ('email',u'Email'),
+                                )
+    )
+
+class FiltroFacturaForm(forms.Form):
+    query = forms.CharField(label='Buscar', initial='Ej. Messi')
+    tipo = forms.ChoiceField(
+                                required=True,
+                                choices = ( ('pedido',u'Pedido'),
+                                            ('fecha',u'Fecha'),
                                 )
     )
 

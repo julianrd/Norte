@@ -34,12 +34,12 @@ urlpatterns = patterns('',
     url(r'^admin/perfil/(?P<pk>\d+)/$', views. AdminPerfilView.as_view(), name = 'perfil_admin'),
     url(r'^admin/nuevo_admin/$', views.AdminCreateView.as_view(), name = 'nuevo_admin'),
     url(r'^admin/(?P<pk>\d+)/$', views. AdminDetailView.as_view(), name = 'detalle_admin'),
-    url(r'^admin/lista_admin/$', views.AdminListView.as_view(), name = 'lista_admin'),
+    url(r'^admin/admins/$', views.AdminListView.as_view(), name = 'lista_admin'),
     url(r'^admin/del_admin/(?P<pk>\d+)/$', views.AdminDeleteView.as_view(), name = 'elim_admin'),
     url(r'^admin/mod_admin/(?P<pk>\d+)/$', views.AdminModifView.as_view(), name = 'modif_admin'),
     url(r'^admin/nuevo_empleado/$', views.EmpCreateView.as_view(), name = 'nuevo_empleado'),
     url(r'^admin/empleado/(?P<pk>\d+)/$', views.EmpDetailView.as_view(), name = 'detalle_empleado'),
-    url(r'^admin/lista_empleado/$', views.EmpListView.as_view(), name = 'lista_empleado'),
+    url(r'^admin/empleados/$', views.EmpListView.as_view(), name = 'lista_empleado'),
     url(r'^admin/del_empleado/(?P<pk>\d+)/$', views.EmpDeleteView.as_view(), name = 'elim_empleado'),
     url(r'^admin/mod_empleado/(?P<pk>\d+)/$', views.EmpModifView.as_view(), name = 'modif_empleado'),
 
@@ -51,7 +51,7 @@ urlpatterns = patterns('',
     url(r'^staff/mod_cliente/(?P<pk>\d+)/$', views.ClienteModifView.as_view(), name = 'modif_cliente'),
     url(r'^staff/nuevo_empleado/$', views.EmpCreateView.as_view(), name = 'nuevo_empleado'),
     url(r'^staff/empleado/(?P<pk>\d+)/$', views.EmpDetailView.as_view(), name = 'detalle_empleado'),
-    url(r'^staff/lista_empleado/$', views.EmpListView.as_view(), name = 'lista_empleado'),
+    url(r'^staff/empleados/$', views.EmpListView.as_view(), name = 'lista_empleado'),
     url(r'^staff/del_empleado/(?P<pk>\d+)/$', views.EmpDeleteView.as_view(), name = 'elim_empleado'),
     url(r'^staff/mod_empleado/(?P<pk>\d+)/$', views.EmpModifView.as_view(), name = 'modif_empleado'),
 
@@ -61,9 +61,10 @@ urlpatterns = patterns('',
 
     url(r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name = 'media'),
 
-    url('^staff/clientes/0=(?P<nombre>.+)/$', views.ClienteListView.as_view(), name = 'clientes_nombre'),
-    url('^staff/clientes/1=(?P<dni>.+)/$', views.ClienteListView.as_view(), name = 'clientes_dni'),
-    url('^staff/clientes/2=(?P<email>.+)/$', views.ClienteListView.as_view(), name = 'clientes_email')
+    url('^cliente/facturas/(?P<pk>\d+)/(?P<tipo>.+)=(?P<query>.+)/$', views.ClienteListView.as_view(), name = 'facturas_search'),
+    url('^staff/clientes/(?P<tipo>.+)=(?P<query>.+)/$', views.ClienteListView.as_view(), name = 'clientes_search'),
+    url('^admin/empleados/(?P<tipo>.+)=(?P<query>.+)/$', views.EmpListView.as_view(), name = 'empleados_search'),
+    url('^admin/admins/(?P<tipo>.+)=(?P<query>.+)/$', views.AdminListView.as_view(), name = 'admins_search'),
 )
 
 # static files (images, css, javascript, etc.)

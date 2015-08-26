@@ -38,7 +38,7 @@ from django.core.mail import EmailMessage
 from django.contrib import messages
 
 from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
-    IniciarSesionForm, RegenerarContrasenaForm, FiltroForm
+    IniciarSesionForm, RegenerarContrasenaForm, FiltroPersonaForm, FiltroFacturaForm
 
 from django.core.mail import send_mail
 
@@ -220,24 +220,19 @@ class AdminListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     context_object_name = 'admin_list'
     permission_required = 'FacturasNorte.view_admin'
 
-    form_class = FiltroForm
+    form_class = FiltroPersonaForm
 
-    def form_valid(self, form):
-        redirect('FacturasNorte:lista_cliente', {'query' : form.cleaned_data['query'],
-                                                 'tipo': form.cleaned_data['tipo']})
+    def post(self, request, *args, **kwargs):
+        form = self.get_form(FiltroPersonaForm)
+        if form.is_valid():
+            URL = 'FacturasNorte/admin/admins/'
+            return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['query'])
 
     def get_queryset(self):
         try:
-            query = self.request.POST['query']
-            tipo = self.request.POST['tipo']
+            return search_person(Administrador, self.kwargs['tipo'], self.kwargs['query'])
         except KeyError:
             return Administrador.objects.all()
-        if tipo == '0':
-            return Administrador.objects.filter(nombre__icontains=query)
-        elif tipo == '2':
-            return Administrador.objects.filter(email__icontains=query)
-        else:
-            return Administrador.objects.filter(dni__startswith=int(query))
 
 class AdminDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/admin/admin_detail.html"
@@ -300,24 +295,19 @@ class EmpListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     context_object_name = 'emp_list'
     permission_required = 'FacturasNorte.view_empleado'
 
-    form_class = FiltroForm
+    form_class = FiltroPersonaForm
 
-    def form_valid(self, form):
-        redirect('FacturasNorte:lista_cliente', {'query' : form.cleaned_data['query'],
-                                                 'tipo': form.cleaned_data['tipo']})
+    def post(self, request, *args, **kwargs):
+        form = self.get_form(FiltroPersonaForm)
+        if form.is_valid():
+            URL = 'FacturasNorte/admin/empleados/'
+            return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['query'])
 
     def get_queryset(self):
         try:
-            query = self.request.POST['query']
-            tipo = self.request.POST['tipo']
+            return search_person(Empleado, self.kwargs['tipo'], self.kwargs['query'])
         except KeyError:
             return Empleado.objects.all()
-        if tipo == '0':
-            return Empleado.objects.filter(nombre__icontains=query)
-        elif tipo == '2':
-            return Empleado.objects.filter(email__icontains=query)
-        else:
-            return Empleado.objects.filter(dni__startswith=int(query))
 
 class EmpDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/admin/emp_detail.html"
@@ -411,28 +401,19 @@ class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView)
     paginate_by = 10
     permission_required = 'FacturasNorte.view_cliente'
 
-    form_class = FiltroForm
+    form_class = FiltroPersonaForm
 
     def post(self, request, *args, **kwargs):
-        URL = 'FacturasNorte/staff/clientes/'
-        form = self.get_form(FiltroForm)
-        return redirect('/' + URL + form.cleaned_data['tipo'] + '=' + form.cleaned_data['query'])
-
+        form = self.get_form(FiltroPersonaForm)
+        if form.is_valid():
+            URL = 'FacturasNorte/staff/clientes/'
+            return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['query'])
 
     def get_queryset(self):
         try:
-            nombre = self.kwargs['nombre']
-            return Cliente.objects.filter(nombre__icontains=nombre)
+            return search_person(Cliente, self.kwargs['tipo'], self.kwargs['query'])
         except KeyError:
-            try:
-                dni = self.kwargs['dni']
-                return Cliente.objects.filter(nroDoc__icontains=int(dni))
-            except KeyError:
-                try:
-                    email = self.kwargs['email']
-                    return Cliente.objects.filter(email__icontains=email)
-                except KeyError:
-                    return Cliente.objects.all()
+            return Cliente.objects.all()
 
 
 class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
@@ -446,14 +427,23 @@ class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
         context['now'] = timezone.now()
         return context
 
-class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomClienteDetailView):
+class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomClienteDetailView, FormMixin):
     template_name = "FacturasNorte/cliente/facturas_list.html"
     model = Cliente
     context_object_name = 'cliente'
     permission_required = 'FacturasNorte.view_cliente'
 
+    form_class = FiltroFacturaForm
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form(FiltroPersonaForm)
+        if form.is_valid():
+            URL = 'FacturasNorte/cliente/facturas/' + self.pk_url_kwarg + '/'
+            return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['query'])
+
     def get_context_data(self, **kwargs):
         context = super(ClienteFacturasView, self).get_context_data(**kwargs)
+        context['form'] = self.get_form(FiltroFacturaForm)
         context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg))
         return context
 
@@ -597,7 +587,7 @@ class BlogDetail(generic.DetailView):
     model = models.Entry
     template_name = "FacturasNorte/post.html"
 
-def buscar_pdfs(pk):
+def buscar_pdfs(pk, field, query):
      cliente = get_object_or_404(Cliente, nroUsuario=pk)
      storageManager = FileSystemStorage()
      archivos = storageManager.listdir(settings.MEDIA_ROOT)[1]
@@ -605,7 +595,7 @@ def buscar_pdfs(pk):
 
      for a in archivos:
          doc = a.split('-')[1]
-         fec = a.split('-')[2].split('.')[0]
+         fec = a.split('-')[3].split('.')[0]
          if (doc == cliente.nroDoc):
              f = Factura()
              f.set_ruta(a)
@@ -625,3 +615,17 @@ def reset_password(usuario):
     enviar_password_regenerada(usuario, password)
     usuario.save()
     return
+
+def search_redirect(baseUrl, queryField, queryText):
+    return redirect('/' + baseUrl + queryField + '=' + queryText)
+
+def search_person(model, searchField, searchQuery):
+    if searchField == 'nombre':
+        return model.objects.filter(nombre__icontains=searchQuery)
+    elif searchField == 'dni':
+        if model == Cliente:
+            return model.objects.filter(nroDoc__icontains=int(searchQuery))
+        else:
+            return model.objects.filter(dni__icontains=int(searchQuery))
+    else:
+        return model.objects.filter(email__icontains=searchQuery)
