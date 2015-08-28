@@ -61,7 +61,7 @@ urlpatterns = patterns('',
 
     url(r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name = 'media'),
 
-    url('^cliente/facturas/(?P<pk>\d+)/(?P<tipo>.+)=(?P<query>.+)/$', views.ClienteListView.as_view(), name = 'facturas_search'),
+    url('^cliente/facturas/(?P<pk>\d+)/(?P<tipo>.+)=(?P<query>.+)/$', views.ClienteFacturasView.as_view(), name = 'facturas_search'),
     url('^staff/clientes/(?P<tipo>.+)=(?P<query>.+)/$', views.ClienteListView.as_view(), name = 'clientes_search'),
     url('^admin/empleados/(?P<tipo>.+)=(?P<query>.+)/$', views.EmpListView.as_view(), name = 'empleados_search'),
     url('^admin/admins/(?P<tipo>.+)=(?P<query>.+)/$', views.AdminListView.as_view(), name = 'admins_search'),

@@ -1,3 +1,4 @@
+from time import strftime
 import urlparse
 
 from django.contrib.admin.views.decorators import staff_member_required
@@ -14,6 +15,8 @@ from django.views.generic.edit import FormMixin
 
 from FacturasNorte.custom_classes import  Factura, \
     CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView
+from FacturasNorte.functions import send_email_contact, reset_password, buscar_pdfs, search_redirect, search_person, \
+    crear_usuario
 
 __author__ = 'Julian'
 from django.utils import timezone
@@ -436,15 +439,28 @@ class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomCli
     form_class = FiltroFacturaForm
 
     def post(self, request, *args, **kwargs):
-        form = self.get_form(FiltroPersonaForm)
+        form = self.get_form(FiltroFacturaForm)
+        URL = 'FacturasNorte/cliente/facturas/' + self.kwargs.get(self.pk_url_kwarg) + '/'
         if form.is_valid():
-            URL = 'FacturasNorte/cliente/facturas/' + self.pk_url_kwarg + '/'
-            return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['query'])
+            if (form.cleaned_data['tipo'] == 'fecha'):
+                fecha = form.cleaned_data['fecha'].strftime("%Y-%m-%d")
+                return search_redirect(URL, form.cleaned_data['tipo'], fecha)
+            elif (form.cleaned_data['tipo'] == 'pedido'):
+                return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['pedido'])
+            else:
+                return redirect(URL)
+        else:
+            return redirect('/' + URL)
 
     def get_context_data(self, **kwargs):
         context = super(ClienteFacturasView, self).get_context_data(**kwargs)
         context['form'] = self.get_form(FiltroFacturaForm)
-        context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg))
+        try:
+            context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg),
+                                                    self.kwargs['tipo'],
+                                                    self.kwargs['query'])
+        except KeyError:
+            context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg))
         return context
 
 class ClienteRegenerarContrasenaView(FormView):
@@ -476,41 +492,6 @@ def reset_password_conf(request, pk):
 
     return render(request, 'FacturasNorte/base/reset_contrasena.html', {'usuario':usuario})
 
-def crear_usuario(form, rol):
-    nuevo_usuario = User()
-    nuevo_usuario.username = form.cleaned_data['email_field'].split("@")[0]
-    nuevo_usuario.email = form.cleaned_data['email_field']
-    nuevo_usuario.is_active = True
-    nuevo_usuario.date_joined = timezone.now()
-
-    if rol == 'admin':
-        nuevo_usuario.is_staff = True
-        nuevo_usuario.is_superuser = True
-        password = form.cleaned_data['password_field']
-        permissions = []
-
-    elif rol == 'empleado':
-        nuevo_usuario.is_staff = True
-        nuevo_usuario.is_superuser = False
-        password = form.cleaned_data['password_field']
-        permissions = Permission.objects.filter(Q(codename='view_empleado')| Q(codename__endswith='cliente'))
-
-    elif rol == 'cliente':
-        nuevo_usuario.is_staff = False
-        nuevo_usuario.is_superuser = False
-        password = User.objects.make_random_password()
-        permissions = Permission.objects.filter(codename='view_cliente')
-
-    nuevo_usuario.set_password(password)
-    nuevo_usuario.save()
-    enviar_password(password)
-
-    for perm in permissions:
-        nuevo_usuario.user_permissions.add(perm)
-
-    nuevo_usuario.save()
-    return nuevo_usuario
-
 class ContactView(FormView):
 
     template_name = 'FacturasNorte/contact.html'
@@ -538,46 +519,6 @@ class ContactView(FormView):
 
         return super(ContactView, self).form_valid(form)
 
-def pdf_view(request):
-    with open('C:\Users\Julian\Documents\Diario Norte\Proyecto Norte\PDFs\Hola.pdf', 'rb') as pdf:
-        response = HttpResponse(pdf.read(), content_type='application/pdf')
-        response['Content-Disposition'] = 'inline;filename=some_file.pdf'
-        return response
-    pdf.closed
-
-def enviar_password(password):
-    message = 'Su contrasena es: ' + str(password)
-    sender = 'julian.rd7@gmail.com'
-    email = EmailMessage('Cuenta Registrada', message, sender,
-            ['julian_rd7@hotmail.com'],
-            headers = {'Reply-To': 'julian.rd7@gmail.com'})
-
-    connection = mail.get_connection()
-    connection.open()
-    email.send()
-    connection.close()
-
-def enviar_password_regenerada(usuario, password):
-    message = 'Senor/a usuario/a: ' + str(usuario.username) + '.' ' Su nueva contrasena es: ' + str(password)
-    sender = 'julian.rd7@gmail.com'
-    email = EmailMessage('Contrasena regenerada', message, sender,
-            ['julian_rd7@hotmail.com'],
-            headers = {'Reply-To': 'julian.rd7@gmail.com'})
-
-    connection = mail.get_connection()
-    connection.open()
-    email.send()
-    connection.close()
-
-def send_email_contact(email, subject, body):
-    body = '{} ha enviado un email de contacto\n\n{}\n\n{}'.format(email, subject, body)
-    send_mail(
-        subject = 'Nuevo email de contacto',
-        message = body,
-        from_email = 'julian.rd7@gmail.com',
-        recipient_list =['julian_rd7@hotmail.com'],
-            )
-
 class BlogIndex(generic.ListView):
     queryset = models.Entry.objects.published()
     template_name = "FacturasNorte/home.html"
@@ -587,45 +528,14 @@ class BlogDetail(generic.DetailView):
     model = models.Entry
     template_name = "FacturasNorte/post.html"
 
-def buscar_pdfs(pk, field, query):
-     cliente = get_object_or_404(Cliente, nroUsuario=pk)
-     storageManager = FileSystemStorage()
-     archivos = storageManager.listdir(settings.MEDIA_ROOT)[1]
-     facturas = []
-
-     for a in archivos:
-         doc = a.split('-')[1]
-         fec = a.split('-')[3].split('.')[0]
-         if (doc == cliente.nroDoc):
-             f = Factura()
-             f.set_ruta(a)
-             f.set_fecha(fec)
-             facturas.append(f)
-
-     return facturas
+def pdf_view(request):
+    with open('C:\Users\Julian\Documents\Diario Norte\Proyecto Norte\PDFs\Hola.pdf', 'rb') as pdf:
+        response = HttpResponse(pdf.read(), content_type='application/pdf')
+        response['Content-Disposition'] = 'inline;filename=some_file.pdf'
+        return response
+    pdf.closed
 
 def reestablecer_password(request, pk):
     usuario = get_object_or_404(User, id=pk)
     reset_password(usuario)
     return render(request, 'FacturasNorte/base/reset_contrasena_hecho.html', {})
-
-def reset_password(usuario):
-    password = User.objects.make_random_password()
-    usuario.set_password(password)
-    enviar_password_regenerada(usuario, password)
-    usuario.save()
-    return
-
-def search_redirect(baseUrl, queryField, queryText):
-    return redirect('/' + baseUrl + queryField + '=' + queryText)
-
-def search_person(model, searchField, searchQuery):
-    if searchField == 'nombre':
-        return model.objects.filter(nombre__icontains=searchQuery)
-    elif searchField == 'dni':
-        if model == Cliente:
-            return model.objects.filter(nroDoc__icontains=int(searchQuery))
-        else:
-            return model.objects.filter(dni__icontains=int(searchQuery))
-    else:
-        return model.objects.filter(email__icontains=searchQuery)

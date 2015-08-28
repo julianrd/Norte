@@ -137,8 +137,12 @@ class CustomClienteDetailView(DetailView):
 
 class Factura(object):
     ruta = None
+    nroPedido = None
     cliente = None
     fecha = None
+
+    def get_nroPedido(self):
+        return self.nroPedido
 
     def get_ruta(self):
         return self.ruta
@@ -148,6 +152,10 @@ class Factura(object):
 
     def get_fecha(self):
         return self.fecha()
+
+    def set_nroPedido(self, nroPedido):
+        self.nroPedido = nroPedido
+        return
 
     def set_ruta(self, ruta):
         self.ruta = ruta

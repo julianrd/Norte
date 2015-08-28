@@ -152,13 +152,20 @@ class FiltroPersonaForm(forms.Form):
     )
 
 class FiltroFacturaForm(forms.Form):
-    query = forms.CharField(label='Buscar', initial='Ej. Messi')
+    pedido = forms.CharField(required=False, label='Nro Pedido', initial='')
+    fecha = forms.DateField(required=False, label='Fecha', widget=SelectDateWidget(years=range(1995, datetime.date.today().year+1)))
     tipo = forms.ChoiceField(
                                 required=True,
                                 choices = ( ('pedido',u'Pedido'),
                                             ('fecha',u'Fecha'),
                                 )
     )
+
+    # def is_valid(self):
+    #     if self.tipo != None:
+    #         return True
+    #     else:
+    #         return False
 
 
 
