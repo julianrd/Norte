@@ -1,0 +1,12 @@
+#form-group
+{
+    width: 100%;
+    display: inline-block;
+}
+#label
+{
+    float: left;
+}
+#field{
+    float: left;
+}

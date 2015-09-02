@@ -62,9 +62,9 @@ DATABASES = {
         'ENGINE': 'sqlserver_ado',
         'NAME': 'FacturasNorte',
 
-        'HOST': 'JORGIED',#'JORGIED',
-        'USER': '',
-        'PASSWORD': '',#'dni36017874',
+        'HOST': 'PABLOHP',#'JORGIED',
+        'USER': 'sa',
+        'PASSWORD': 'Norte1234',#'dni36017874',
 
         'OPTIONS': {
             'provider': 'SQLNCLI',
@@ -149,4 +149,14 @@ MEDIA_ROOT = 'C:/Users/Julian/Documents/Diario Norte/Proyecto Norte/PDFs/'
 
 MEDIA_ULR = '/pdf/'
 
+#PERMISSIONS
+CLIENTE_PERMISOS = [('cambiar_cont', 'Puede cambiar su contrasena'), ('view_perfil_cliente', 'Puede ver su perfil de cliente'),
+                       ('view_facturas_cliente', 'Puede ver sus facturas')]
+
+EMPLEADO_PERMISOS = [('cambiar_cont', 'Puede cambiar su contrasena'), ('view_facturas', 'Puede ver las facutras de los clientes'),
+                       ('view_lista_cliente', 'Puede ver la lista de clientes'),
+                       ('view_detalle_cliente', 'Puede ver detalle cliente'), ('update_cliente', 'Puede modificar cliente'),
+                       ('agregar_cliente', 'Puede agregar cliente'), ('del_cliente', 'Puede eliminar cliente'),
+                       ('view_perfil_empleado', 'Puede ver su perfil de empleado')
+                       ]
 

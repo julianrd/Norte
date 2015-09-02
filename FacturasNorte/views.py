@@ -4,7 +4,7 @@ import urlparse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import Permission
 from django.core import mail
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -16,7 +16,7 @@ from django.views.generic.edit import FormMixin
 from FacturasNorte.custom_classes import  Factura, \
     CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView
 from FacturasNorte.functions import send_email_contact, reset_password, buscar_pdfs, search_redirect, search_person, \
-    crear_usuario
+    crear_usuario, enviar_password, crear_perfil
 
 __author__ = 'Julian'
 from django.utils import timezone
@@ -51,28 +51,8 @@ from FacturasNorte.models import Administrador, Empleado, Cliente
 from FacturasNorte.models import User
 
 #Pruebas de Usuario
-def is_admin(user):
-    return user.is_superuser
-
 def is_admin_o_emp(user):
     return user.is_superuser or user.is_staff
-
-def is_emp(request):
-    return request.user.is_staff
-
-def is_admin_o_cliente(user):
-    return user.is_superuser or not user.is_staff
-
-class AdminTestRequiredMixin(object):
-    @permission_required('is_superuser')
-    def as_view(cls, **initkwargs):
-        view = super(AdminTestRequiredMixin, cls).as_view(**initkwargs)
-        return login_required(view)
-
-class EmpleadoTestRequiredMixin(object):
-    @staff_member_required
-    def dispatch(self, *args, **kwargs):
-        return super(EmpleadoTestRequiredMixin, self).dispatch(*args, **kwargs)
 
 class FormListView(FormMixin, ListView):
     def get(self, request, *args, **kwargs):
@@ -185,22 +165,11 @@ class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     permission_required = 'FacturasNorte.add_admin'
 
     def form_valid(self, form):
-
-        #Nuevo Usuario
-        nuevo_usuario = crear_usuario(form, 'admin')
-
-        #Nuevo_Admin
-        nuevo_admin = Administrador()
-        nuevo_admin.set_dni(form.cleaned_data['dni_field'])
-        nuevo_admin.set_nombre(form.cleaned_data['nombre_field'])
-        nuevo_admin.set_email(form.cleaned_data['email_field'])
-        nuevo_admin.set_fechaNacimiento(form.cleaned_data['fecha_nacimiento_field'])
-        nuevo_admin.set_domicilio(form.cleaned_data['domicilio_field'])
-        nuevo_admin.set_telefono(form.cleaned_data['telefono_field'])
-        nuevo_admin.set_usuario(nuevo_usuario)
-        nuevo_admin.save()
-
-        return super(AdminCreateView, self).form_valid(form)
+        try:
+            crear_perfil(form, Administrador)
+            return super(AdminCreateView, self).form_valid(form)
+        except ValidationError:
+            return render(self.request, 'FacturasNorte/admin/add_admin_error.html')
 
 class AdminModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Administrador
@@ -253,7 +222,7 @@ class EmpleadoPerfilView(LoginRequiredMixin, PermissionRequiredMixin, CustomEmpl
     template_name = "FacturasNorte/empleado/perfil_emp.html"
     model = Empleado
     context_object_name = 'empleado'
-    permission_required = 'FacturasNorte.view_empleado'
+    permission_required = 'FacturasNorte.view_perfil_empleado'
 
 class EmpCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/admin/add_emp.html"
@@ -262,22 +231,11 @@ class EmpCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     permission_required = 'FacturasNorte.add_empleado'
 
     def form_valid(self, form):
-
-        #Nuevo Usuario
-        nuevo_usuario = crear_usuario(form, 'empleado')
-
-        #Nuevo Empleado
-        nuevo_emp = Empleado()
-        nuevo_emp.set_dni(form.cleaned_data['dni_field'])
-        nuevo_emp.set_nombre(form.cleaned_data['nombre_field'])
-        nuevo_emp.set_email(form.cleaned_data['email_field'])
-        nuevo_emp.set_fechaNacimiento(form.cleaned_data['fecha_nacimiento_field'])
-        nuevo_emp.set_domicilio(form.cleaned_data['domicilio_field'])
-        nuevo_emp.set_telefono(form.cleaned_data['telefono_field'])
-        nuevo_emp.set_usuario(nuevo_usuario)
-        nuevo_emp.save()
-
-        return super(EmpCreateView, self).form_valid(form)
+        try:
+            crear_perfil(form, Empleado)
+            return super(EmpCreateView, self).form_valid(form)
+        except ValidationError:
+            return render(self.request, 'FacturasNorte/admin/add_empleado_error.html')
 
 class EmpModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Empleado
@@ -327,7 +285,7 @@ class ClientePerfilView(LoginRequiredMixin, PermissionRequiredMixin, CustomClien
     template_name = "FacturasNorte/cliente/perfil_cliente.html"
     model = Cliente
     context_object_name = 'cliente'
-    permission_required = 'FacturasNorte.view_cliente'
+    permission_required = 'FacturasNorte.view_perfil_cliente'
 
 class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/empleado/add_cliente.html"
@@ -336,28 +294,19 @@ class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     permission_required = 'FacturasNorte.add_cliente'
 
     def form_valid(self, form):
-
-        #Nuevo Usuario
-        nuevo_usuario = crear_usuario(form, 'cliente')
-
-        #Nuevo_Cliente
-        nuevo_cliente = Cliente()
-        nuevo_cliente.set_dni(str(form.cleaned_data['dni_field']))
-        nuevo_cliente.set_nombre(form.cleaned_data['nombre_field'])
-        nuevo_cliente.set_email(form.cleaned_data['email_field'])
-        nuevo_cliente.set_fechaNacimiento(form.cleaned_data['fecha_nacimiento_field'])
-        nuevo_cliente.set_domicilio(form.cleaned_data['domicilio_field'])
-        nuevo_cliente.set_telefono(form.cleaned_data['telefono_field'])
-        nuevo_cliente.set_usuario(nuevo_usuario)
-        nuevo_cliente.save()
-
-        return super(ClienteCreateView, self).form_valid(form)
+        if form.non_field_errors():
+            return reverse('FacturasNorte:nuevo_cliente')
+        try:
+            crear_perfil(form, Cliente)
+            return super(ClienteCreateView, self).form_valid(form)
+        except ValidationError:
+            return render(self.request, 'FacturasNorte/empleado/add_cliente_error.html')
 
 class CambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/base/cambiar_contrasena.html"
     form_class = CambiarContrasenaForm
     success_url = reverse_lazy('FacturasNorte:cambiar_contrasena_hecho')
-    permission_required = 'FacturasNorte.cambiar_cont_cliente'
+    permission_required = 'FacturasNorte.cambiar_cont'
 
     def get_context_data(self, **kwargs):
     # Call the base implementation first to get a context
@@ -402,7 +351,7 @@ class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView)
     model = Cliente
     context_object_name = 'cliente_list'
     paginate_by = 10
-    permission_required = 'FacturasNorte.view_cliente'
+    permission_required = 'FacturasNorte.view_lista_cliente'
 
     form_class = FiltroPersonaForm
 

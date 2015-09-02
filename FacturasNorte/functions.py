@@ -1,5 +1,6 @@
 from time import strptime
 from datetime import date
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import Q
 
 __author__ = 'Julian'
@@ -12,44 +13,69 @@ from django.core.mail import EmailMessage, send_mail
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils import timezone
 from FacturasNorte.custom_classes import Factura
-from FacturasNorte.models import Cliente
+from FacturasNorte.models import Cliente, Empleado
 from Norte import settings
 
+def crear_perfil(form, model):
+    username = form.cleaned_data['email_field'].split("@")[0]
+    #Nuevo Usuario
+    nuevo_usuario = crear_usuario(form, 'cliente')
+    #Nuevo_Perfil
+    nuevo_model = model()
+    nuevo_model.set_dni(str(form.cleaned_data['dni_field']))
+    nuevo_model.set_nombre(form.cleaned_data['nombre_field'])
+    nuevo_model.set_email(form.cleaned_data['email_field'])
+    nuevo_model.set_fechaNacimiento(form.cleaned_data['fecha_nacimiento_field'])
+    nuevo_model.set_domicilio(form.cleaned_data['domicilio_field'])
+    nuevo_model.set_telefono(form.cleaned_data['telefono_field'])
+    try:
+        nuevo_model.set_usuario(nuevo_usuario)
+        nuevo_model.save()
+        enviar_password(nuevo_model.get_password)
+        return nuevo_model
+    except Exception:
+        usuario_creado = get_object_or_404(User, username=username)
+        usuario_creado.delete()
+        raise ValidationError(('Campo invalido'), code='campos')
 
 def crear_usuario(form, rol):
-    nuevo_usuario = User()
-    nuevo_usuario.username = form.cleaned_data['email_field'].split("@")[0]
-    nuevo_usuario.email = form.cleaned_data['email_field']
-    nuevo_usuario.is_active = True
-    nuevo_usuario.date_joined = timezone.now()
+    username = form.cleaned_data['email_field'].split("@")[0]
+    try:
+        nuevo_usuario = User()
+        nuevo_usuario.username = username
+        nuevo_usuario.email = form.cleaned_data['email_field']
+        nuevo_usuario.is_active = True
+        nuevo_usuario.date_joined = timezone.now()
 
-    if rol == 'admin':
-        nuevo_usuario.is_staff = True
-        nuevo_usuario.is_superuser = True
-        password = form.cleaned_data['password_field']
-        permissions = []
+        if rol == 'admin':
+            nuevo_usuario.is_staff = True
+            nuevo_usuario.is_superuser = True
+            password = form.cleaned_data['password_field']
+            permissions = []
 
-    elif rol == 'empleado':
-        nuevo_usuario.is_staff = True
-        nuevo_usuario.is_superuser = False
-        password = form.cleaned_data['password_field']
-        permissions = Permission.objects.filter(Q(codename='view_empleado')| Q(codename__endswith='cliente'))
+        elif rol == 'empleado':
+            nuevo_usuario.is_staff = True
+            nuevo_usuario.is_superuser = False
+            password = form.cleaned_data['password_field']
+            permissions = settings.EMPLEADO_PERMISOS
 
-    elif rol == 'cliente':
-        nuevo_usuario.is_staff = False
-        nuevo_usuario.is_superuser = False
-        password = User.objects.make_random_password()
-        permissions = Permission.objects.filter(codename='view_cliente')
+        elif rol == 'cliente':
+            nuevo_usuario.is_staff = False
+            nuevo_usuario.is_superuser = False
+            password = User.objects.make_random_password()
+            permissions = settings.CLIENTE_PERMISOS
 
-    nuevo_usuario.set_password(password)
-    nuevo_usuario.save()
-    enviar_password(password)
+        nuevo_usuario.set_password(password)
+        nuevo_usuario.save()
 
-    for perm in permissions:
-        nuevo_usuario.user_permissions.add(perm)
+        for perm in permissions:
+            perm_object = Permission.objects.get(codename=perm[0])
+            nuevo_usuario.user_permissions.add(perm_object)
 
-    nuevo_usuario.save()
-    return nuevo_usuario
+        nuevo_usuario.save()
+        return nuevo_usuario
+    except Exception:
+        return None
 
 def enviar_password(password):
     message = 'Su contrasena es: ' + str(password)
@@ -85,7 +111,7 @@ def send_email_contact(email, subject, body):
             )
 
 def buscar_pdfs(pk, field=None, query=None):
-     cliente = get_object_or_404(Cliente, nroUsuario=pk)
+     cliente = get_object_or_404(Cliente, numero=pk)
      storageManager = FileSystemStorage()
      archivos = storageManager.listdir(settings.MEDIA_ROOT)[1]
      facturas = []
@@ -112,9 +138,6 @@ def buscar_pdfs(pk, field=None, query=None):
 
      return facturas
 
-
-
-
 def reset_password(usuario):
     password = User.objects.make_random_password()
     usuario.set_password(password)
@@ -135,3 +158,10 @@ def search_person(model, searchField, searchQuery):
             return model.objects.filter(dni__icontains=int(searchQuery))
     else:
         return model.objects.filter(email__icontains=searchQuery)
+
+def verificar_usuario(username):
+    try:
+        User.objects.get(username=username)
+        return False
+    except ObjectDoesNotExist:
+        return True

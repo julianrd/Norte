@@ -8,9 +8,11 @@
                 <legend>Facturas Norte
                 </legend>
                     {% load l10n %}
+
                     <form action="" method="post">
                         {% csrf_token %}
                          <h1> Formulario de Registro Cliente</h1>
+                             {{ form.non_field_errors }}
                              {% for field in form %}
 
                                  <div class="fieldWrapper">

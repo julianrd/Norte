@@ -24,16 +24,47 @@
 {% endblock %}
 
 {% block content %}
-<h1>{{ cliente.nombre}}</h1>
 
-<p>DNI: {{ cliente.nroDoc }}</p>
-<p>Fecha nacimiento: {{ cliente.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</p>
-<p>Domicilio: {{ cliente.domicilio }}</p>
-<p>Telefono: {{ cliente.telefono }}</p>
+{%  if user.id == cliente.nroUsuario.id %}
+
+<h1>Datos personales</h1>
+
+<table id="vertical" style="width:100%">
+   <tr>
+    <th>Nombre</th>
+    <td>{{ cliente.nombre }}</td>
+  </tr>
+  <tr>
+    <th>DNI</th>
+    <td>{{ cliente.nroDoc }}</td>
+  </tr>
+  <tr>
+    <th>Fecha nacimiento</th>
+    <td>{{ cliente.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</td>
+  </tr>
+  <tr>
+    <th>Email</th>
+    <td>{{ cliente.email }}</td>
+  </tr>
+  <tr>
+    <th>Domicilio</th>
+    <td>{{ cliente.domicilio }}</td>
+  </tr>
+  <tr>
+    <th>Telefono</th>
+    <td>{{ cliente.telefono }}</td>
+  </tr>
+
+</table>
+
 
 <form method="post" action="{% url 'FacturasNorte:cambiar_contrasena' %}">
 {% csrf_token %}
 <input type="submit" value="Cambiar contrasena" />
 </form>
+
+{% else %}
+    <p>No tiene permiso para visualizar los datos de esta persona.</p>
+{% endif %}
 
 {% endblock %}

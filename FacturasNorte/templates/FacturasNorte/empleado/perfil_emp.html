@@ -24,12 +24,39 @@
 {% endblock %}
 
 {% block content %}
-<h1>{{ empleado.nombre}}</h1>
 
-<p>DNI: {{ empleado.dni }}</p>
-<p>Fecha nacimiento: {{ empleado.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</p>
-<p>Domicilio: {{ empleado.domicilio }}</p>
-<p>Telefono: {{ empleado.telefono }}</p>
+{%  if user.id == empleado.nroUsuario.id %}
+
+<h1>Datos personales</h1>
+
+<table id="vertical" style="width:100%">
+   <tr>
+    <th>Nombre</th>
+    <td>{{ empleado.nombre }}</td>
+  </tr>
+  <tr>
+    <th>DNI</th>
+    <td>{{ empleado.dni }}</td>
+  </tr>
+  <tr>
+    <th>Fecha nacimiento</th>
+    <td>{{ empleado.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</td>
+  </tr>
+  <tr>
+    <th>Email</th>
+    <td>{{ empleado.email }}</td>
+  </tr>
+  <tr>
+    <th>Domicilio</th>
+    <td>{{ empleado.domicilio }}</td>
+  </tr>
+  <tr>
+    <th>Telefono</th>
+    <td>{{ empleado.telefono }}</td>
+  </tr>
+
+</table>
+
 
 <div id="links">
     <form action="{% url 'FacturasNorte:cambiar_contrasena'%}">
@@ -39,4 +66,9 @@
             <input type="submit" value="Modificar">
     </form>
 </div>
+
+{% else %}
+    <p>No tiene permiso para visualizar los datos de esta persona</p>
+{% endif %}
+
 {% endblock %}

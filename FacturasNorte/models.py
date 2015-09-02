@@ -152,7 +152,8 @@ class Cliente(models.Model):
 
     class Meta:
         db_table = 'Clientes'
-        permissions = [('cambiar_cont_cliente', 'Puede cambiar contrasena de Cliente')]
+        permissions = [('cambiar_cont', 'Puede cambiar su contrasena'), ('view_perfil_cliente', 'Puede ver su perfil de cliente'),
+                       ('view_facturas_cliente', 'Puede ver sus facturas')]
 
 
 class Administrador(models.Model):
@@ -167,17 +168,7 @@ class Administrador(models.Model):
     class Meta:
         db_table = 'Administradores'
         verbose_name_plural = 'Administradores'
-        permissions = [('view_admin', 'Puede ver administrador'), ('update_admin', 'Puede modificar administrador'),
-                       ('add_admin', 'Puede agregar administrador'), ('del_admin', 'Puede eliminar administrador'),
-                       ('view_empleado', 'Puede ver empleado'), ('update_empleado', 'Puede modificar empleado'),
-                       ('add_empleado', 'Puede agregar empleado'), ('del_empleado', 'Puede eliminar empleado'),
-                       ('view_cliente', 'Puede ver cliente'), ('update_cliente', 'Puede modificar cliente'),
-                       ('add_cliente', 'Puede agregar cliente'), ('del_cliente', 'Puede eliminar cliente'),
-                       ('cambiar_cont_cliente', 'Puede cambiar contrasena de Cliente'),
-                       ('cambiar_cont_empleado', 'Puede cambiar contrasena de Cliente'),
-                       ('cambiar_cont_admin', 'Puede cambiar contrasena de Cliente')
-                       ]
-
+        permissions = []
 
     def get_usuario(self):
         return self.nroUsuario
@@ -222,8 +213,11 @@ class Empleado(models.Model):
     class Meta:
         db_table = 'Empleados'
         verbose_name_plural = 'Empleados'
-        permissions = [('view_cliente', 'Puede ver cliente'), ('update_cliente', 'Puede modificar cliente'),
-                       ('add_cliente', 'Puede agregar cliente'), ('del_cliente', 'Puede eliminar cliente')
+        permissions = [('cambiar_cont', 'Puede cambiar su contrasena'), ('view_facturas', 'Puede ver las facutras de los clientes'),
+                       ('view_lista_cliente', 'Puede ver la lista de clientes'),
+                       ('view_detalle_cliente', 'Puede ver detalle cliente'), ('update_cliente', 'Puede modificar cliente'),
+                       ('agregar_cliente', 'Puede agregar cliente'), ('del_cliente', 'Puede eliminar cliente'),
+                       ('view_perfil_empleado', 'Puede ver su perfil de empleado')
                        ]
 
 
@@ -292,8 +286,8 @@ class Entry(models.Model):
 
     class Meta:
         db_table = 'Entradas'
-        verbose_name = "Blog Entry"
-        verbose_name_plural = "Blog Entries"
+        verbose_name = "Novedad"
+        verbose_name_plural = "Novedades"
 """
 @receiver(pre_save, sender=User)
 def agregar_permisos(sender, **kwargs):

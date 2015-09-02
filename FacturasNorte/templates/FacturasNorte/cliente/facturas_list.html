@@ -1,6 +1,9 @@
 {% extends "FacturasNorte/base/base.html" %}
 {% load l10n %}
 {% block content %}
+
+{%  if user.id == cliente.nroUsuario.id %}
+
     <h1>Sus facturas</h1>
 
     <div id="searchbar">
@@ -40,4 +43,10 @@
      {% endfor %}
   {% endif %}
 </table>
+
+{% else %}
+    <p>No tiene permiso para visualizar los datos de esta persona.</p>
+{% endif %}
+
+
 {% endblock %}

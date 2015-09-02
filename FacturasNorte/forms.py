@@ -1,11 +1,10 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
-from FacturasNorte.models import Cliente
+from FacturasNorte.functions import verificar_usuario
 
 __author__ = 'Julian'
 from django import forms
-from Norte import formats
 
 import datetime
 from django.forms.extras.widgets import SelectDateWidget
@@ -33,13 +32,18 @@ class AdminRegisterForm(forms.Form):
         self.fields['password_again_field'].required = False
 
     def clean(self):
-        password1 = self.cleaned_data.get('password_field')
-        password2 = self.cleaned_data.get('password_again_field')
+        cleaned_data = super(AdminRegisterForm, self).clean()
 
-        if password1 and password1 != password2:
-            raise forms.ValidationError("Passwords don't match")
+        if verificar_usuario(self.cleaned_data['email_field'].split("@")[0]):
+            password1 = self.cleaned_data.get('password_field')
+            password2 = self.cleaned_data.get('password_again_field')
 
-        return self.cleaned_data
+            if password1 and password1 != password2:
+                raise forms.ValidationError("Passwords don't match")
+
+            return cleaned_data
+        else:
+            raise forms.ValidationError(('El usuario ya existe'), code='usuario')
 
 class EmpleadoRegisterForm(forms.Form):
     nombre_field = forms.CharField(label='Nombre', initial='Su nombre')
@@ -58,20 +62,22 @@ class EmpleadoRegisterForm(forms.Form):
         self.fields['password_again_field'].required = False
 
     def clean(self):
-        password1 = self.cleaned_data.get('password_field')
-        password2 = self.cleaned_data.get('password_again_field')
+        cleaned_data = super(EmpleadoRegisterForm, self).clean()
 
-        if password1 and password1 != password2:
-            raise forms.ValidationError("Passwords don't match")
+        if verificar_usuario(self.cleaned_data['email_field'].split("@")[0]):
+            password1 = self.cleaned_data.get('password_field')
+            password2 = self.cleaned_data.get('password_again_field')
 
-        return self.cleaned_data
+            if password1 and password1 != password2:
+                raise forms.ValidationError("Passwords don't match")
+
+            return cleaned_data
+        else:
+            raise forms.ValidationError(('El usuario ya existe'), code='usuario')
 
 
-        self.fields['password_field'].required = False
-        self.fields['password_again_field'].required = False
 
 class ContactUsuarioAnonimoForm(forms.Form):
-
     email = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={'class': 'form-control'})
@@ -106,6 +112,12 @@ class ClienteRegisterForm(forms.Form):
     domicilio_field = forms.CharField(label='Domicilio', max_length=254, initial='Calle y altura')
     telefono_field = forms.CharField(label='Telefono', max_length=254, initial='Su numero sin comillas ni parentesis')
 
+    def clean(self):
+        cleaned_data = super(ClienteRegisterForm, self).clean()
+        if verificar_usuario(self.cleaned_data['email_field'].split("@")[0]):
+            return cleaned_data
+        else:
+            raise forms.ValidationError(('El usuario ya existe'), code='usuario')
 
 class CambiarContrasenaForm(forms.Form):
     contrasena_anterior = forms.CharField(widget=forms.PasswordInput(), initial='')
@@ -166,6 +178,3 @@ class FiltroFacturaForm(forms.Form):
     #         return True
     #     else:
     #         return False
-
-
-

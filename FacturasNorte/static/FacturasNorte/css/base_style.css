@@ -342,6 +342,7 @@ table tr td
 #user-tools
 {
   color: #ECEF01;
+  text-decoration: none;
   float: right;
   padding: 1.2em 10px;
   font-size: 11px;
@@ -734,6 +735,13 @@ table tr td
   font-size: 11px;
   text-align: right;
   font-style: italic;
+}
+
+#user-tools a
+{
+  color: #ffffff;
+  text-decoration: underline;
+
 }
 
 #filter .fieldWrapper, #filter p , #filter
@@ -2329,4 +2337,15 @@ table tr td
 {
   display: inline;
   float: right;
+}
+
+#vertical th
+{
+  width: 10%;
+  background-color: #A3A3A3;
+}
+
+#vertical td
+{
+  font-weight: bolder;
 }
