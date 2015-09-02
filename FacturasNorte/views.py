@@ -1,22 +1,15 @@
-from time import strftime
 import urlparse
 
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.models import Permission
-from django.core import mail
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.files.storage import FileSystemStorage
-from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.edit import FormMixin
 
-from FacturasNorte.custom_classes import  Factura, \
-    CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView
+from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView
 from FacturasNorte.functions import send_email_contact, reset_password, buscar_pdfs, search_redirect, search_person, \
-    crear_usuario, enviar_password, crear_perfil
+    crear_perfil
 
 __author__ = 'Julian'
 from django.utils import timezone
@@ -26,7 +19,7 @@ from Norte import settings
 
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView
-from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, get_object_or_404, redirect
 
 from django.contrib.auth import login, logout, authenticate
@@ -37,13 +30,10 @@ from . import models
 #Importaciones para conficuracion de contacto
 
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.core.mail import EmailMessage
 from django.contrib import messages
 
 from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
     IniciarSesionForm, RegenerarContrasenaForm, FiltroPersonaForm, FiltroFacturaForm
-
-from django.core.mail import send_mail
 
 from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
 
@@ -291,7 +281,7 @@ class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/empleado/add_cliente.html"
     form_class = ClienteRegisterForm
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
-    permission_required = 'FacturasNorte.add_cliente'
+    permission_required = 'FacturasNorte.agregar_cliente'
 
     def form_valid(self, form):
         if form.non_field_errors():
@@ -337,7 +327,7 @@ class ClienteModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Cliente
     template_name = "FacturasNorte/empleado/mod_cliente.html"
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
-    permission_required = 'FacturasNorte.modif_cliente'
+    permission_required = 'FacturasNorte.update_cliente'
 
 class ClienteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Cliente
@@ -383,7 +373,7 @@ class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomCli
     template_name = "FacturasNorte/cliente/facturas_list.html"
     model = Cliente
     context_object_name = 'cliente'
-    permission_required = 'FacturasNorte.view_cliente'
+    permission_required = 'FacturasNorte.view_facturas'
 
     form_class = FiltroFacturaForm
 

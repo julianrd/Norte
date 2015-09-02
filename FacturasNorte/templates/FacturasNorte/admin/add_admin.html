@@ -10,6 +10,7 @@
                     <form action="" method="post">
                         {% csrf_token %}
                               <h1> Formulario de Registro Administrador</h1>
+                             {{ form.non_field_errors }}
                                 <h6> (*) estos campos son obligatorios </h6>
                              {% for field in form %}
 

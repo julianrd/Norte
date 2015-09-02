@@ -1,9 +1,8 @@
 __author__ = 'Julian'
 from django.db import models
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User, Permission, AbstractUser
 from django.dispatch import receiver
-from django.db.models.signals import post_delete, pre_save, post_save
-from django.utils import timezone
+from django.db.models.signals import post_delete
 from django.core.urlresolvers import reverse
 
 class Cliente(models.Model):
@@ -288,6 +287,7 @@ class Entry(models.Model):
         db_table = 'Entradas'
         verbose_name = "Novedad"
         verbose_name_plural = "Novedades"
+
 """
 @receiver(pre_save, sender=User)
 def agregar_permisos(sender, **kwargs):
@@ -324,3 +324,4 @@ def eliminar_usuario(**kwargs):
         return
     u.delete()
     return
+

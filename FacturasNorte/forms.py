@@ -2,6 +2,7 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
+
 from FacturasNorte.functions import verificar_usuario
 
 __author__ = 'Julian'
@@ -11,7 +12,6 @@ from django import forms
 import datetime
 
 from django.forms.extras.widgets import SelectDateWidget
-from django.core.exceptions import ValidationError
 
 
 class IniciarSesionForm(forms.Form):
@@ -78,7 +78,7 @@ class AdminRegisterForm(forms.Form):
 
             return cleaned_data
         else:
-            raise forms.ValidationError(('El usuario ya existe'), code='usuario')
+            raise forms.ValidationError(('El email ingresado ya esta registrado'), code='email')
 
 class EmpleadoRegisterForm(forms.Form):
     nombre_field = forms.CharField(label='Nombre', widget=forms.TextInput(attrs={'class':'special', 'size':'20'}))

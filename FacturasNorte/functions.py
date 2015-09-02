@@ -1,7 +1,7 @@
 from time import strptime
 from datetime import date
+
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.db.models import Q
 
 __author__ = 'Julian'
 
@@ -10,72 +10,75 @@ from django.contrib.auth.models import User
 from django.core import mail
 from django.core.files.storage import FileSystemStorage
 from django.core.mail import EmailMessage, send_mail
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from FacturasNorte.custom_classes import Factura
-from FacturasNorte.models import Cliente, Empleado
+from FacturasNorte.models import Cliente, Empleado, Administrador
 from Norte import settings
 
 def crear_perfil(form, model):
     username = form.cleaned_data['email_field'].split("@")[0]
     #Nuevo Usuario
-    nuevo_usuario = crear_usuario(form, 'cliente')
+    nuevo_usuario = crear_usuario(form, model)
     #Nuevo_Perfil
-    nuevo_model = model()
-    nuevo_model.set_dni(str(form.cleaned_data['dni_field']))
-    nuevo_model.set_nombre(form.cleaned_data['nombre_field'])
-    nuevo_model.set_email(form.cleaned_data['email_field'])
-    nuevo_model.set_fechaNacimiento(form.cleaned_data['fecha_nacimiento_field'])
-    nuevo_model.set_domicilio(form.cleaned_data['domicilio_field'])
-    nuevo_model.set_telefono(form.cleaned_data['telefono_field'])
+    nuevo_perfil = crear_persona(form, model)
+
+    if model == Administrador:
+        nuevo_usuario.is_staff = True
+        nuevo_usuario.is_superuser = True
+        password = form.cleaned_data['password_field']
+        permissions = []
+
+    elif model == Empleado:
+        nuevo_usuario.is_staff = True
+        nuevo_usuario.is_superuser = False
+        password = form.cleaned_data['password_field']
+        permissions = settings.EMPLEADO_PERMISOS
+
+    else:
+        nuevo_usuario.is_staff = False
+        nuevo_usuario.is_superuser = False
+        password = User.objects.make_random_password()
+        permissions = settings.CLIENTE_PERMISOS
+
     try:
-        nuevo_model.set_usuario(nuevo_usuario)
-        nuevo_model.save()
-        enviar_password(nuevo_model.get_password)
-        return nuevo_model
-    except Exception:
-        usuario_creado = get_object_or_404(User, username=username)
-        usuario_creado.delete()
-        raise ValidationError(('Campo invalido'), code='campos')
-
-def crear_usuario(form, rol):
-    username = form.cleaned_data['email_field'].split("@")[0]
-    try:
-        nuevo_usuario = User()
-        nuevo_usuario.username = username
-        nuevo_usuario.email = form.cleaned_data['email_field']
-        nuevo_usuario.is_active = True
-        nuevo_usuario.date_joined = timezone.now()
-
-        if rol == 'admin':
-            nuevo_usuario.is_staff = True
-            nuevo_usuario.is_superuser = True
-            password = form.cleaned_data['password_field']
-            permissions = []
-
-        elif rol == 'empleado':
-            nuevo_usuario.is_staff = True
-            nuevo_usuario.is_superuser = False
-            password = form.cleaned_data['password_field']
-            permissions = settings.EMPLEADO_PERMISOS
-
-        elif rol == 'cliente':
-            nuevo_usuario.is_staff = False
-            nuevo_usuario.is_superuser = False
-            password = User.objects.make_random_password()
-            permissions = settings.CLIENTE_PERMISOS
 
         nuevo_usuario.set_password(password)
         nuevo_usuario.save()
 
         for perm in permissions:
-            perm_object = Permission.objects.get(codename=perm[0])
-            nuevo_usuario.user_permissions.add(perm_object)
+            p = Permission.objects.get(codename=perm[0])
+            nuevo_usuario.user_permissions.add(p)
 
         nuevo_usuario.save()
-        return nuevo_usuario
+        nuevo_perfil.set_usuario(nuevo_usuario)
+        nuevo_perfil.save()
+        enviar_password(password)
+        return
+
     except Exception:
-        return None
+        usuario_creado = get_object_or_404(User, username=username)
+        usuario_creado.delete()
+        raise ValidationError(('Campo invalido'), code='campos')
+
+def crear_usuario(form, model):
+    username = form.cleaned_data['email_field'].split("@")[0]
+    nuevo_usuario = User()
+    nuevo_usuario.username = username
+    nuevo_usuario.email = form.cleaned_data['email_field']
+    nuevo_usuario.is_active = True
+    nuevo_usuario.date_joined = timezone.now()
+    return nuevo_usuario
+
+def crear_persona(form, model):
+    persona = model()
+    persona.set_dni(str(form.cleaned_data['dni_field']))
+    persona.set_nombre(form.cleaned_data['nombre_field'])
+    persona.set_email(form.cleaned_data['email_field'])
+    persona.set_fechaNacimiento(form.cleaned_data['fecha_nacimiento_field'])
+    persona.set_domicilio(form.cleaned_data['domicilio_field'])
+    persona.set_telefono(form.cleaned_data['telefono_field'])
+    return persona
 
 def enviar_password(password):
     message = 'Su contrasena es: ' + str(password)
@@ -165,3 +168,4 @@ def verificar_usuario(username):
         return False
     except ObjectDoesNotExist:
         return True
+
