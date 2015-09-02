@@ -1,7 +1,7 @@
 {% extends "FacturasNorte/base/base.html" %}
 {% load l10n %}
 {% block content %}
-    <body>
+    <body xmlns="http://www.w3.org/1999/html">
         <form action="" class="register" method="post">
 
             <fieldset class="row1">
@@ -13,22 +13,33 @@
                         {% csrf_token %}
                          <h1> Formulario de Registro Cliente</h1>
                              {{ form.non_field_errors }}
+                            <h6> (*) este campo es obligatorio </h6>
+
                              {% for field in form %}
 
-                                 <div class="fieldWrapper">
-                                    <p> {{ field.label_tag }}
+                                  <div class="fieldWrapper">
+                                    <br>   * {{ field.label_tag }}
 
-                                        {{ field }} </p>
 
-                                 </div>
+                                         {{ field.errors }}
+                                         {{ field }}
+
+
+                                  </div>
+
                              {% endfor %}
-
+                                        {% for hidden in form.hidden_fields %}
+                                            {{ hidden }}
+                                        {% endfor %}
                               <p></p>
                               <p></p>
 
-                         <div style="width: 170px; margin: 0 auto;">
-                            <input type="submit" value="Guardar"/>
+
+                          <div style="width: 170px; margin: 0 auto;">
+                          <input type="submit" value="Guardar"/>
+
                          </div>
+
                     </form>
             </fieldset>
         </form>

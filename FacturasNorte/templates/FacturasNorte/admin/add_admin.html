@@ -9,20 +9,25 @@
                     {% load l10n %}
                     <form action="" method="post">
                         {% csrf_token %}
-                         <h1> Formulario de Registro Administrador</h1>
+                              <h1> Formulario de Registro Administrador</h1>
+                                <h6> (*) estos campos son obligatorios </h6>
                              {% for field in form %}
 
-                                 <div class="fieldWrapper">
-                                    <p> {{ field.label_tag }}
 
-                                        {{ field }} </p>
+                                  <div class="fieldWrapper">
+                                    <br> * {{ field.label_tag }}
 
-                                 </div>
+                                         {{ field.errors }}
+                                         {{ field }}
+
+
+                                  </div>
+
                              {% endfor %}
 
-                              <p></p>
-                              <p></p>
 
+                              <p></p>
+                              <p></p>
                          <div style="width: 170px; margin: 0 auto;">
                             <input type="submit" value="Guardar"/>
                          </div>
