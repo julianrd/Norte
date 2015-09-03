@@ -98,6 +98,7 @@ def base(request):
 def index(request):
     return render(request, 'FacturasNorte/base/index.html')
 
+
 class LoginView(FormView):
     form_class = IniciarSesionForm
     success_url = reverse_lazy('FacturasNorte:index')
@@ -477,6 +478,7 @@ def reset_password_conf(request, pk):
     return render(request, 'FacturasNorte/base/reset_contrasena.html', {'usuario':usuario})
 
 def crear_usuario(form, rol):
+
     nuevo_usuario = User()
     nuevo_usuario.username = form.cleaned_data['email_field'].split("@")[0]
     nuevo_usuario.email = form.cleaned_data['email_field']
@@ -629,3 +631,5 @@ def search_person(model, searchField, searchQuery):
             return model.objects.filter(dni__icontains=int(searchQuery))
     else:
         return model.objects.filter(email__icontains=searchQuery)
+
+

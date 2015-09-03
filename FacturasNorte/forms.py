@@ -17,20 +17,21 @@ from django.core.exceptions import ValidationError
 
 class IniciarSesionForm(forms.Form):
     usuario = forms.EmailField(label='E-mail', show_hidden_initial='ejemplo@dominio.com')
-    password = forms.CharField(label='Contrasena', widget=forms.PasswordInput(), initial='')
+    password = forms.CharField(label='Contraseña', widget=forms.PasswordInput(), initial='')
 
-    def get_user(self):
+
+def get_user(self):
         return get_object_or_404(User, email=self.cleaned_data['usuario'])
 
 class AdminRegisterForm(forms.Form):
     nombre_field = forms.CharField(label='Nombre', widget=forms.TextInput(attrs={'class':'special', 'size':'20'}))
     dni_field = forms.IntegerField(label='DNI', widget=forms.TextInput(attrs={'class': 'special', 'size':'20'}))
     email_field = forms.EmailField(label='Email')
-    fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget(years=range(1900, datetime.date.today().year-16)))
+    fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget())
     domicilio_field = forms.CharField(label='Domicilio', max_length=254)
     telefono_field = forms.CharField(label='Telefono', max_length=254)
-    password_field = forms.CharField(widget=forms.PasswordInput(), initial='')
-    password_again_field = forms.CharField(widget=forms.PasswordInput(), initial='')
+    password_field = forms.CharField(label='Contraseña', widget=forms.PasswordInput(), initial='')
+    password_again_field = forms.CharField(label='Repita Contraseña',widget=forms.PasswordInput(), initial='')
 
     def clean_nombre_field(self):
         nombre = self.cleaned_data.get('nombre_field')
@@ -82,8 +83,8 @@ class EmpleadoRegisterForm(forms.Form):
     fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget(years=range(1900, datetime.date.today().year-16)))
     domicilio_field = forms.CharField(label='Domicilio', max_length=254)
     telefono_field = forms.CharField(label='Telefono', max_length=254)
-    password_field = forms.CharField(label='Contrasena', widget=forms.PasswordInput(), initial='')
-    password_again_field = forms.CharField(label='Repita contrasena', widget=forms.PasswordInput(), initial='')
+    password_field = forms.CharField(label='Contraseña', widget=forms.PasswordInput(), initial='')
+    password_again_field = forms.CharField(label='Repita contraseña', widget=forms.PasswordInput(), initial='')
 
     def clean_nombre_field(self):
         nombre = self.cleaned_data.get('nombre_field')

@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'FacturasNorte',
     'django_markdown',
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -84,7 +85,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -148,5 +149,4 @@ EMAIL_USE_TLS = True
 MEDIA_ROOT = 'C:/Users/Julian/Documents/Diario Norte/Proyecto Norte/PDFs/'
 
 MEDIA_ULR = '/pdf/'
-
 
