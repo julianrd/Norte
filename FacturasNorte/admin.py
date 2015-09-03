@@ -18,7 +18,7 @@ class PermissionAdmin(admin.ModelAdmin):
 
 class ClienteAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ['nombre', 'email', 'domicilio']}),
+        (None, {'fields': ['nroUsuario', 'nombre', 'email', 'domicilio']}),
         ('Date information', {'fields':['fechaNacimiento'], 'classes':['collapse']}),
     ]
     list_display = ('nombre', 'fechaNacimiento', 'email', 'domicilio', 'telefono')
@@ -27,7 +27,7 @@ class ClienteAdmin(admin.ModelAdmin):
 
 class AdministradorAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ['nombre', 'dni', 'email', 'domicilio', 'telefono']}),
+        (None, {'fields': ['nroUsuario', 'nombre', 'dni', 'email', 'domicilio', 'telefono']}),
         ('Date information', {'fields':['fechaNacimiento'], 'classes':['collapse']}),
     ]
     list_display = ('nombre', 'fechaNacimiento', 'dni', 'email', 'domicilio', 'telefono')
@@ -37,7 +37,7 @@ class AdministradorAdmin(admin.ModelAdmin):
 
 class EmpleadoAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ['nombre', 'email', 'domicilio']}),
+        (None, {'fields': ['nroUsuario', 'nombre', 'email', 'domicilio']}),
         ('Date information', {'fields':['fechaNacimiento'], 'classes':['collapse']}),
     ]
     list_display = ('nombre', 'fechaNacimiento', 'email', 'domicilio', 'telefono')

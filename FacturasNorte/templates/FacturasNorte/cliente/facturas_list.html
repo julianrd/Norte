@@ -1,6 +1,9 @@
 {% extends "FacturasNorte/base/base.html" %}
 {% load l10n %}
 {% block content %}
+
+{%  if user.id == cliente.nroUsuario.id %}
+
     <h1>Sus facturas</h1>
 
     <div id="searchbar">
@@ -9,7 +12,7 @@
 
             <div class="fieldWrapper">
 
-                <p> {{ form.query.label_tag }} {{ form.query }}   {{ form.tipo.label_tag }} {{ form.tipo }}</p>
+                <p> {{ form.pedido.label_tag }} {{ form.pedido }} {{ form.fecha.label_tag }} {{ form.fecha }}  {{ form.tipo.label_tag }} {{ form.tipo }}</p>
 
             </div>
             <button id="boton" type="submit", style = margin:-4px;padding:2px;border-right-width:3px;> Filtrar  </button>
@@ -33,11 +36,17 @@
      {% for fac in lista_facturas %}
 
         <tr>
-            <td><a href={% url 'FacturasNorte:media' fac.ruta %}></a></td>
+            <td><a href={% url 'FacturasNorte:media' fac.ruta %}>{{ fac.nroPedido }}</a></td>
             <td><a href={% url 'FacturasNorte:media' fac.ruta %}>{{ fac.fecha }}</a></td>
         </tr>
 
      {% endfor %}
   {% endif %}
 </table>
+
+{% else %}
+    <p>No tiene permiso para visualizar los datos de esta persona.</p>
+{% endif %}
+
+
 {% endblock %}

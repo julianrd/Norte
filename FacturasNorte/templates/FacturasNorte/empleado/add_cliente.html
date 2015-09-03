@@ -8,16 +8,17 @@
                 <legend>Facturas Norte
                 </legend>
                     {% load l10n %}
+
                     <form action="" method="post">
                         {% csrf_token %}
+                         <h1> Formulario de Registro Cliente</h1>
+                             {{ form.non_field_errors }}
+                            <h6> (*) este campo es obligatorio </h6>
 
-
-                        <h1> Formulario de Registro Cliente</h1>
-                            <h6> (*) este campo es obligatorio <h6>
                              {% for field in form %}
 
                                   <div class="fieldWrapper">
-                                    <br>   * {{ field.label_tag }} </br>
+                                    <br>   * {{ field.label_tag }}
 
 
                                          {{ field.errors }}

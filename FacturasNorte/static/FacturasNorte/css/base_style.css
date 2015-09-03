@@ -342,6 +342,7 @@ table tr td
 #user-tools
 {
   color: #ECEF01;
+  text-decoration: none;
   float: right;
   padding: 1.2em 10px;
   font-size: 11px;
@@ -734,6 +735,13 @@ table tr td
   font-size: 11px;
   text-align: right;
   font-style: italic;
+}
+
+#user-tools a
+{
+  color: #ffffff;
+  text-decoration: underline;
+
 }
 
 #filter .fieldWrapper, #filter p , #filter
@@ -2331,16 +2339,30 @@ table tr td
   float: right;
 }
 
-ul.errorlist {
-        margin: 0;
-        padding: 0;
-    }
-.errorlist li {
-        background-color: #ab0000;
-        color: white;
-        width: 30%;
-        display: block;
-        font-size: 12px;
-        margin: 0 0 3px;
-        padding: 4px 5px;
-    }
+#vertical th
+{
+  width: 10%;
+  background-color: #A3A3A3;
+}
+
+#vertical td
+{
+  font-weight: bolder;
+}
+
+ul.errorlist
+{
+  margin: 0;
+  padding: 0;
+}
+.errorlist li
+{
+  background-color: #ab0000;
+  color: white;
+  width: 30%;
+  display: block;
+  font-size: 12px;
+  margin: 0 0 3px;
+  padding: 4px 5px;
+}
+

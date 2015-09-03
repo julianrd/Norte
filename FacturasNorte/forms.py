@@ -1,23 +1,45 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import get_object_or_404
-from FacturasNorte.models import Cliente
+from django.contrib.auth import authenticate
+from django.contrib.auth import login
 
 __author__ = 'Julian'
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.shortcuts import get_object_or_404
+
+from FacturasNorte.functions import verificar_usuario
+
 from django import forms
-from Norte import formats
+from nocaptcha_recaptcha.fields import NoReCaptchaField
 
 
 import datetime
 
 from django.forms.extras.widgets import SelectDateWidget
-from django.core.exceptions import ValidationError
 
 
 class IniciarSesionForm(forms.Form):
+
     usuario = forms.EmailField(label='E-mail', show_hidden_initial='ejemplo@dominio.com')
     password = forms.CharField(label='Contraseña', widget=forms.PasswordInput(), initial='')
+
+    email = forms.EmailField(label='E-mail', show_hidden_initial='ejemplo@dominio.com')
+    password = forms.CharField(label='Contrasena', widget=forms.PasswordInput(), initial='')
+    captcha = NoReCaptchaField(required=False)
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        try:
+            User.objects.get(email=email)
+        except ObjectDoesNotExist:
+            raise forms.ValidationError('El email ingresado es incorrecto', code='email incorrecto')
+        return email
+
+    def clean_captcha(self):
+        if not self.cleaned_data.get('captcha'):
+            raise forms.ValidationError('Captcha no verificado, intente de nuevo', code='captcha')
+        return self.cleaned_data.get('captcha')
+
 
 
 def get_user(self):
@@ -30,8 +52,12 @@ class AdminRegisterForm(forms.Form):
     fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget())
     domicilio_field = forms.CharField(label='Domicilio', max_length=254)
     telefono_field = forms.CharField(label='Telefono', max_length=254)
+
     password_field = forms.CharField(label='Contraseña', widget=forms.PasswordInput(), initial='')
     password_again_field = forms.CharField(label='Repita Contraseña',widget=forms.PasswordInput(), initial='')
+
+    password_field = forms.CharField( widget=forms.PasswordInput(), initial='')
+    password_again_field = forms.CharField(widget=forms.PasswordInput(), initial='')
 
     def clean_nombre_field(self):
         nombre = self.cleaned_data.get('nombre_field')
@@ -68,13 +94,19 @@ class AdminRegisterForm(forms.Form):
         self.fields['password_again_field'].required = False
 
     def clean(self):
-        password1 = self.cleaned_data.get('password_field')
-        password2 = self.cleaned_data.get('password_again_field')
+        cleaned_data = super(AdminRegisterForm, self).clean()
 
-        if password1 and password1 != password2:
-            raise forms.ValidationError("Contraseñas no coinciden, vuelva a ingresar")
 
-        return self.cleaned_data
+        if verificar_usuario(self.cleaned_data['email_field'].split("@")[0]):
+            password1 = self.cleaned_data.get('password_field')
+            password2 = self.cleaned_data.get('password_again_field')
+
+            if password1 and password1 != password2:
+                raise forms.ValidationError("ContraseÃ±as no coinciden, vuelva a ingresar")
+
+            return cleaned_data
+        else:
+            raise forms.ValidationError(('El email ingresado ya esta registrado'), code='email')
 
 class EmpleadoRegisterForm(forms.Form):
     nombre_field = forms.CharField(label='Nombre', widget=forms.TextInput(attrs={'class':'special', 'size':'20'}))
@@ -123,20 +155,23 @@ class EmpleadoRegisterForm(forms.Form):
         self.fields['password_again_field'].required = False
 
     def clean(self):
-        password1 = self.cleaned_data.get('password_field')
-        password2 = self.cleaned_data.get('password_again_field')
-
-        if password1 and password1 != password2:
-            raise forms.ValidationError("Contraseñas no coinciden, vuelva a ingresar")
-
-        return self.cleaned_data
+        cleaned_data = super(EmpleadoRegisterForm, self).clean()
 
 
-        self.fields['password_field'].required = False
-        self.fields['password_again_field'].required = False
+        if verificar_usuario(self.cleaned_data['email_field'].split("@")[0]):
+            password1 = self.cleaned_data.get('password_field')
+            password2 = self.cleaned_data.get('password_again_field')
+
+            if password1 and password1 != password2:
+                raise forms.ValidationError("ContraseÃ±as no coinciden, vuelva a ingresar")
+
+            return cleaned_data
+        else:
+            raise forms.ValidationError(('El usuario ya existe'), code='usuario')
+
+
 
 class ContactUsuarioAnonimoForm(forms.Form):
-
     email = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={'class': 'form-control'})
@@ -195,15 +230,22 @@ class ClienteRegisterForm(forms.Form):
 
     def clean_telefono_field(self):
         telefono = self.cleaned_data.get('telefono_field')
-
         if len(telefono) > 14 or len(telefono) <= 9:
             raise forms.ValidationError("El telefono debe tener un formato valido, ej: 3624XXYYZZ")
         return telefono
 
+    def clean(self):
+        cleaned_data = super(ClienteRegisterForm, self).clean()
+        if verificar_usuario(self.cleaned_data['email_field'].split("@")[0]):
+            return cleaned_data
+        else:
+            raise forms.ValidationError(('El usuario ya existe'), code='usuario')
+
+
 class CambiarContrasenaForm(forms.Form):
-    contrasena_anterior = forms.CharField(label = "Contraseña Anterior", widget=forms.PasswordInput(), initial='')
-    contrasena_nueva = forms.CharField(label = "Contraseña Nueva", widget=forms.PasswordInput(), initial='')
-    confirmar_contrasena = forms.CharField(label = "Confirmar Contraseña",widget=forms.PasswordInput(), initial='')
+    contrasena_anterior = forms.CharField(label = "ContraseÃ±a Anterior", widget=forms.PasswordInput(), initial='')
+    contrasena_nueva = forms.CharField(label = "ContraseÃ±a Nueva", widget=forms.PasswordInput(), initial='')
+    confirmar_contrasena = forms.CharField(label = "Confirmar ContraseÃ±a",widget=forms.PasswordInput(), initial='')
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
@@ -218,9 +260,9 @@ class CambiarContrasenaForm(forms.Form):
             password1 = self.cleaned_data.get('contrasena_nueva')
             password2 = self.cleaned_data.get('confirmar_contrasena')
             if password1 and password1 != password2:
-                raise forms.ValidationError("Las nuevas contraseñas ingresadas no coinciden", code='match_passwords')
+                raise forms.ValidationError("Las nuevas contraseÃ±as ingresadas no coinciden", code='match_passwords')
         else:
-            raise forms.ValidationError("La contraseña anterior ingresada es invalida", code='old_password')
+            raise forms.ValidationError("La contraseÃ±a anterior ingresada es invalida", code='old_password')
         return self.cleaned_data
 
 class RegenerarContrasenaForm(forms.Form):
@@ -245,13 +287,12 @@ class FiltroPersonaForm(forms.Form):
     )
 
 class FiltroFacturaForm(forms.Form):
-    query = forms.CharField(label='Buscar', initial='Ej. Messi')
+    pedido = forms.CharField(required=False, label='Nro Pedido', initial='')
+    fecha = forms.DateField(required=False, label='Fecha', widget=SelectDateWidget(years=range(1995, datetime.date.today().year+1)))
     tipo = forms.ChoiceField(
                                 required=True,
                                 choices = ( ('pedido',u'Pedido'),
                                             ('fecha',u'Fecha'),
                                 )
     )
-
-
 

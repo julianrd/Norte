@@ -37,7 +37,11 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'FacturasNorte',
     'django_markdown',
+<<<<<<< HEAD
 
+=======
+    'nocaptcha_recaptcha',
+>>>>>>> 1fc795a6fd2a3006b22d562ce8d59c3350ef8ae1
 )
 
 MIDDLEWARE_CLASSES = (
@@ -63,9 +67,9 @@ DATABASES = {
         'ENGINE': 'sqlserver_ado',
         'NAME': 'FacturasNorte',
 
-        'HOST': 'JORGIED',#'JORGIED',
-        'USER': '',
-        'PASSWORD': '',#'dni36017874',
+        'HOST': 'PABLOHP',#'JORGIED',
+        'USER': 'sa',
+        'PASSWORD': 'Norte1234',#'dni36017874',
 
         'OPTIONS': {
             'provider': 'SQLNCLI',
@@ -149,4 +153,21 @@ EMAIL_USE_TLS = True
 MEDIA_ROOT = 'C:/Users/Julian/Documents/Diario Norte/Proyecto Norte/PDFs/'
 
 MEDIA_ULR = '/pdf/'
+
+
+#PERMISSIONS
+CLIENTE_PERMISOS = [('cambiar_cont', 'Puede cambiar su contrasena'), ('view_perfil_cliente', 'Puede ver su perfil de cliente'),
+                       ('view_facturas', 'Puede ver sus facturas')]
+
+EMPLEADO_PERMISOS = [('cambiar_cont', 'Puede cambiar su contrasena'), ('view_facturas', 'Puede ver las facutras de los clientes'),
+                       ('view_lista_cliente', 'Puede ver la lista de clientes'),
+                       ('view_detalle_cliente', 'Puede ver detalle cliente'), ('update_cliente', 'Puede modificar cliente'),
+                       ('agregar_cliente', 'Puede agregar cliente'), ('del_cliente', 'Puede eliminar cliente'),
+                       ('view_perfil_empleado', 'Puede ver su perfil de empleado')
+                       ]
+
+
+NORECAPTCHA_SITE_KEY = '6Ld8HgwTAAAAAO8EB6lFkjWgHd6DYUoKL2u3R6Y4'
+NORECAPTCHA_SECRET_KEY = '6Ld8HgwTAAAAAM5fqalC3jaXEQbJqlW7GCboJ5YY'
+
 

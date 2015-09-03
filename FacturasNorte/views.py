@@ -1,19 +1,15 @@
 import urlparse
 
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.models import Permission
-from django.core import mail
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.files.storage import FileSystemStorage
-from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.edit import FormMixin
 
-from FacturasNorte.custom_classes import  Factura, \
-    CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView
+from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView
+from FacturasNorte.functions import send_email_contact, reset_password, buscar_pdfs, search_redirect, search_person, \
+    crear_perfil
 
 __author__ = 'Julian'
 from django.utils import timezone
@@ -23,7 +19,7 @@ from Norte import settings
 
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView
-from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, get_object_or_404, redirect
 
 from django.contrib.auth import login, logout, authenticate
@@ -34,13 +30,10 @@ from . import models
 #Importaciones para conficuracion de contacto
 
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.core.mail import EmailMessage
 from django.contrib import messages
 
 from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
     IniciarSesionForm, RegenerarContrasenaForm, FiltroPersonaForm, FiltroFacturaForm
-
-from django.core.mail import send_mail
 
 from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
 
@@ -48,28 +41,8 @@ from FacturasNorte.models import Administrador, Empleado, Cliente
 from FacturasNorte.models import User
 
 #Pruebas de Usuario
-def is_admin(user):
-    return user.is_superuser
-
 def is_admin_o_emp(user):
     return user.is_superuser or user.is_staff
-
-def is_emp(request):
-    return request.user.is_staff
-
-def is_admin_o_cliente(user):
-    return user.is_superuser or not user.is_staff
-
-class AdminTestRequiredMixin(object):
-    @permission_required('is_superuser')
-    def as_view(cls, **initkwargs):
-        view = super(AdminTestRequiredMixin, cls).as_view(**initkwargs)
-        return login_required(view)
-
-class EmpleadoTestRequiredMixin(object):
-    @staff_member_required
-    def dispatch(self, *args, **kwargs):
-        return super(EmpleadoTestRequiredMixin, self).dispatch(*args, **kwargs)
 
 class FormListView(FormMixin, ListView):
     def get(self, request, *args, **kwargs):
@@ -114,8 +87,12 @@ class LoginView(FormView):
         The user has provided valid credentials (this was checked in AuthenticationForm.is_valid()). So now we
         can log him in.
         """
-        user = authenticate(username=form.cleaned_data['usuario'], password=form.cleaned_data['password'])
-        login(self.request, user)
+        try:
+            user = authenticate(username=form.cleaned_data['email'], password=form.cleaned_data['password'])
+            login(self.request, user)
+        except Exception:
+            form.add_error('password', ValidationError('Contrasena incorrecta', code='authentication'))
+            return self.form_invalid(form)
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
@@ -183,22 +160,11 @@ class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     permission_required = 'FacturasNorte.add_admin'
 
     def form_valid(self, form):
-
-        #Nuevo Usuario
-        nuevo_usuario = crear_usuario(form, 'admin')
-
-        #Nuevo_Admin
-        nuevo_admin = Administrador()
-        nuevo_admin.set_dni(form.cleaned_data['dni_field'])
-        nuevo_admin.set_nombre(form.cleaned_data['nombre_field'])
-        nuevo_admin.set_email(form.cleaned_data['email_field'])
-        nuevo_admin.set_fechaNacimiento(form.cleaned_data['fecha_nacimiento_field'])
-        nuevo_admin.set_domicilio(form.cleaned_data['domicilio_field'])
-        nuevo_admin.set_telefono(form.cleaned_data['telefono_field'])
-        nuevo_admin.set_usuario(nuevo_usuario)
-        nuevo_admin.save()
-
-        return super(AdminCreateView, self).form_valid(form)
+        try:
+            crear_perfil(form, Administrador)
+            return super(AdminCreateView, self).form_valid(form)
+        except ValidationError:
+            return render(self.request, 'FacturasNorte/admin/add_admin_error.html')
 
 class AdminModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Administrador
@@ -251,7 +217,7 @@ class EmpleadoPerfilView(LoginRequiredMixin, PermissionRequiredMixin, CustomEmpl
     template_name = "FacturasNorte/empleado/perfil_emp.html"
     model = Empleado
     context_object_name = 'empleado'
-    permission_required = 'FacturasNorte.view_empleado'
+    permission_required = 'FacturasNorte.view_perfil_empleado'
 
 class EmpCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/admin/add_emp.html"
@@ -260,22 +226,11 @@ class EmpCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     permission_required = 'FacturasNorte.add_empleado'
 
     def form_valid(self, form):
-
-        #Nuevo Usuario
-        nuevo_usuario = crear_usuario(form, 'empleado')
-
-        #Nuevo Empleado
-        nuevo_emp = Empleado()
-        nuevo_emp.set_dni(form.cleaned_data['dni_field'])
-        nuevo_emp.set_nombre(form.cleaned_data['nombre_field'])
-        nuevo_emp.set_email(form.cleaned_data['email_field'])
-        nuevo_emp.set_fechaNacimiento(form.cleaned_data['fecha_nacimiento_field'])
-        nuevo_emp.set_domicilio(form.cleaned_data['domicilio_field'])
-        nuevo_emp.set_telefono(form.cleaned_data['telefono_field'])
-        nuevo_emp.set_usuario(nuevo_usuario)
-        nuevo_emp.save()
-
-        return super(EmpCreateView, self).form_valid(form)
+        try:
+            crear_perfil(form, Empleado)
+            return super(EmpCreateView, self).form_valid(form)
+        except ValidationError:
+            return render(self.request, 'FacturasNorte/admin/add_empleado_error.html')
 
 class EmpModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Empleado
@@ -325,37 +280,28 @@ class ClientePerfilView(LoginRequiredMixin, PermissionRequiredMixin, CustomClien
     template_name = "FacturasNorte/cliente/perfil_cliente.html"
     model = Cliente
     context_object_name = 'cliente'
-    permission_required = 'FacturasNorte.view_cliente'
+    permission_required = 'FacturasNorte.view_perfil_cliente'
 
 class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/empleado/add_cliente.html"
     form_class = ClienteRegisterForm
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
-    permission_required = 'FacturasNorte.add_cliente'
+    permission_required = 'FacturasNorte.agregar_cliente'
 
     def form_valid(self, form):
-
-        #Nuevo Usuario
-        nuevo_usuario = crear_usuario(form, 'cliente')
-
-        #Nuevo_Cliente
-        nuevo_cliente = Cliente()
-        nuevo_cliente.set_dni(str(form.cleaned_data['dni_field']))
-        nuevo_cliente.set_nombre(form.cleaned_data['nombre_field'])
-        nuevo_cliente.set_email(form.cleaned_data['email_field'])
-        nuevo_cliente.set_fechaNacimiento(form.cleaned_data['fecha_nacimiento_field'])
-        nuevo_cliente.set_domicilio(form.cleaned_data['domicilio_field'])
-        nuevo_cliente.set_telefono(form.cleaned_data['telefono_field'])
-        nuevo_cliente.set_usuario(nuevo_usuario)
-        nuevo_cliente.save()
-
-        return super(ClienteCreateView, self).form_valid(form)
+        if form.non_field_errors():
+            return reverse('FacturasNorte:nuevo_cliente')
+        try:
+            crear_perfil(form, Cliente)
+            return super(ClienteCreateView, self).form_valid(form)
+        except ValidationError:
+            return render(self.request, 'FacturasNorte/empleado/add_cliente_error.html')
 
 class CambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/base/cambiar_contrasena.html"
     form_class = CambiarContrasenaForm
     success_url = reverse_lazy('FacturasNorte:cambiar_contrasena_hecho')
-    permission_required = 'FacturasNorte.cambiar_cont_cliente'
+    permission_required = 'FacturasNorte.cambiar_cont'
 
     def get_context_data(self, **kwargs):
     # Call the base implementation first to get a context
@@ -386,7 +332,7 @@ class ClienteModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Cliente
     template_name = "FacturasNorte/empleado/mod_cliente.html"
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
-    permission_required = 'FacturasNorte.modif_cliente'
+    permission_required = 'FacturasNorte.update_cliente'
 
 class ClienteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Cliente
@@ -400,7 +346,7 @@ class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView)
     model = Cliente
     context_object_name = 'cliente_list'
     paginate_by = 10
-    permission_required = 'FacturasNorte.view_cliente'
+    permission_required = 'FacturasNorte.view_lista_cliente'
 
     form_class = FiltroPersonaForm
 
@@ -432,20 +378,33 @@ class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomCli
     template_name = "FacturasNorte/cliente/facturas_list.html"
     model = Cliente
     context_object_name = 'cliente'
-    permission_required = 'FacturasNorte.view_cliente'
+    permission_required = 'FacturasNorte.view_facturas'
 
     form_class = FiltroFacturaForm
 
     def post(self, request, *args, **kwargs):
-        form = self.get_form(FiltroPersonaForm)
+        form = self.get_form(FiltroFacturaForm)
+        URL = 'FacturasNorte/cliente/facturas/' + self.kwargs.get(self.pk_url_kwarg) + '/'
         if form.is_valid():
-            URL = 'FacturasNorte/cliente/facturas/' + self.pk_url_kwarg + '/'
-            return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['query'])
+            if (form.cleaned_data['tipo'] == 'fecha'):
+                fecha = form.cleaned_data['fecha'].strftime("%Y-%m-%d")
+                return search_redirect(URL, form.cleaned_data['tipo'], fecha)
+            elif (form.cleaned_data['tipo'] == 'pedido'):
+                return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['pedido'])
+            else:
+                return redirect(URL)
+        else:
+            return redirect('/' + URL)
 
     def get_context_data(self, **kwargs):
         context = super(ClienteFacturasView, self).get_context_data(**kwargs)
         context['form'] = self.get_form(FiltroFacturaForm)
-        context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg))
+        try:
+            context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg),
+                                                    self.kwargs['tipo'],
+                                                    self.kwargs['query'])
+        except KeyError:
+            context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg))
         return context
 
 class ClienteRegenerarContrasenaView(FormView):
@@ -477,6 +436,7 @@ def reset_password_conf(request, pk):
 
     return render(request, 'FacturasNorte/base/reset_contrasena.html', {'usuario':usuario})
 
+<<<<<<< HEAD
 def crear_usuario(form, rol):
 
     nuevo_usuario = User()
@@ -513,6 +473,8 @@ def crear_usuario(form, rol):
     nuevo_usuario.save()
     return nuevo_usuario
 
+=======
+>>>>>>> 1fc795a6fd2a3006b22d562ce8d59c3350ef8ae1
 class ContactView(FormView):
 
     template_name = 'FacturasNorte/contact.html'
@@ -540,46 +502,6 @@ class ContactView(FormView):
 
         return super(ContactView, self).form_valid(form)
 
-def pdf_view(request):
-    with open('C:\Users\Julian\Documents\Diario Norte\Proyecto Norte\PDFs\Hola.pdf', 'rb') as pdf:
-        response = HttpResponse(pdf.read(), content_type='application/pdf')
-        response['Content-Disposition'] = 'inline;filename=some_file.pdf'
-        return response
-    pdf.closed
-
-def enviar_password(password):
-    message = 'Su contrasena es: ' + str(password)
-    sender = 'julian.rd7@gmail.com'
-    email = EmailMessage('Cuenta Registrada', message, sender,
-            ['julian_rd7@hotmail.com'],
-            headers = {'Reply-To': 'julian.rd7@gmail.com'})
-
-    connection = mail.get_connection()
-    connection.open()
-    email.send()
-    connection.close()
-
-def enviar_password_regenerada(usuario, password):
-    message = 'Senor/a usuario/a: ' + str(usuario.username) + '.' ' Su nueva contrasena es: ' + str(password)
-    sender = 'julian.rd7@gmail.com'
-    email = EmailMessage('Contrasena regenerada', message, sender,
-            ['julian_rd7@hotmail.com'],
-            headers = {'Reply-To': 'julian.rd7@gmail.com'})
-
-    connection = mail.get_connection()
-    connection.open()
-    email.send()
-    connection.close()
-
-def send_email_contact(email, subject, body):
-    body = '{} ha enviado un email de contacto\n\n{}\n\n{}'.format(email, subject, body)
-    send_mail(
-        subject = 'Nuevo email de contacto',
-        message = body,
-        from_email = 'julian.rd7@gmail.com',
-        recipient_list =['julian_rd7@hotmail.com'],
-            )
-
 class BlogIndex(generic.ListView):
     queryset = models.Entry.objects.published()
     template_name = "FacturasNorte/home.html"
@@ -589,26 +511,17 @@ class BlogDetail(generic.DetailView):
     model = models.Entry
     template_name = "FacturasNorte/post.html"
 
-def buscar_pdfs(pk, field, query):
-     cliente = get_object_or_404(Cliente, nroUsuario=pk)
-     storageManager = FileSystemStorage()
-     archivos = storageManager.listdir(settings.MEDIA_ROOT)[1]
-     facturas = []
-
-     for a in archivos:
-         doc = a.split('-')[1]
-         fec = a.split('-')[3].split('.')[0]
-         if (doc == cliente.nroDoc):
-             f = Factura()
-             f.set_ruta(a)
-             f.set_fecha(fec)
-             facturas.append(f)
-
-     return facturas
+def pdf_view(request):
+    with open('C:\Users\Julian\Documents\Diario Norte\Proyecto Norte\PDFs\Hola.pdf', 'rb') as pdf:
+        response = HttpResponse(pdf.read(), content_type='application/pdf')
+        response['Content-Disposition'] = 'inline;filename=some_file.pdf'
+        return response
+    pdf.closed
 
 def reestablecer_password(request, pk):
     usuario = get_object_or_404(User, id=pk)
     reset_password(usuario)
+<<<<<<< HEAD
     return render(request, 'FacturasNorte/base/reset_contrasena_hecho.html', {})
 
 def reset_password(usuario):
@@ -633,3 +546,5 @@ def search_person(model, searchField, searchQuery):
         return model.objects.filter(email__icontains=searchQuery)
 
 
+
+    return render(request, 'FacturasNorte/base/reset_contrasena_hecho.html', {})

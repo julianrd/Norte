@@ -12,12 +12,13 @@
                     <form action="" method="post">
                         {% csrf_token %}
                             <h1> Formulario de Registro Empleado</h1>
-                                <h6> (*) este campo es obligatorio <h6>
+                            {{ form.non_field_errors }}
+                                <h6> (*) este campo es obligatorio </h6>
                              {% for field in form %}
 
 
                                   <div class="fieldWrapper">
-                                    <br> * {{ field.label_tag }} </br>
+                                    <br> * {{ field.label_tag }}
 
                                          {{ field.errors }}
                                          {{ field }}
@@ -31,9 +32,9 @@
                               <p></p>
                               <p></p>
 
-                         <div style="width: 170px; margin: 0 auto;" value="Guardar"/>
-                         <input type="submit" value="Guardar"/>
-
+                         <div style="width: 170px; margin: 0 auto;">
+                            <input type="submit" value="Guardar"/>
+                         </div>
                     </form>
             </fieldset>
         </form>

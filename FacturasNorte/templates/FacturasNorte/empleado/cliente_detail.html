@@ -4,13 +4,32 @@
 {% block content %}
 <h1>{{ cliente.nombre}}</h1>
 
-    <p>DNI: {{ cliente.nroDoc }}</p>
-    <p>Fecha nacimiento: {{ cliente.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</p>
-    <p>Domicilio: {{ cliente.domicilio }}</p>
-    <p>Telefono: {{ cliente.telefono }}</p>
+<table id="vertical" style="width:100%">
+  <tr>
+    <th>DNI</th>
+    <td>{{ cliente.nroDoc }}</td>
+  </tr>
+  <tr>
+    <th>Fecha nacimiento</th>
+    <td>{{ cliente.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</td>
+  </tr>
+  <tr>
+    <th>Email</th>
+    <td>{{ cliente.email }}</td>
+  </tr>
+  <tr>
+    <th>Domicilio</th>
+    <td>{{ cliente.domicilio }}</td>
+  </tr>
+  <tr>
+    <th>Telefono</th>
+    <td>{{ cliente.telefono }}</td>
+  </tr>
+
+</table>
 
     <div id="links">
-        <form action="{% url 'FacturasNorte:facturas_cliente' cliente.nroUsuario.id %}">
+        <form action="{% url 'FacturasNorte:facturas_cliente' cliente.numero %}">
             <input type="submit" value="Ver Facturas">
         </form>
         <form action="{% url 'FacturasNorte:modif_cliente' cliente.numero %}">

@@ -45,6 +45,9 @@ urlpatterns = patterns('',
 
     url(r'^staff/perfil/(?P<pk>\d+)/$', views. EmpleadoPerfilView.as_view(), name = 'perfil_empleado'),
     url(r'^staff/nuevo_cliente/$', views.ClienteCreateView.as_view(), name = 'nuevo_cliente'),
+    url(r'^staff/nuevo_cliente/$', views.ClienteCreateView.as_view(), kwargs=dict(error='El usuario ya existe'), name = 'nuevo_cliente_ya_existe'),
+    url(r'^staff/nuevo_cliente/$', views.ClienteCreateView.as_view(), kwargs=dict(error='Campos invalidos'), name = 'nuevo_cliente_error'),
+    url(r'^staff/nuevo_cliente/error$', views.ClienteCreateView.as_view(), name = 'nuevo_cliente_error'),
     url(r'^staff/cliente/(?P<pk>\d+)/$', views. ClienteDetailView.as_view(), name = 'detalle_cliente'),
     url(r'^staff/clientes/$', views.ClienteListView.as_view(), name = 'lista_cliente'),
     url(r'^staff/del_cliente/(?P<pk>\d+)/$', views.ClienteDeleteView.as_view(), name = 'elim_cliente'),
@@ -61,7 +64,7 @@ urlpatterns = patterns('',
 
     url(r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name = 'media'),
 
-    url('^cliente/facturas/(?P<pk>\d+)/(?P<tipo>.+)=(?P<query>.+)/$', views.ClienteListView.as_view(), name = 'facturas_search'),
+    url('^cliente/facturas/(?P<pk>\d+)/(?P<tipo>.+)=(?P<query>.+)/$', views.ClienteFacturasView.as_view(), name = 'facturas_search'),
     url('^staff/clientes/(?P<tipo>.+)=(?P<query>.+)/$', views.ClienteListView.as_view(), name = 'clientes_search'),
     url('^admin/empleados/(?P<tipo>.+)=(?P<query>.+)/$', views.EmpListView.as_view(), name = 'empleados_search'),
     url('^admin/admins/(?P<tipo>.+)=(?P<query>.+)/$', views.AdminListView.as_view(), name = 'admins_search'),
