@@ -7,28 +7,40 @@
 {% load staticfiles %}
 <link rel="stylesheet" href="{% static "FacturasNorte/css/forms.css" %}?v=00002">
 
-{% if form.errors %}
-     <h2>Usuario o password incorrectos. Intente nuevamente</h2>
-{% endif %}
 
 <form method="post" action="{% url 'FacturasNorte:login' %}">
 {% csrf_token %}
 
+  <div>
+      <div>{{ form.email.errors }}</div>
+      <div>{{ form.password.errors }}</div>
+      {% if form.captcha.errors %}
+        <div><ul class="errorlist"><li>Captcha no verificado.</li></ul></div>
+      {% endif %}
+  </div>
   <div id="form-group">
-    <div id="label">{{ form.usuario.label_tag }}</div>
-    <div id="field">{{ form.usuario }}</div>
+    <div id="label">{{ form.email.label_tag }}</div>
+    <div id="field">{{ form.email }}</div>
   </div>
   <div id="form-group">
     <div id="label">{{ form.password.label_tag }}</div>
+
     <div id="field">{{ form.password }}</div>
   </div>
+  <div id="form-group">
+        <div id="field">{{ form.captcha }}</div>
+  </div>
+<div class="g-recaptcha" data-sitekey="6Ld8HgwTAAAAAO8EB6lFkjWgHd6DYUoKL2u3R6Y4"> </div>
 <input type="submit" value="Iniciar Sesion" />
 <input type="hidden" name="next" value="{{ next }}" />
+
 </form>
 
 <form method="post" action="{% url 'FacturasNorte:reestablecer_contrasena_form' %}">
     {% csrf_token %}
 <input type="submit" value="Olvido su contrasena?" />
 </form>
+
+<script src="https://www.google.com/recaptcha/api.js"></script>
 
 {% endblock %}

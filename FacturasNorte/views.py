@@ -86,8 +86,12 @@ class LoginView(FormView):
         The user has provided valid credentials (this was checked in AuthenticationForm.is_valid()). So now we
         can log him in.
         """
-        user = authenticate(username=form.cleaned_data['usuario'], password=form.cleaned_data['password'])
-        login(self.request, user)
+        try:
+            user = authenticate(username=form.cleaned_data['email'], password=form.cleaned_data['password'])
+            login(self.request, user)
+        except Exception:
+            form.add_error('password', ValidationError('Contrasena incorrecta', code='authentication'))
+            return self.form_invalid(form)
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):

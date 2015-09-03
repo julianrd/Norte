@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'FacturasNorte',
     'django_markdown',
+    'nocaptcha_recaptcha',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -160,4 +161,7 @@ EMPLEADO_PERMISOS = [('cambiar_cont', 'Puede cambiar su contrasena'), ('view_fac
                        ('view_perfil_empleado', 'Puede ver su perfil de empleado')
                        ]
 
+
+NORECAPTCHA_SITE_KEY = '6Ld8HgwTAAAAAO8EB6lFkjWgHd6DYUoKL2u3R6Y4'
+NORECAPTCHA_SECRET_KEY = '6Ld8HgwTAAAAAM5fqalC3jaXEQbJqlW7GCboJ5YY'
 

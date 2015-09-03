@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
+from django.contrib.auth import authenticate
+from django.contrib.auth import login
+
+__author__ = 'Julian'
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.shortcuts import get_object_or_404
 
 from FacturasNorte.functions import verificar_usuario
 
-__author__ = 'Julian'
 from django import forms
+from nocaptcha_recaptcha.fields import NoReCaptchaField
 
 
 import datetime
@@ -15,8 +19,22 @@ from django.forms.extras.widgets import SelectDateWidget
 
 
 class IniciarSesionForm(forms.Form):
-    usuario = forms.EmailField(label='E-mail', show_hidden_initial='ejemplo@dominio.com')
+    email = forms.EmailField(label='E-mail', show_hidden_initial='ejemplo@dominio.com')
     password = forms.CharField(label='Contrasena', widget=forms.PasswordInput(), initial='')
+    captcha = NoReCaptchaField(required=False)
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        try:
+            User.objects.get(email=email)
+        except ObjectDoesNotExist:
+            raise forms.ValidationError('El email ingresado es incorrecto', code='email incorrecto')
+        return email
+
+    def clean_captcha(self):
+        if not self.cleaned_data.get('captcha'):
+            raise forms.ValidationError('Captcha no verificado, intente de nuevo', code='captcha')
+        return self.cleaned_data.get('captcha')
 
     def get_user(self):
         return get_object_or_404(User, email=self.cleaned_data['usuario'])
@@ -28,7 +46,7 @@ class AdminRegisterForm(forms.Form):
     fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget(years=range(1900, datetime.date.today().year-16)))
     domicilio_field = forms.CharField(label='Domicilio', max_length=254)
     telefono_field = forms.CharField(label='Telefono', max_length=254)
-    password_field = forms.CharField(widget=forms.PasswordInput(), initial='')
+    password_field = forms.CharField( widget=forms.PasswordInput(), initial='')
     password_again_field = forms.CharField(widget=forms.PasswordInput(), initial='')
 
     def clean_nombre_field(self):
