@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import urlparse
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError

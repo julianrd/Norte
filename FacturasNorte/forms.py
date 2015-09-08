@@ -46,8 +46,8 @@ class AdminRegisterForm(forms.Form):
     fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget(years=range(1900, datetime.date.today().year-16)))
     domicilio_field = forms.CharField(label='Domicilio', max_length=254)
     telefono_field = forms.CharField(label='Telefono', max_length=254)
-    password_field = forms.CharField( widget=forms.PasswordInput(), initial='')
-    password_again_field = forms.CharField(widget=forms.PasswordInput(), initial='')
+    password_field = forms.CharField(label='Contraseña' ,widget=forms.PasswordInput(), initial='')
+    password_again_field = forms.CharField(label='Repita su contraseña', widget=forms.PasswordInput(), initial='')
 
     def clean_nombre_field(self):
         nombre = self.cleaned_data.get('nombre_field')
@@ -86,17 +86,19 @@ class AdminRegisterForm(forms.Form):
     def clean(self):
         cleaned_data = super(AdminRegisterForm, self).clean()
 
+        try:
+            if verificar_usuario(self.cleaned_data['email_field'].split("@")[0]):
+                password1 = self.cleaned_data.get('password_field')
+                password2 = self.cleaned_data.get('password_again_field')
 
-        if verificar_usuario(self.cleaned_data['email_field'].split("@")[0]):
-            password1 = self.cleaned_data.get('password_field')
-            password2 = self.cleaned_data.get('password_again_field')
+                if password1 and password1 != password2:
+                    raise forms.ValidationError("ContraseÃ±as no coinciden, vuelva a ingresar")
 
-            if password1 and password1 != password2:
-                raise forms.ValidationError("ContraseÃ±as no coinciden, vuelva a ingresar")
-
-            return cleaned_data
-        else:
-            raise forms.ValidationError(('El email ingresado ya esta registrado'), code='email')
+            else:
+                raise forms.ValidationError(('El email ingresado ya esta registrado'), code='email')
+        except KeyError:
+            pass
+        return cleaned_data
 
 class EmpleadoRegisterForm(forms.Form):
     nombre_field = forms.CharField(label='Nombre', widget=forms.TextInput(attrs={'class':'special', 'size':'20'}))
@@ -105,7 +107,7 @@ class EmpleadoRegisterForm(forms.Form):
     fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget(years=range(1900, datetime.date.today().year-16)))
     domicilio_field = forms.CharField(label='Domicilio', max_length=254)
     telefono_field = forms.CharField(label='Telefono', max_length=254)
-    password_field = forms.CharField(label='Contrasena', widget=forms.PasswordInput(), initial='')
+    password_field = forms.CharField(label='Contraseña', widget=forms.PasswordInput(), initial='')
     password_again_field = forms.CharField(label='Repita contrasena', widget=forms.PasswordInput(), initial='')
 
     def clean_nombre_field(self):
@@ -147,18 +149,18 @@ class EmpleadoRegisterForm(forms.Form):
     def clean(self):
         cleaned_data = super(EmpleadoRegisterForm, self).clean()
 
+        try:
+            if verificar_usuario(self.cleaned_data['email_field'].split("@")[0]):
+                password1 = self.cleaned_data.get('password_field')
+                password2 = self.cleaned_data.get('password_again_field')
 
-        if verificar_usuario(self.cleaned_data['email_field'].split("@")[0]):
-            password1 = self.cleaned_data.get('password_field')
-            password2 = self.cleaned_data.get('password_again_field')
-
-            if password1 and password1 != password2:
-                raise forms.ValidationError("ContraseÃ±as no coinciden, vuelva a ingresar")
-
-            return cleaned_data
-        else:
-            raise forms.ValidationError(('El usuario ya existe'), code='usuario')
-
+                if password1 and password1 != password2:
+                    raise forms.ValidationError("ContraseÃ±as no coinciden, vuelva a ingresar")
+            else:
+                raise forms.ValidationError(('El usuario ya existe'), code='usuario')
+        except:
+            pass
+        return cleaned_data
 
 
 class ContactUsuarioAnonimoForm(forms.Form):
@@ -225,12 +227,13 @@ class ClienteRegisterForm(forms.Form):
         return telefono
 
     def clean(self):
-        cleaned_data = super(ClienteRegisterForm, self).clean()
-        if verificar_usuario(self.cleaned_data['email_field'].split("@")[0]):
-            return cleaned_data
-        else:
-            raise forms.ValidationError(('El usuario ya existe'), code='usuario')
-
+        try:
+            cleaned_data = super(ClienteRegisterForm, self).clean()
+            if not verificar_usuario(self.cleaned_data['email_field'].split("@")[0]):
+                raise forms.ValidationError(('El usuario ya existe'), code='usuario')
+        except KeyError:
+            pass
+        return cleaned_data
 
 class CambiarContrasenaForm(forms.Form):
     contrasena_anterior = forms.CharField(label = "ContraseÃ±a Anterior", widget=forms.PasswordInput(), initial='')
