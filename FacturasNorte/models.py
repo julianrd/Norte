@@ -288,21 +288,6 @@ class Entry(models.Model):
         verbose_name = "Novedad"
         verbose_name_plural = "Novedades"
 
-"""
-@receiver(pre_save, sender=User)
-def agregar_permisos(sender, **kwargs):
-    usuario = kwargs.get('instance')
-    if usuario.is_superuser:
-        permissions = Permission.objects.filter(name__startswith='Puede')
-
-    elif usuario.is_staff:
-        permissions = Permission.objects.filter(name__endswith='cliente')
-
-    else: permissions = []
-
-    for p in permissions:
-        usuario.user_permissions.add(p)
-"""
 
 @receiver(post_delete, sender=Administrador)
 def eliminar_usuario_admin(sender, **kwargs):
