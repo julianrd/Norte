@@ -37,11 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'FacturasNorte',
     'django_markdown',
-<<<<<<< HEAD
-
-=======
     'nocaptcha_recaptcha',
->>>>>>> 1fc795a6fd2a3006b22d562ce8d59c3350ef8ae1
 )
 
 MIDDLEWARE_CLASSES = (

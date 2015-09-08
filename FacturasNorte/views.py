@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import urlparse
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -436,45 +437,6 @@ def reset_password_conf(request, pk):
 
     return render(request, 'FacturasNorte/base/reset_contrasena.html', {'usuario':usuario})
 
-<<<<<<< HEAD
-def crear_usuario(form, rol):
-
-    nuevo_usuario = User()
-    nuevo_usuario.username = form.cleaned_data['email_field'].split("@")[0]
-    nuevo_usuario.email = form.cleaned_data['email_field']
-    nuevo_usuario.is_active = True
-    nuevo_usuario.date_joined = timezone.now()
-
-    if rol == 'admin':
-        nuevo_usuario.is_staff = True
-        nuevo_usuario.is_superuser = True
-        password = form.cleaned_data['password_field']
-        permissions = []
-
-    elif rol == 'empleado':
-        nuevo_usuario.is_staff = True
-        nuevo_usuario.is_superuser = False
-        password = form.cleaned_data['password_field']
-        permissions = Permission.objects.filter(Q(codename='view_empleado')| Q(codename__endswith='cliente'))
-
-    elif rol == 'cliente':
-        nuevo_usuario.is_staff = False
-        nuevo_usuario.is_superuser = False
-        password = User.objects.make_random_password()
-        permissions = Permission.objects.filter(codename='view_cliente')
-
-    nuevo_usuario.set_password(password)
-    nuevo_usuario.save()
-    enviar_password(password)
-
-    for perm in permissions:
-        nuevo_usuario.user_permissions.add(perm)
-
-    nuevo_usuario.save()
-    return nuevo_usuario
-
-=======
->>>>>>> 1fc795a6fd2a3006b22d562ce8d59c3350ef8ae1
 class ContactView(FormView):
 
     template_name = 'FacturasNorte/contact.html'
@@ -521,30 +483,5 @@ def pdf_view(request):
 def reestablecer_password(request, pk):
     usuario = get_object_or_404(User, id=pk)
     reset_password(usuario)
-<<<<<<< HEAD
     return render(request, 'FacturasNorte/base/reset_contrasena_hecho.html', {})
 
-def reset_password(usuario):
-    password = User.objects.make_random_password()
-    usuario.set_password(password)
-    enviar_password_regenerada(usuario, password)
-    usuario.save()
-    return
-
-def search_redirect(baseUrl, queryField, queryText):
-    return redirect('/' + baseUrl + queryField + '=' + queryText)
-
-def search_person(model, searchField, searchQuery):
-    if searchField == 'nombre':
-        return model.objects.filter(nombre__icontains=searchQuery)
-    elif searchField == 'dni':
-        if model == Cliente:
-            return model.objects.filter(nroDoc__icontains=int(searchQuery))
-        else:
-            return model.objects.filter(dni__icontains=int(searchQuery))
-    else:
-        return model.objects.filter(email__icontains=searchQuery)
-
-
-
-    return render(request, 'FacturasNorte/base/reset_contrasena_hecho.html', {})
