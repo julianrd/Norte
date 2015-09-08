@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
+from FacturasNorte.models import Administrador, Empleado, Cliente
 
 __author__ = 'Julian'
 from django.contrib.auth.models import User
@@ -41,18 +42,13 @@ class IniciarSesionForm(forms.Form):
 def get_user(self):
         return get_object_or_404(User, email=self.cleaned_data['usuario'])
 
-class AdminRegisterForm(forms.Form):
-    nombre_field = forms.CharField(label='Nombre', widget=forms.TextInput(attrs={'class':'special', 'size':'20'}))
-    dni_field = forms.IntegerField(label='DNI', widget=forms.TextInput(attrs={'class': 'special', 'size':'20'}))
-    email_field = forms.EmailField(label='Email')
+class AdminForm(forms.ModelForm):
+    class Meta:
+        model = Administrador
+        fields = ['nombre', 'dni', 'email', 'domicilio', 'telefono']
+
     fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget())
-    domicilio_field = forms.CharField(label='Domicilio', max_length=254)
-    telefono_field = forms.CharField(label='Telefono', max_length=254)
-
-    password_field = forms.CharField(label='Contraseña' ,widget=forms.PasswordInput(), initial='')
-    password_again_field = forms.CharField(label='Repita su contraseña', widget=forms.PasswordInput(), initial='')
-
-
+    
     def clean_nombre_field(self):
         nombre = self.cleaned_data.get('nombre_field')
 
@@ -82,18 +78,17 @@ class AdminRegisterForm(forms.Form):
             raise forms.ValidationError("El telefono debe tener un formato valido, ej: 3624XXYYZZ")
         return telefono
 
-    def __init__(self, *args, **kwargs):
-        super(AdminRegisterForm, self).__init__(*args, **kwargs)
-        self.fields['password_field'].required = False
-        self.fields['password_again_field'].required = False
+
+class AdminRegisterForm(AdminForm):
+    confirmar_contrasena = forms.CharField(label = "Confirmar contraseña", widget=forms.PasswordInput(), initial='')
 
     def clean(self):
         cleaned_data = super(AdminRegisterForm, self).clean()
 
         try:
             if verificar_usuario(self.cleaned_data['email_field'].split("@")[0]):
-                password1 = self.cleaned_data.get('password_field')
-                password2 = self.cleaned_data.get('password_again_field')
+                password1 = self.cleaned_data.get('contrasena')
+                password2 = self.cleaned_data.get('confirmar_contrasena')
 
                 if password1 and password1 != password2:
                     raise forms.ValidationError("ContraseÃ±as no coinciden, vuelva a ingresar")
@@ -104,26 +99,22 @@ class AdminRegisterForm(forms.Form):
             pass
         return cleaned_data
 
-class EmpleadoRegisterForm(forms.Form):
-    nombre_field = forms.CharField(label='Nombre', widget=forms.TextInput(attrs={'class':'special', 'size':'20'}))
-    dni_field = forms.IntegerField(label='DNI', widget=forms.TextInput(attrs={'class': 'special', 'size':'20'}))
-    email_field = forms.EmailField(label='Email')
-    fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget(years=range(1900, datetime.date.today().year-16)))
-    domicilio_field = forms.CharField(label='Domicilio', max_length=254)
-    telefono_field = forms.CharField(label='Telefono', max_length=254)
-    password_field = forms.CharField(label='Contraseña', widget=forms.PasswordInput(), initial='')
-    password_again_field = forms.CharField(label='Repita contraseña', widget=forms.PasswordInput(), initial='')
+class EmpleadoForm(forms.ModelForm):
+    class Meta:
+        model = Empleado
+        fields = ['nombre', 'dni', 'email', 'domicilio', 'telefono']
 
+    fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget())
 
     def clean_nombre_field(self):
-        nombre = self.cleaned_data.get('nombre_field')
+        nombre = self.cleaned_data.get('nombre')
 
         if len(nombre) < 3:
             raise forms.ValidationError("el nombre debe contener mas caracteres")
         return nombre
 
     def clean_dni_field(self):
-        dni = self.cleaned_data.get('dni_field')
+        dni = self.cleaned_data.get('dni')
         if dni > 99999999:
             raise forms.ValidationError("Formato DNI invalido, ingrese nuevamente")
         elif dni < 2000000:
@@ -131,42 +122,38 @@ class EmpleadoRegisterForm(forms.Form):
         return dni
 
     def clean_domicilio_field(self):
-        domicilio = self.cleaned_data.get('domicilio_field')
+        domicilio = self.cleaned_data.get('domicilio')
 
         if len(domicilio) < 5:
             raise forms.ValidationError("el domicilio debe contener mas caracteres")
         return domicilio
 
     def clean_telefono_field(self):
-        telefono = self.cleaned_data.get('telefono_field')
+        telefono = self.cleaned_data.get('telefono')
 
         if len(telefono) > 14:
             raise forms.ValidationError("El telefono debe tener un formato valido, ej: 3624XXYYZZ")
         return telefono
 
 
-    def __init__(self, *args, **kwargs):
-        super(EmpleadoRegisterForm, self).__init__(*args, **kwargs)
-
-        self.fields['password_field'].required = False
-        self.fields['password_again_field'].required = False
+class EmpleadoRegisterForm(EmpleadoForm):
+    confirmar_contrasena = forms.CharField(label = "Confirmar contraseña", widget=forms.PasswordInput(), initial='')
 
     def clean(self):
         cleaned_data = super(EmpleadoRegisterForm, self).clean()
 
         try:
-            if verificar_usuario(self.cleaned_data['email_field'].split("@")[0]):
-                password1 = self.cleaned_data.get('password_field')
-                password2 = self.cleaned_data.get('password_again_field')
+            if verificar_usuario(self.cleaned_data['email'].split("@")[0]):
+                password1 = self.cleaned_data.get('contrasena')
+                password2 = self.cleaned_data.get('confirmar_contrasena')
 
                 if password1 and password1 != password2:
-                    raise forms.ValidationError("ContraseÃ±as no coinciden, vuelva a ingresar")
+                    raise forms.ValidationError("Contraseñas no coinciden, vuelva a ingresar")
             else:
                 raise forms.ValidationError(('El usuario ya existe'), code='usuario')
         except:
             pass
         return cleaned_data
-
 
 class ContactUsuarioAnonimoForm(forms.Form):
     email = forms.EmailField(
@@ -195,55 +182,56 @@ class ContactUsuarioLoginForm(forms.Form):
     )
 
 
-class ClienteRegisterForm(forms.Form):
-    nombre_field = forms.CharField(label='Nombre', widget=forms.TextInput(attrs={'class':'special', 'size':'20'}))
-    dni_field = forms.IntegerField(label='DNI', widget=forms.TextInput(attrs={'class': 'special', 'size':'20'}))
-    email_field = forms.EmailField(label='Email')
-    fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget(years=range(1900, datetime.date.today().year-16)))
-    domicilio_field = forms.CharField(label='Domicilio', max_length=254)
-    telefono_field = forms.CharField(label='Telefono', max_length=254)
+class ClienteForm(forms.ModelForm):
+    class Meta:
+        model = Cliente
+        fields = ['nombre', 'nroDoc', 'email', 'domicilio', 'telefono']
 
-    def clean_nombre_field(self):
-        nombre = self.cleaned_data.get('nombre_field')
+    fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget())
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
 
         if len(nombre) < 3:
             raise forms.ValidationError("el nombre debe contener mas caracteres")
         return nombre
 
-    def clean_dni_field(self):
-        dni = self.cleaned_data.get('dni_field')
+    def clean_nroDoc(self):
+        dni = int(self.cleaned_data.get('nroDoc'))
         if dni > 99999999:
             raise forms.ValidationError("Formato DNI invalido, ingrese nuevamente")
         elif dni < 2000000:
             raise forms.ValidationError("Formato DNI invalido, ingrese nuevamente")
         return dni
 
-    def clean_domicilio_field(self):
-        domicilio = self.cleaned_data.get('domicilio_field')
+    def clean_domicilio(self):
+        domicilio = self.cleaned_data.get('domicilio')
 
         if len(domicilio) < 5:
             raise forms.ValidationError("el domicilio debe contener mas caracteres")
         return domicilio
 
-    def clean_telefono_field(self):
-        telefono = self.cleaned_data.get('telefono_field')
+    def clean_telefono(self):
+        telefono = self.cleaned_data.get('telefono')
         if len(telefono) > 14 or len(telefono) <= 9:
             raise forms.ValidationError("El telefono debe tener un formato valido, ej: 3624XXYYZZ")
         return telefono
 
+class ClienteRegisterForm(ClienteForm):
+
     def clean(self):
         try:
             cleaned_data = super(ClienteRegisterForm, self).clean()
-            if not verificar_usuario(self.cleaned_data['email_field'].split("@")[0]):
+            if not verificar_usuario(self.cleaned_data['email'].split("@")[0]):
                 raise forms.ValidationError(('El usuario ya existe'), code='usuario')
         except KeyError:
             pass
         return cleaned_data
 
 class CambiarContrasenaForm(forms.Form):
-    contrasena_anterior = forms.CharField(label = "ContraseÃ±a Anterior", widget=forms.PasswordInput(), initial='')
-    contrasena_nueva = forms.CharField(label = "ContraseÃ±a Nueva", widget=forms.PasswordInput(), initial='')
-    confirmar_contrasena = forms.CharField(label = "Confirmar ContraseÃ±a",widget=forms.PasswordInput(), initial='')
+    contrasena_anterior = forms.CharField(label = "Contraseña anterior", widget=forms.PasswordInput(), initial='')
+    contrasena_nueva = forms.CharField(label = "Contraseña nueva", widget=forms.PasswordInput(), initial='')
+    confirmar_contrasena = forms.CharField(label = "Confirmar contraseña",widget=forms.PasswordInput(), initial='')
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
@@ -258,9 +246,9 @@ class CambiarContrasenaForm(forms.Form):
             password1 = self.cleaned_data.get('contrasena_nueva')
             password2 = self.cleaned_data.get('confirmar_contrasena')
             if password1 and password1 != password2:
-                raise forms.ValidationError("Las nuevas contraseÃ±as ingresadas no coinciden", code='match_passwords')
+                raise forms.ValidationError("Las nuevas contraseñas ingresadas no coinciden", code='match_passwords')
         else:
-            raise forms.ValidationError("La contraseÃ±a anterior ingresada es invalida", code='old_password')
+            raise forms.ValidationError("La contraseña anterior ingresada es invalida", code='old_password')
         return self.cleaned_data
 
 class RegenerarContrasenaForm(forms.Form):

@@ -1,14 +1,36 @@
 {% extends "FacturasNorte/base/base.html" %}
 {% load l10n %}
 {% block content %}
-<form action="" method="post">
-    {% csrf_token %}
-    <p>Nombre: {{ form.nombre }}</p>
-    <p>DNI: {{ form.dni }}</p>
-    <p>Email: {{ form.email }}</p>
-    <p>Fecha nacimiento: {{ form.fechaNacimiento }}</p>
-    <p>Domicilio: {{ form.domicilio }}</p>
-    <p>Telefono: {{ form.telefono }}</p>
-    <input type="submit" value="Guardar" />
+<form action="" class="register" method="post">
+
+            <fieldset class="row1">
+                <legend>Modificar Empleado
+                </legend>
+                    {% load l10n %}
+                    <form action="" method="post">
+                        {% csrf_token %}
+                             {{ form.non_field_errors }}
+                             {% for field in form %}
+
+
+                                  <div class="fieldWrapper">
+                                    <br> * {{ field.label }} <br>
+
+                                         {{ field.errors }}
+                                         {{ field }}
+
+
+                                  </div>
+
+                             {% endfor %}
+
+
+                              <p></p>
+                              <p></p>
+                         <div style="width: 170px; margin: 0 auto;">
+                            <input type="submit" value="Guardar"/>
+                         </div>
+                    </form>
+            </fieldset>
 </form>
 {% endblock %}

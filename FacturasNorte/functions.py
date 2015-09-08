@@ -17,7 +17,7 @@ from FacturasNorte.models import Cliente, Empleado, Administrador
 from Norte import settings
 
 def crear_perfil(form, model):
-    username = form.cleaned_data['email_field'].split("@")[0]
+    username = form.cleaned_data['email'].split("@")[0]
     #Nuevo Usuario
     nuevo_usuario = crear_usuario(form, model)
     #Nuevo_Perfil
@@ -26,13 +26,13 @@ def crear_perfil(form, model):
     if model == Administrador:
         nuevo_usuario.is_staff = True
         nuevo_usuario.is_superuser = True
-        password = form.cleaned_data['password_field']
+        password = form.cleaned_data['contrasena']
         permissions = []
 
     elif model == Empleado:
         nuevo_usuario.is_staff = True
         nuevo_usuario.is_superuser = False
-        password = form.cleaned_data['password_field']
+        password = form.cleaned_data['contrasena']
         permissions = settings.EMPLEADO_PERMISOS
 
     else:
@@ -62,22 +62,25 @@ def crear_perfil(form, model):
         raise ValidationError(('Campo invalido'), code='campos')
 
 def crear_usuario(form, model):
-    username = form.cleaned_data['email_field'].split("@")[0]
+    username = form.cleaned_data['email'].split("@")[0]
     nuevo_usuario = User()
     nuevo_usuario.username = username
-    nuevo_usuario.email = form.cleaned_data['email_field']
+    nuevo_usuario.email = form.cleaned_data['email']
     nuevo_usuario.is_active = True
     nuevo_usuario.date_joined = timezone.now()
     return nuevo_usuario
 
 def crear_persona(form, model):
     persona = model()
-    persona.set_dni(str(form.cleaned_data['dni_field']))
-    persona.set_nombre(form.cleaned_data['nombre_field'])
-    persona.set_email(form.cleaned_data['email_field'])
+    if model == Cliente:
+        persona.set_dni(str(form.cleaned_data['nroDoc']))
+    else:
+        persona.set_dni(str(form.cleaned_data['dni']))
+    persona.set_nombre(form.cleaned_data['nombre'])
+    persona.set_email(form.cleaned_data['email'])
     persona.set_fechaNacimiento(form.cleaned_data['fecha_nacimiento_field'])
-    persona.set_domicilio(form.cleaned_data['domicilio_field'])
-    persona.set_telefono(form.cleaned_data['telefono_field'])
+    persona.set_domicilio(form.cleaned_data['domicilio'])
+    persona.set_telefono(form.cleaned_data['telefono'])
     return persona
 
 def enviar_password(password):

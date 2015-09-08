@@ -34,7 +34,8 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib import messages
 
 from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
-    IniciarSesionForm, RegenerarContrasenaForm, FiltroPersonaForm, FiltroFacturaForm
+    IniciarSesionForm, RegenerarContrasenaForm, FiltroPersonaForm, FiltroFacturaForm, ClienteForm, \
+    EmpleadoForm, AdminForm
 
 from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
 
@@ -169,6 +170,7 @@ class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
 class AdminModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Administrador
+    form_class = AdminForm
     template_name = "FacturasNorte/admin/mod_admin.html"
     success_url = reverse_lazy('FacturasNorte:lista_admin')
     permission_required = 'FacturasNorte.update_admin'
@@ -235,6 +237,7 @@ class EmpCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
 class EmpModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Empleado
+    form_class = EmpleadoForm
     template_name = "FacturasNorte/admin/mod_emp.html"
     success_url = reverse_lazy('FacturasNorte:lista_empleado')
     permission_required = 'FacturasNorte.update_empleado'
@@ -331,6 +334,7 @@ def cambiar_password_conf(request):
 
 class ClienteModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Cliente
+    form_class = ClienteForm
     template_name = "FacturasNorte/empleado/mod_cliente.html"
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
     permission_required = 'FacturasNorte.update_cliente'
