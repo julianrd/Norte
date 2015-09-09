@@ -30,14 +30,14 @@ from . import models
 
 #Importaciones para conficuracion de contacto
 
-from django.core.urlresolvers import reverse_lazy, reverse
+from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 
 from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
     IniciarSesionForm, RegenerarContrasenaForm, FiltroPersonaForm, FiltroFacturaForm, ClienteForm, \
-    EmpleadoForm, AdminForm
+    EmpleadoForm, AdminForm, ClienteUpdateForm
 
-from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm, ClienteRegisterForm
+from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm
 
 from FacturasNorte.models import Administrador, Empleado, Cliente
 from FacturasNorte.models import User
@@ -72,7 +72,6 @@ def base(request):
 @login_required
 def index(request):
     return render(request, 'FacturasNorte/base/index.html')
-
 
 class LoginView(FormView):
     form_class = IniciarSesionForm
@@ -162,11 +161,8 @@ class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     permission_required = 'FacturasNorte.add_admin'
 
     def form_valid(self, form):
-        try:
-            crear_perfil(form, Administrador)
-            return super(AdminCreateView, self).form_valid(form)
-        except ValidationError:
-            return render(self.request, 'FacturasNorte/admin/add_admin_error.html')
+        crear_perfil(form, Administrador)
+        return super(AdminCreateView, self).form_valid(form)
 
 class AdminModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Administrador
@@ -229,11 +225,8 @@ class EmpCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     permission_required = 'FacturasNorte.add_empleado'
 
     def form_valid(self, form):
-        try:
-            crear_perfil(form, Empleado)
-            return super(EmpCreateView, self).form_valid(form)
-        except ValidationError:
-            return render(self.request, 'FacturasNorte/admin/add_empleado_error.html')
+        crear_perfil(form, Empleado)
+        return super(EmpCreateView, self).form_valid(form)
 
 class EmpModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Empleado
@@ -288,18 +281,15 @@ class ClientePerfilView(LoginRequiredMixin, PermissionRequiredMixin, CustomClien
 
 class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/empleado/add_cliente.html"
-    form_class = ClienteRegisterForm
+    form_class = ClienteForm
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
     permission_required = 'FacturasNorte.agregar_cliente'
 
     def form_valid(self, form):
-        if form.non_field_errors():
-            return reverse('FacturasNorte:nuevo_cliente')
-        try:
-            crear_perfil(form, Cliente)
-            return super(ClienteCreateView, self).form_valid(form)
-        except ValidationError:
-            return render(self.request, 'FacturasNorte/empleado/add_cliente_error.html')
+        # if form.non_field_errors():
+        #     return reverse('FacturasNorte:nuevo_cliente')
+        crear_perfil(form, Cliente)
+        return super(ClienteCreateView, self).form_valid(form)
 
 class CambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/base/cambiar_contrasena.html"
@@ -334,7 +324,7 @@ def cambiar_password_conf(request):
 
 class ClienteModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Cliente
-    form_class = ClienteForm
+    form_class = ClienteUpdateForm
     template_name = "FacturasNorte/empleado/mod_cliente.html"
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
     permission_required = 'FacturasNorte.update_cliente'

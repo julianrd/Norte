@@ -29,7 +29,7 @@
 </table>
 
     <div id="links">
-        <form action="{% url 'FacturasNorte:facturas_cliente' cliente.numero %}">
+        <form action="{% url 'FacturasNorte:facturas_cliente' cliente.nroUsuario.id %}">
             <input type="submit" value="Ver Facturas">
         </form>
         <form action="{% url 'FacturasNorte:modif_cliente' cliente.numero %}">

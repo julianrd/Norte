@@ -108,16 +108,18 @@ def enviar_password_regenerada(usuario, password):
     connection.close()
 
 def send_email_contact(email, subject, body):
+    subject = subject.encode("utf-8")
+    body = body.encode("utf-8")
     body = '{} ha enviado un email de contacto\n\n{}\n\n{}'.format(email, subject, body)
     send_mail(
         subject = 'Nuevo email de contacto',
         message = body,
         from_email = 'julian.rd7@gmail.com',
         recipient_list =['julian_rd7@hotmail.com'],
-            )
+        )
 
 def buscar_pdfs(pk, field=None, query=None):
-     cliente = get_object_or_404(Cliente, numero=pk)
+     cliente = get_object_or_404(Cliente, nroUsuario=pk)
      storageManager = FileSystemStorage()
      archivos = storageManager.listdir(settings.MEDIA_ROOT)[1]
      facturas = []

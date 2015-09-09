@@ -47,8 +47,9 @@ class AdminForm(forms.ModelForm):
         model = Administrador
         fields = ['nombre', 'dni', 'email', 'domicilio', 'telefono']
 
-    fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget())
-    
+    fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget(years=range(1930, datetime.date.today().year+1)))
+    contrasena = forms.CharField(label = "Contraseña", widget=forms.PasswordInput(), initial='')
+
     def clean_nombre_field(self):
         nombre = self.cleaned_data.get('nombre_field')
 
@@ -104,7 +105,8 @@ class EmpleadoForm(forms.ModelForm):
         model = Empleado
         fields = ['nombre', 'dni', 'email', 'domicilio', 'telefono']
 
-    fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget())
+    fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget(years=range(1930, datetime.date.today().year+1)))
+    contrasena = forms.CharField(label = "Contraseña", widget=forms.PasswordInput(), initial='')
 
     def clean_nombre_field(self):
         nombre = self.cleaned_data.get('nombre')
@@ -171,7 +173,6 @@ class ContactUsuarioAnonimoForm(forms.Form):
 
 
 class ContactUsuarioLoginForm(forms.Form):
-
     subject = forms.CharField(
         label='Asunto',
         widget=forms.TextInput(attrs={'class': 'form-control'})
@@ -187,7 +188,7 @@ class ClienteForm(forms.ModelForm):
         model = Cliente
         fields = ['nombre', 'nroDoc', 'email', 'domicilio', 'telefono']
 
-    fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget())
+    fecha_nacimiento_field = forms.DateField(label='Fecha de Nacimiento', widget=SelectDateWidget(years=range(1930, datetime.date.today().year+1)))
 
     def clean_nombre(self):
         nombre = self.cleaned_data.get('nombre')
@@ -217,11 +218,12 @@ class ClienteForm(forms.ModelForm):
             raise forms.ValidationError("El telefono debe tener un formato valido, ej: 3624XXYYZZ")
         return telefono
 
-class ClienteRegisterForm(ClienteForm):
+class ClienteUpdateForm(ClienteForm):
+    contrasena = forms.CharField(label = "Contraseña", widget=forms.PasswordInput(), initial='')
 
     def clean(self):
         try:
-            cleaned_data = super(ClienteRegisterForm, self).clean()
+            cleaned_data = super(ClienteUpdateForm, self).clean()
             if not verificar_usuario(self.cleaned_data['email'].split("@")[0]):
                 raise forms.ValidationError(('El usuario ya existe'), code='usuario')
         except KeyError:

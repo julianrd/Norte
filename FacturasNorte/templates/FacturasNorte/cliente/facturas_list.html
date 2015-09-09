@@ -1,52 +1,54 @@
 {% extends "FacturasNorte/base/base.html" %}
 {% load l10n %}
+{% load staticfiles %}
 {% block content %}
 
-{%  if user.id == cliente.nroUsuario.id %}
+    {%  if user.id == cliente.nroUsuario.id or user.is_superuser %}
 
-    <h1>Sus facturas</h1>
+        <h1>Sus facturas</h1>
 
-    <div id="searchbar">
-        <form action="" id="filter" method="post">
-        {% csrf_token %}
+        <div id="searchbar">
+            <form action="" id="filter" method="post">
+            {% csrf_token %}
 
-            <div class="fieldWrapper">
+                <div class="fieldWrapper">
 
-                <p> {{ form.pedido.label_tag }} {{ form.pedido }} {{ form.fecha.label_tag }} {{ form.fecha }}  {{ form.tipo.label_tag }} {{ form.tipo }}</p>
+                    <p> {{ form.pedido.label_tag }} {{ form.pedido }} {{ form.fecha.label_tag }} {{ form.fecha }}  {{ form.tipo.label_tag }} {{ form.tipo }}</p>
 
-            </div>
-            <button id="boton" type="submit", style = margin:-4px;padding:2px;border-right-width:3px;> Filtrar  </button>
+                </div>
+                <button id="boton" type="submit", style = margin:-4px;padding:2px;border-right-width:3px;> Filtrar  </button>
 
-        </form>
-    </div>
+            </form>
+        </div>
 
-    <br/>
-    <br/>
+        <br/>
+        <br/>
 
-    {% if not lista_facturas %}
-        <h3> No se han encontrado resultados.</h3>
-    {% else %}
+        {% if not lista_facturas %}
+            <h3> No se han encontrado resultados.</h3>
+        {% else %}
 
- <table style="width:100%">
+     <table style="width:100%">
 
-  <tr>
-    <th>Nro Pedido</th>
-    <th>Fecha</th>
-    </tr>
-     {% for fac in lista_facturas %}
-
-        <tr>
-            <td><a href={% url 'FacturasNorte:media' fac.ruta %}>{{ fac.nroPedido }}</a></td>
-            <td><a href={% url 'FacturasNorte:media' fac.ruta %}>{{ fac.fecha }}</a></td>
+      <tr>
+        <th>Nro Pedido</th>
+        <th>Fecha</th>
+        <th>Detalle</th>
         </tr>
+         {% for fac in lista_facturas %}
 
-     {% endfor %}
-  {% endif %}
-</table>
+            <tr>
+                <td><a href={% url 'FacturasNorte:media' fac.ruta %}>{{ fac.nroPedido }}</a></td>
+                <td><a href={% url 'FacturasNorte:media' fac.ruta %}>{{ fac.fecha }}</a></td>
+                <td><a href={% url 'FacturasNorte:media' fac.ruta %}> <img src="{% static "FacturasNorte/img/view.png" %}" width="12", alt="Editar"/> Ver</a></td></td>
+            </tr>
 
-{% else %}
-    <p>No tiene permiso para visualizar los datos de esta persona.</p>
-{% endif %}
+         {% endfor %}
+      {% endif %}
+    </table>
 
+    {% else %}
+        <p>No tiene permiso para visualizar los datos de esta persona.</p>
+    {% endif %}
 
 {% endblock %}

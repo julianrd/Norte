@@ -2,11 +2,9 @@
 {% load l10n %}
     {% block title %}Gracias por Contactarnos{% endblock title %}
     {% block content %}
-        {% load staticfiles %}
-             <link rel="stylesheet" href="{% static "FacturasNorte/css/../../static/FacturasNorte/img/index_style.css" %}">
-        <form>
+         <form>
       <h1>Se ha enviado su mail</h1>
 
-          <h1><p>volver a: <a href="/FacturasNorte/index">Pagina Principal</a></p></h1>
+          <p><p>volver a: <a href="{% url "FacturasNorte:index" %}">Pagina Principal</a></p></p>
         </form>
     {% endblock content %}

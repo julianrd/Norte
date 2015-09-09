@@ -23,12 +23,12 @@
                 {% block welcome-msg %}
                     <p>Bienvenido, <strong>{% firstof user.get_short_name user.get_username %}</strong>.
                 {% endblock %}
-                <a href="{% url 'FacturasNorte:logout' %}">Cerrar sesion</a></p>
+                <a href="{% url 'FacturasNorte:logout' %}">Cerrar sesi&oacute;n</a></p>
             </div>
             {% else %}
                 <div id="user-tools">
                     <p>Bienvenido.
-                <a href="{% url 'FacturasNorte:login' %}">Inicie sesion</a></p>
+                <a href="{% url 'FacturasNorte:login' %}">Inicie sesi&oacute;n</a></p>
             </div>
 
             {% endif %}
@@ -36,7 +36,7 @@
             <div id="logo">
                 <div id="logo_text">
                     <!-- class="logo_colour", allows you to change the colour of the text -->
-                    <h1><a href="{% url 'FacturasNorte:index' %}">Sistema De Facturación <span class="logo_colour">Norte</span></a></h1>
+                    <h1><a href="{% url 'FacturasNorte:index' %}">Sistema De Facturaci&oacute;n <span class="logo_colour">Norte</span></a></h1>
                     <h2>Sistema de Facturación Electronica de Clientes</h2>
                 </div>
             </div>

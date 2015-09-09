@@ -15,8 +15,8 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^superadmin/', include(admin.site.urls)),
-    url(r'^$', views.index, name = 'index'),
     url(r'^base/$', views.base, name = 'index'),
+    url(r'^$', views.index, name = 'index'),
 
     url(r'^login/$', views.LoginView.as_view(), name='login'),
     url(r'^logout/$', views.logout_view, name='logout'),

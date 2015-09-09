@@ -3,36 +3,6 @@
 
 {% extends "FacturasNorte/base/base.html" %}
 {% block content %}
-{% load staticfiles %}
-<link rel="stylesheet" href="{% static "FacturasNorte/css/../../../static/FacturasNorte/img/../../../static/FacturasNorte/css/index_style.css" %}">
-
-
-   <form>
-    {% if user.username != '' %}
-
-        {% if user.is_superuser %}
-            <!--Admin-->
-            <h2>Perfil Administrador</h2>
-        {% else %}
-
-            {% if user.is_staff %}
-                <!--Empleado-->
-                <h2>Perfil Empleado</h2>
-            {% endif %}
-        {% endif %}
-
-        {% if not user.is_staff %}
-            <h6>Perfil Cliente</h6>
-            </form>
-
-            <body>
-
-
-            </body>
-
-        {% endif %}
-
-    {% endif %}
-
+    <h1>Sitio en construcci&oacute;n, disculpe las molestias.</h1>
 {% endblock %}
 

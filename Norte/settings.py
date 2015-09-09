@@ -159,7 +159,7 @@ EMPLEADO_PERMISOS = [('cambiar_cont', 'Puede cambiar su contrasena'), ('view_fac
                        ('view_lista_cliente', 'Puede ver la lista de clientes'),
                        ('view_detalle_cliente', 'Puede ver detalle cliente'), ('update_cliente', 'Puede modificar cliente'),
                        ('agregar_cliente', 'Puede agregar cliente'), ('del_cliente', 'Puede eliminar cliente'),
-                       ('view_perfil_empleado', 'Puede ver su perfil de empleado')
+                       ('view_perfil_empleado', 'Puede ver su perfil de empleado'), ('view_facturas', 'Puede ver sus facturas')
                        ]
 
 
