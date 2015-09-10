@@ -35,11 +35,11 @@ from django.contrib import messages
 
 from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
     IniciarSesionForm, RegenerarContrasenaForm, FiltroPersonaForm, FiltroFacturaForm, ClienteForm, \
-    EmpleadoForm, AdminForm, ClienteUpdateForm
+    EmpleadoForm, ClienteUpdateForm
 
-from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm
+from FacturasNorte.forms import  EmpleadoRegisterForm
 
-from FacturasNorte.models import Administrador, Empleado, Cliente
+from FacturasNorte.models import Empleado, Cliente
 from FacturasNorte.models import User
 
 #Pruebas de Usuario
@@ -150,30 +150,30 @@ def ThankYou (request):
 
 class AdminPerfilView(LoginRequiredMixin, PermissionRequiredMixin, CustomAdminDetailView):
     template_name = "FacturasNorte/admin/perfil_admin.html"
-    model = Administrador
+    model = Empleado
     context_object_name = 'admin'
     permission_required = 'FacturasNorte.view_admin'
 
 class AdminCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/admin/add_admin.html"
-    form_class = AdminRegisterForm
+    form_class = EmpleadoRegisterForm
     success_url = reverse_lazy('FacturasNorte:lista_admin')
     permission_required = 'FacturasNorte.add_admin'
 
     def form_valid(self, form):
-        crear_perfil(form, Administrador)
+        crear_perfil(form, 'admin')
         return super(AdminCreateView, self).form_valid(form)
 
 class AdminModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
-    model = Administrador
-    form_class = AdminForm
+    model = Empleado
+    form_class = EmpleadoForm
     template_name = "FacturasNorte/admin/mod_admin.html"
     success_url = reverse_lazy('FacturasNorte:lista_admin')
     permission_required = 'FacturasNorte.update_admin'
 
 
 class AdminDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
-    model = Administrador
+    model = Empleado
     template_name = "FacturasNorte/admin/del_admin.html"
     success_url = reverse_lazy('FacturasNorte:lista_admin')
     context_object_name = 'admin'
@@ -182,7 +182,7 @@ class AdminDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
 
 class AdminListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     template_name = "FacturasNorte/admin/admin_list.html"
-    model = Administrador
+    model = Empleado
     context_object_name = 'admin_list'
     permission_required = 'FacturasNorte.view_admin'
 
@@ -196,15 +196,18 @@ class AdminListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
 
     def get_queryset(self):
         try:
-            return search_person(Administrador, self.kwargs['tipo'], self.kwargs['query'])
+            return search_person(Empleado, self.kwargs['tipo'], self.kwargs['query'])
         except KeyError:
-            return Administrador.objects.all()
+            return Empleado.objects.filter(admin=True)
 
 class AdminDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/admin/admin_detail.html"
-    model = Administrador
+    model = Empleado
     context_object_name = 'admin'
     permission_required = 'FacturasNorte.view_admin'
+
+    def get_queryset(self):
+       return Empleado.objects.filter(admin=True)
 
     def get_context_data(self, **kwargs):
         context = super(AdminDetailView, self).get_context_data(**kwargs)
@@ -225,7 +228,7 @@ class EmpCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     permission_required = 'FacturasNorte.add_empleado'
 
     def form_valid(self, form):
-        crear_perfil(form, Empleado)
+        crear_perfil(form, 'empleado')
         return super(EmpCreateView, self).form_valid(form)
 
 class EmpModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -288,7 +291,7 @@ class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     def form_valid(self, form):
         # if form.non_field_errors():
         #     return reverse('FacturasNorte:nuevo_cliente')
-        crear_perfil(form, Cliente)
+        crear_perfil(form, 'cliente')
         return super(ClienteCreateView, self).form_valid(form)
 
 class CambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
@@ -424,10 +427,7 @@ def reset_password_conf(request, pk):
     try:
         usuario = get_object_or_404(Cliente, numero=pk).nroUsuario
     except ObjectDoesNotExist:
-        try:
-            usuario = get_object_or_404(Empleado, id=pk).nroUsuario
-        except ObjectDoesNotExist:
-            usuario = get_object_or_404(Administrador, id=pk).nroUsuario
+        usuario = get_object_or_404(Empleado, id=pk).nroUsuario
 
     return render(request, 'FacturasNorte/base/reset_contrasena.html', {'usuario':usuario})
 

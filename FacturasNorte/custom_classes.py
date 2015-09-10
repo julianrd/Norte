@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.http import Http404
 
 from django.views.generic.detail import DetailView
-from FacturasNorte.models import Administrador, Empleado, Cliente
+from FacturasNorte.models import Empleado, Cliente
 
 __author__ = 'Julian'
 
@@ -22,7 +22,7 @@ class CustomAdminDetailView(DetailView):
         # Use a custom queryset if provided; this is required for subclasses
         # like DateDetailView
         if queryset is None:
-            queryset = Administrador.objects
+            queryset = Empleado.objects.filter(admin=True)
 
         # Next, try looking up by primary key.
         pk = self.kwargs.get(self.pk_url_kwarg)

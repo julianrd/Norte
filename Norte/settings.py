@@ -60,10 +60,17 @@ WSGI_APPLICATION = 'Norte.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'sqlserver_ado',
-        'NAME': 'FacturasNorte',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'facturasnorte',
+        'USER': 'dacs2015',
+        'PASSWORD': 'dacs2015',#'dni36017874',
+    },
 
-        'HOST': 'PABLOHP',#'JORGIED',
+    'clientes_legados': {
+        'ENGINE': 'sqlserver_ado',
+        'NAME': 'DB_EditorialChacoGestion',
+
+        'HOST': '10.0.4.162',#'JORGIED',
         'USER': 'sa',
         'PASSWORD': 'Norte1234',#'dni36017874',
 

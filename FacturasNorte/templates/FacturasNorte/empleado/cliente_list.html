@@ -19,7 +19,7 @@
     <div id="nuevo">
 
         <p><a href={% url 'FacturasNorte:nuevo_cliente' %}>
-             <img src="{% static "FacturasNorte/img/add.gif" %}" width="12", alt="Nuevo"/> Nuevo Cliente </td></a></p>
+             <img src="{% static "FacturasNorte/img/add.gif" %}" width="12", alt="Nuevo"/> Nuevo Cliente</a></p>
     </div>
 <br/>
 <br/>
@@ -40,15 +40,15 @@
      {% for cliente in cliente_list %}
 
         <tr>
-            <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.numero %}>{{ cliente.nroDoc }}</a></td>
-            <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.numero %}>{{ cliente.nombre }}</a></td>
-            <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.numero %}>{{ cliente.email }}</a></td>
+            <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.id %}>{{ cliente.dni }}</a></td>
+            <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.id %}>{{ cliente.nombre }}</a></td>
+            <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.id %}>{{ cliente.email }}</a></td>
 
-            <td><a href={% url 'FacturasNorte:modif_cliente' cliente.numero %}>
+            <td><a href={% url 'FacturasNorte:modif_cliente' cliente.id %}>
 
                 <img src="{% static "FacturasNorte/img/edit.gif" %}" width="12", alt="Editar"/> Editar</a></td>
 
-            <td><a href={% url 'FacturasNorte:elim_cliente' cliente.numero %}>
+            <td><a href={% url 'FacturasNorte:elim_cliente' cliente.id %}>
                 <img src="{% static "FacturasNorte/img/delete.gif" %}" width="12", alt="Borrar"/> Borrar</a></td>
         </tr>
 
