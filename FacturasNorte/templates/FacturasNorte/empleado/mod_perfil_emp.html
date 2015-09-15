@@ -1,0 +1,42 @@
+{% extends "FacturasNorte/base/base.html" %}
+{% load l10n %}
+{% block content %}
+
+{%  if user.id == empleado.nroUsuario.id %}
+<form action="" class="register" method="post">
+
+            <fieldset class="row1">
+                <legend>Modificar Empleado
+                </legend>
+                    {% load l10n %}
+                    <form action="" method="post">
+                        {% csrf_token %}
+                             {{ form.non_field_errors }}
+                             {% for field in form %}
+
+
+                                  <div class="fieldWrapper">
+                                    <br> * {{ field.label }} <br>
+
+                                         {{ field.errors }}
+                                         {{ field }}
+
+
+                                  </div>
+
+                             {% endfor %}
+
+
+                              <p></p>
+                              <p></p>
+                         <div style="width: 170px; margin: 0 auto;">
+                            <input type="submit" value="Guardar"/>
+                         </div>
+                    </form>
+            </fieldset>
+</form>
+
+{% else %}
+    <p>No tiene permiso para visualizar los datos de esta persona.</p>
+{% endif %}
+{% endblock %}

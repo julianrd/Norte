@@ -48,8 +48,8 @@ class EmpleadoForm(PersonaForm):
         model = Empleado
         fields = ['nombre', 'dni', 'email', 'fechaNacimiento', 'domicilio', 'telefono']
 
-
 class EmpleadoRegisterForm(EmpleadoForm):
+    contrasena = forms.CharField(label = "Contraseña", widget=forms.PasswordInput(), initial='')
     confirmar_contrasena = forms.CharField(label = "Confirmar contraseña", widget=forms.PasswordInput(), initial='')
 
     def clean(self):
@@ -125,10 +125,10 @@ class CambiarContrasenaForm(forms.Form):
         self.user = user
         return
 
-    def clean_confirmar_contrasena(self):
+    def clean(self):
+        password2 = self.cleaned_data.get('confirmar_contrasena')
         if self.user.check_password(self.cleaned_data.get('contrasena_anterior')):
             password1 = self.cleaned_data.get('contrasena_nueva')
-            password2 = self.cleaned_data.get('confirmar_contrasena')
             if password1 and password1 != password2:
                 raise forms.ValidationError("Las nuevas contraseñas ingresadas no coinciden", code='match_passwords')
         else:

@@ -57,15 +57,20 @@ urlpatterns = patterns('',
     url(r'^staff/empleados/$', views.EmpListView.as_view(), name = 'lista_empleado'),
     url(r'^staff/del_empleado/(?P<pk>\d+)/$', views.EmpDeleteView.as_view(), name = 'elim_empleado'),
     url(r'^staff/mod_empleado/(?P<pk>\d+)/$', views.EmpModifView.as_view(), name = 'modif_empleado'),
+    url(r'^staff/mod_perfil/(?P<pk>\d+)/$', views.EmpModifPerfilView.as_view(), name = 'modif_perfil'),
+    url(r'^staff/facturas/(?P<pk>\d+)/$', views.EmpleadoListaFacturasView.as_view(), name = 'facturas_cliente_empleado'),
 
     url(r'^cliente/perfil/(?P<pk>\d+)/$', views.ClientePerfilView.as_view(), name = 'perfil_cliente'),
     url(r'^cliente/factura/$', views.pdf_view, name = 'factura'),
     url(r'^cliente/facturas/(?P<pk>\d+)/$', views.ClienteFacturasView.as_view(), name = 'facturas_cliente'),
 
+
     url(r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name = 'media'),
 
     url('^cliente/facturas/(?P<pk>\d+)/(?P<tipo>.+)=(?P<query>.+)/$', views.ClienteFacturasView.as_view(), name = 'facturas_search'),
     url('^cliente/facturas/(?P<pk>\d+)/(?P<tipo>.+)=/$', views.ClienteFacturasView.as_view(), name = 'facturas_search'),
+    url('^staff/facturas/(?P<pk>\d+)/(?P<tipo>.+)=(?P<query>.+)/$', views.EmpleadoListaFacturasView.as_view(), name = 'facturas_search'),
+    url('^staff/facturas/(?P<pk>\d+)/(?P<tipo>.+)=/$', views.EmpleadoListaFacturasView.as_view(), name = 'facturas_search'),
     url('^staff/clientes/(?P<tipo>.+)=(?P<query>.+)/$', views.ClienteListView.as_view(), name = 'clientes_search'),
     url('^staff/clientes/(?P<tipo>.+)=/$', views.ClienteListView.as_view(), name = 'clientes_search'),
     url('^admin/empleados/(?P<tipo>.+)=(?P<query>.+)/$', views.EmpListView.as_view(), name = 'empleados_search'),

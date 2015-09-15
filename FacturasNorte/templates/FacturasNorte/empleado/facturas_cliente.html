@@ -1,0 +1,46 @@
+{% extends "FacturasNorte/base/base.html" %}
+{% load l10n %}
+{% load staticfiles %}
+{% block content %}
+        <h1>Facturas de {{ cliente.nombre }} </h1>
+
+        <div id="searchbar">
+            <form action="" id="filter" method="post">
+            {% csrf_token %}
+
+                <div class="fieldWrapper">
+
+                    <p> {{ form.pedido.label_tag }} {{ form.pedido }} {{ form.fecha.label_tag }} {{ form.fecha }}  {{ form.tipo.label_tag }} {{ form.tipo }}</p>
+
+                </div>
+                <button id="boton" type="submit", style = margin:-4px;padding:2px;border-right-width:3px;> Filtrar  </button>
+
+            </form>
+        </div>
+
+        <br/>
+        <br/>
+
+        {% if not lista_facturas %}
+            <h3> No se han encontrado resultados.</h3>
+        {% else %}
+
+     <table style="width:100%">
+
+      <tr>
+        <th>Nro Pedido</th>
+        <th>Fecha</th>
+        <th>Detalle</th>
+        </tr>
+         {% for fac in lista_facturas %}
+
+            <tr>
+                <td><a href={% url 'FacturasNorte:media' fac.ruta %}>{{ fac.nroPedido }}</a></td>
+                <td><a href={% url 'FacturasNorte:media' fac.ruta %}>{{ fac.fecha }}</a></td>
+                <td><a href={% url 'FacturasNorte:media' fac.ruta %}> <img src="{% static "FacturasNorte/img/view.png" %}" width="12", alt="Editar"/> Ver</a></td></td>
+            </tr>
+
+         {% endfor %}
+      {% endif %}
+    </table>
+{% endblock %}

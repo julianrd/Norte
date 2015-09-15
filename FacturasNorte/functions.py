@@ -113,7 +113,7 @@ def send_email_contact(email, subject, body):
     body = body.encode("utf-8")
     body = '{} ha enviado un email de contacto\n\n{}\n\n{}'.format(email, subject, body)
     send_mail(
-        subject = 'Nuevo email de contacto',
+        subject = subject,
         message = body,
         from_email = 'julian.rd7@gmail.com',
         recipient_list =['julian_rd7@hotmail.com'],

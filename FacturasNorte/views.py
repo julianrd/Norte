@@ -236,7 +236,14 @@ class EmpModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     form_class = EmpleadoForm
     template_name = "FacturasNorte/admin/mod_emp.html"
     success_url = reverse_lazy('FacturasNorte:lista_empleado')
-    permission_required = 'FacturasNorte.update_empleado'
+    permission_required = 'FacturasNorte.view_perfil_empleado'
+
+class EmpModifPerfilView(EmpModifView):
+    template_name = 'FacturasNorte/empleado/mod_perfil_emp.html'
+
+    def form_valid(self, form):
+        self.success_url = reverse_lazy('FacturasNorte:perfil_empleado',kwargs={'pk' : self.request.user.id})
+        return super(EmpModifPerfilView, self).form_valid(form)
 
 class EmpDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Empleado
@@ -317,13 +324,14 @@ class CambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, FormVie
             if form.cleaned_data['contrasena_nueva'] == form.cleaned_data['confirmar_contrasena']:
                 usuario.set_password(form.cleaned_data['contrasena_nueva'])
                 usuario.save()
-                return super(CambiarContrasenaView, self).form_valid(form)
+            else:
+                raise forms.ValidationError(u"Las contraseñas ingresadas no coinciden", code='no_match')
         else:
-            raise forms.ValidationError("La contrasena anterior ingresada es invalida", code='old_password')
+            raise forms.ValidationError(u"La contraseña anterior ingresada es invalida", code='old_password')
+        return super(CambiarContrasenaView, self).form_valid(form)
 
 def cambiar_password_conf(request):
     return render(request, 'FacturasNorte/base/cambiar_contrasena_hecho.html', {})
-
 
 class ClienteModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Cliente
@@ -365,7 +373,7 @@ class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
     template_name = "FacturasNorte/empleado/cliente_detail.html"
     model = Cliente
     context_object_name = 'cliente'
-    permission_required = 'FacturasNorte.view_cliente'
+    permission_required = 'FacturasNorte.view_detalle_cliente'
 
     def get_context_data(self, **kwargs):
         context = super(ClienteDetailView, self).get_context_data(**kwargs)
@@ -396,6 +404,35 @@ class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomCli
 
     def get_context_data(self, **kwargs):
         context = super(ClienteFacturasView, self).get_context_data(**kwargs)
+        context['form'] = self.get_form(FiltroFacturaForm)
+        try:
+            context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg),
+                                                    self.kwargs['tipo'],
+                                                    self.kwargs['query'])
+        except KeyError:
+            context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg))
+        return context
+
+class EmpleadoListaFacturasView(ClienteFacturasView):
+    template_name = "FacturasNorte/empleado/facturas_cliente.html"
+    permission_required = 'FacturasNorte.view_facturas'
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form(FiltroFacturaForm)
+        URL = 'FacturasNorte/staff/facturas/' + self.kwargs.get(self.pk_url_kwarg) + '/'
+        if form.is_valid():
+            if (form.cleaned_data['tipo'] == 'fecha'):
+                fecha = form.cleaned_data['fecha'].strftime("%Y-%m-%d")
+                return search_redirect(URL, form.cleaned_data['tipo'], fecha)
+            elif (form.cleaned_data['tipo'] == 'pedido'):
+                return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['pedido'])
+            else:
+                return redirect(URL)
+        else:
+            return redirect('/' + URL)
+
+    def get_context_data(self, **kwargs):
+        context = super(EmpleadoListaFacturasView, self).get_context_data(**kwargs)
         context['form'] = self.get_form(FiltroFacturaForm)
         try:
             context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg),
