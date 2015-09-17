@@ -16,13 +16,15 @@
   <div>
       <div>{{ form.email.errors }}</div>
       <div>{{ form.password.errors }}</div>
-      {% if form.captcha.errors %}
-        <div><ul class="errorlist"><li>Captcha no verificado.</li></ul></div>
-      {% endif %}
+
   </div>
   <div id="form-group">
     <div id="label">{{ form.email.label_tag }}</div>
     <div id="field">{{ form.email }}</div>
+      {% if form.captcha.errors %}
+        <div><ul class="errorlist"><li>Captcha no verificado.</li></ul></div>
+
+      {% endif %}
 
   </div>
   <div id="form-group">
@@ -30,10 +32,14 @@
     <div id="field">{{ form.password }}</div>
   </div>
   <div id="form-group">
-        <div id="field">{{ form.captcha }}</div>
+      {% if form.password.errors or form.email.error %}
+           <div id="field">{{ form.captcha }}</div>
+               <div class="g-recaptcha" data-sitekey="6Ld8HgwTAAAAAO8EB6lFkjWgHd6DYUoKL2u3R6Y4"> </div>
+      {% endif %}
+
   </div>
 
-<div class="g-recaptcha" data-sitekey="6Ld8HgwTAAAAAO8EB6lFkjWgHd6DYUoKL2u3R6Y4"> </div>
+
 <input type="submit" value="Iniciar Sesion" />
 
 <input type="hidden" name="next" value="{{ next }}" />

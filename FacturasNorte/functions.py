@@ -13,8 +13,15 @@ from django.core.mail import EmailMessage, send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from FacturasNorte.custom_classes import Factura
-from FacturasNorte.models import Cliente, Empleado, Administrador
+from FacturasNorte.models import Cliente, Empleado, Administrador, Historiales
 from Norte import settings
+from django import forms
+
+from django.http import HttpRequest
+from django.contrib.auth.models import User
+from ipware.ip import get_ip
+
+
 
 def crear_perfil(form, model):
     username = form.cleaned_data['email'].split("@")[0]
@@ -173,4 +180,43 @@ def verificar_usuario(username):
         return False
     except ObjectDoesNotExist:
         return True
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+def crear_historial_correcto(user, request):
+
+  nuevo_historial = Historiales()
+  nuevo_historial.fecha = timezone.now()
+  nuevo_historial.ip = get_client_ip(request)
+  nuevo_historial.autenticado = 'Correcto'
+  nuevo_historial.nroUsuario = user.id
+  nuevo_historial.nombre = user.username
+
+  if user.is_superuser:
+      nuevo_historial.perfil = 'Admin'
+  elif user.is_staff:
+      nuevo_historial.perfil = 'Empleado'
+  else:
+      nuevo_historial.perfil = 'Cliente'
+
+  nuevo_historial.save()
+
+def crear_historial_incorrecto(request, form):
+
+
+   nuevo_historial = Historiales()
+   nuevo_historial.fecha = timezone.now()
+   nuevo_historial.ip = get_client_ip(request)
+   nuevo_historial.autenticado='Incorrecto'
+   nuevo_historial.nroUsuario = ''
+   nuevo_historial.nombre = form['email']
+   nuevo_historial.save()
+
 

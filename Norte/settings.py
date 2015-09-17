@@ -63,9 +63,9 @@ DATABASES = {
         'ENGINE': 'sqlserver_ado',
         'NAME': 'FacturasNorte',
 
-        'HOST': 'PABLOHP',#'JORGIED',
-        'USER': 'sa',
-        'PASSWORD': 'Norte1234',#'dni36017874',
+        'HOST': 'JORGIED',#'JORGIED',
+        'USER': '',
+        'PASSWORD': '',#'dni36017874',
 
         'OPTIONS': {
             'provider': 'SQLNCLI',

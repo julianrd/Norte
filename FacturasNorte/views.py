@@ -12,7 +12,6 @@ from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDet
 from FacturasNorte.functions import send_email_contact, reset_password, buscar_pdfs, search_redirect, search_person, \
     crear_perfil
 
-__author__ = 'Julian'
 from django.utils import timezone
 from django import forms
 
@@ -39,8 +38,9 @@ from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm
 
 from FacturasNorte.forms import AdminRegisterForm, EmpleadoRegisterForm
 
-from FacturasNorte.models import Administrador, Empleado, Cliente
+from FacturasNorte.models import Administrador, Empleado, Cliente, Historiales
 from FacturasNorte.models import User
+from FacturasNorte.functions import crear_historial_correcto, crear_historial_incorrecto
 
 #Pruebas de Usuario
 def is_admin_o_emp(user):
@@ -78,6 +78,7 @@ class LoginView(FormView):
     success_url = reverse_lazy('FacturasNorte:index')
     template_name = 'FacturasNorte/registration/login.html'
 
+
     @method_decorator(csrf_protect)
     @method_decorator(never_cache)
     def dispatch(self, *args, **kwargs):
@@ -91,9 +92,13 @@ class LoginView(FormView):
         try:
             user = authenticate(username=form.cleaned_data['email'], password=form.cleaned_data['password'])
             login(self.request, user)
+            crear_historial_correcto(user, self.request)
         except Exception:
             form.add_error('password', ValidationError('Contrasena incorrecta', code='authentication'))
+            crear_historial_incorrecto(self.request, form.cleaned_data)
+
             return self.form_invalid(form)
+
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):

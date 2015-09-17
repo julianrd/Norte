@@ -20,9 +20,14 @@ from django.forms.extras.widgets import SelectDateWidget
 
 
 class IniciarSesionForm(forms.Form):
+
     email = forms.EmailField(label='E-mail', show_hidden_initial='ejemplo@dominio.com')
     password = forms.CharField(label='Contrasena', widget=forms.PasswordInput(), initial='')
-    captcha = NoReCaptchaField(required=False)
+
+    if authenticate(username=email, password=password):
+        captcha = NoReCaptchaField(required=False)
+
+
 
     def clean_email(self):
         email = self.cleaned_data.get('email')

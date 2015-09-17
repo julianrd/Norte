@@ -310,3 +310,15 @@ def eliminar_usuario(**kwargs):
     u.delete()
     return
 
+
+class Historiales(models.Model):
+    nroUsuario = models.CharField(max_length=200, blank = False)
+    nombre = models.CharField(max_length=200, blank = True)
+    fecha = models.DateTimeField(max_length=200, blank = True)
+    perfil = models.CharField(max_length = 20, blank = True)
+    autenticado = models.CharField(max_length = 10, blank = True)
+    ip = models.IPAddressField(max_length = 30, blank = True)
+
+
+    def __str__(self):
+        return self.nroUsuario
