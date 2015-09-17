@@ -1,7 +1,10 @@
 from time import strptime
 from datetime import date
+from _mysql_exceptions import DatabaseError as DatabaseErrorMySQL
+from sqlserver_ado.dbapi import DatabaseError as DatabaseErrorMSSQL
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+
 
 __author__ = 'Julian'
 
@@ -13,7 +16,7 @@ from django.core.mail import EmailMessage, send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from FacturasNorte.custom_classes import Factura
-from FacturasNorte.models import Cliente, Empleado
+from FacturasNorte.models import Cliente, Empleado, ClienteLegado
 from Norte import settings
 
 def crear_perfil(form, perfil):
@@ -60,7 +63,7 @@ def crear_perfil(form, perfil):
         enviar_password(password)
         return
 
-    except Exception:
+    except DatabaseErrorMySQL:
         usuario_creado = get_object_or_404(User, username=username)
         usuario_creado.delete()
         raise ValidationError(('Campo invalido'), code='campos')
@@ -76,7 +79,10 @@ def crear_usuario(form):
 
 def crear_persona(form, model):
     persona = model()
-    persona.set_dni(str(form.cleaned_data['dni']))
+    if model == Cliente:
+        persona.set_dni(str(form.cleaned_data['nroDoc']))
+    else:
+        persona.set_dni(str(form.cleaned_data['dni']))
     persona.set_nombre(form.cleaned_data['nombre'])
     persona.set_email(form.cleaned_data['email'])
     persona.set_fechaNacimiento(form.cleaned_data['fechaNacimiento'])
@@ -160,12 +166,17 @@ def search_person(model, searchField, searchQuery):
     if searchField == 'nombre':
         return model.objects.filter(nombre__icontains=searchQuery)
     elif searchField == 'dni':
-        if model == Cliente:
-            return model.objects.filter(dni__icontains=int(searchQuery))
-        else:
-            return model.objects.filter(dni__icontains=int(searchQuery))
+        return model.objects.filter(dni__icontains=int(searchQuery))
     else:
         return model.objects.filter(email__icontains=searchQuery)
+
+def search_legado(model, searchField, searchQuery):
+    if searchField == 'nombre':
+        return model.objects.using('clientes_legados').filter(nombre__icontains=searchQuery)
+    elif searchField == 'dni':
+        return model.objects.using('clientes_legados').filter(dni__icontains=int(searchQuery))
+    else:
+        return model.objects.using('clientes_legados').filter(email__icontains=searchQuery)
 
 def verificar_usuario(username):
     try:
@@ -173,4 +184,7 @@ def verificar_usuario(username):
         return False
     except ObjectDoesNotExist:
         return True
+
+
+
 

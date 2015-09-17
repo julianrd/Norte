@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import urlparse
 
+from sqlserver_ado.dbapi import Date
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.utils.decorators import method_decorator
@@ -10,7 +11,7 @@ from django.views.generic.edit import FormMixin
 
 from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView
 from FacturasNorte.functions import send_email_contact, reset_password, buscar_pdfs, search_redirect, search_person, \
-    crear_perfil
+    crear_perfil, search_legado
 
 __author__ = 'Julian'
 from django.utils import timezone
@@ -35,11 +36,11 @@ from django.contrib import messages
 
 from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
     IniciarSesionForm, RegenerarContrasenaForm, FiltroPersonaForm, FiltroFacturaForm, ClienteForm, \
-    EmpleadoForm, ClienteUpdateForm
+    EmpleadoForm, ClienteUpdateForm, ClienteLegadoForm
 
 from FacturasNorte.forms import  EmpleadoRegisterForm
 
-from FacturasNorte.models import Empleado, Cliente
+from FacturasNorte.models import Empleado, Cliente, ClienteLegado
 from FacturasNorte.models import User
 
 #Pruebas de Usuario
@@ -340,6 +341,17 @@ class ClienteModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
     permission_required = 'FacturasNorte.update_cliente'
 
+class ClienteRegistroView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = ClienteLegado
+    form_class = ClienteLegadoForm
+    template_name = "FacturasNorte/empleado/registro_cliente.html"
+    success_url = reverse_lazy('FacturasNorte:lista_cliente')
+    permission_required = 'FacturasNorte.update_cliente'
+
+    def form_valid(self, form):
+        crear_perfil(form, 'cliente')
+        return super(ClienteRegistroView, self).form_valid(form)
+
 class ClienteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Cliente
     template_name = "FacturasNorte/empleado/del_cliente.html"
@@ -353,7 +365,6 @@ class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView)
     context_object_name = 'cliente_list'
     paginate_by = 10
     permission_required = 'FacturasNorte.view_lista_cliente'
-
     form_class = FiltroPersonaForm
 
     def post(self, request, *args, **kwargs):
@@ -368,6 +379,25 @@ class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView)
         except KeyError:
             return Cliente.objects.all()
 
+class ClientesLegadosView(ClienteListView):
+    template_name = "FacturasNorte/empleado/clientes_legados.html"
+    model = ClienteLegado
+    context_object_name = 'cliente_list'
+    paginate_by = 10
+    permission_required = 'FacturasNorte.view_lista_cliente'
+    form_class = FiltroPersonaForm
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form(FiltroPersonaForm)
+        if form.is_valid():
+            URL = 'FacturasNorte/staff/clientes_legados/'
+            return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['query'])
+
+    def get_queryset(self):
+        try:
+            return search_legado(ClienteLegado, self.kwargs['tipo'], self.kwargs['query'])
+        except KeyError:
+            return ClienteLegado.objects.using('clientes_legados').all()
 
 class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/empleado/cliente_detail.html"

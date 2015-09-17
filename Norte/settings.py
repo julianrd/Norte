@@ -68,18 +68,21 @@ DATABASES = {
 
     'clientes_legados': {
         'ENGINE': 'sqlserver_ado',
-        'NAME': 'DB_EditorialChacoGestion',
+        'NAME': 'DB_EditorialChacoGestion',#'ClientesLegados',
 
-        'HOST': '10.0.4.162',#'JORGIED',
+        'HOST': '10.0.4.162',#'PABLOHP',
         'USER': 'sa',
-        'PASSWORD': 'Norte1234',#'dni36017874',
+        'PASSWORD': 'Norte1234',#'Norte1234',
 
         'OPTIONS': {
             'provider': 'SQLNCLI',
-            'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;'
+            'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;',
+            'use_legacy_date_fields' : 'True'
         }
     }
 }
+
+DATABASE_ROUTERS = ['FacturasNorte.db_routers.FacturasNorteRouter']
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/

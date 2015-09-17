@@ -30,7 +30,7 @@ class ClienteLegado(models.Model):
                                                  null=True)  # Field name made lowercase.
     aplicarRecargo = models.CharField(db_column='APLICAR_RECARGO', max_length=1,
                                       blank=True)  # Field name made lowercase.
-    fechaAlta = models.DateTimeField(db_column='FECHAALTA', blank=True, null=True)  # Field name made lowercase.
+    fechaAlta = models.DateTimeField(db_column='FECHAALTA', blank=True, null=True, default='1930-1-1')  # Field name made lowercase.
     idCodigoContable = models.FloatField(db_column='IDCODIGOCONTABLE', blank=True,
                                          null=True)  # Field name made lowercase.
     telefonoRefencia = models.CharField(db_column='TELEFONOREFENCIA', max_length=20,
@@ -149,7 +149,7 @@ class ClienteLegado(models.Model):
         self.telefono = telefono
 
     class Meta:
-        db_table = 'FACT_0004'
+        db_table = 'FACT0004'#'Clientes'#
 
 class Persona(models.Model):
     nroUsuario = models.OneToOneField(User)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core.validators import validate_email
-from FacturasNorte.models import Empleado, Cliente
+from FacturasNorte.models import Empleado, Cliente, ClienteLegado
 from FacturasNorte.validators import validate_emailExistente, validate_nombre, validate_dni, validate_domicilio, \
     validate_telefono
 
@@ -35,9 +35,9 @@ class IniciarSesionForm(forms.Form):
 
 class PersonaForm(forms.ModelForm):
     nombre = forms.CharField(validators=[validate_nombre])
-    dni = forms.CharField(validators=[validate_dni])
+    dni = forms.CharField(label='DNI', validators=[validate_dni])
     email = forms.EmailField(validators=[validate_email])
-    fechaNacimiento = forms.DateField(widget=SelectDateWidget(years=range(1930, datetime.date.today().year+1)))
+    fechaNacimiento = forms.DateField(label='Fecha de nacimiento', widget=SelectDateWidget(years=range(1930, datetime.date.today().year+1)))
     domicilio = forms.CharField(validators=[validate_domicilio])
     telefono = forms.CharField(validators=[validate_telefono])
 
@@ -74,9 +74,20 @@ class ClienteForm(PersonaForm):
         model = Cliente
         fields = ('nombre', 'dni', 'email', 'fechaNacimiento', 'domicilio', 'telefono')
 
+class ClienteLegadoForm(forms.ModelForm):
+    nombre = forms.CharField(validators=[validate_nombre])
+    nroDoc = forms.CharField(label='DNI', validators=[validate_dni])
+    email = forms.EmailField(validators=[validate_email])
+    fechaNacimiento = forms.DateField(label='Fecha de nacimiento', widget=SelectDateWidget(years=range(1930, datetime.date.today().year+1)))
+    domicilio = forms.CharField(validators=[validate_domicilio])
+    telefono = forms.CharField(validators=[validate_telefono])
+
+    class Meta:
+        model = ClienteLegado
+        fields = ('nombre', 'nroDoc', 'email', 'fechaNacimiento', 'domicilio', 'telefono')
+
 
 class ClienteUpdateForm(ClienteForm):
-    contrasena = forms.CharField(label = "Contraseña", widget=forms.PasswordInput(), initial='')
 
     def clean(self):
         try:
