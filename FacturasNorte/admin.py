@@ -2,7 +2,7 @@ from django.contrib.auth.models import Permission
 
 __author__ = 'Julian'
 from django.contrib import admin
-from FacturasNorte.models import Cliente, Administrador, Empleado, Entry, Tag
+from FacturasNorte.models import Cliente, Empleado, Entry, Tag
 
 from django_markdown.admin import MarkdownModelAdmin
 from django_markdown.widgets import AdminMarkdownWidget
@@ -54,8 +54,7 @@ admin.site.register(Entry, EntryAdmin)
 admin.site.register(Tag)
 admin.site.register(Permission, PermissionAdmin)
 admin.site.register(Cliente, ClienteAdmin)
-admin.site.register(Administrador, AdministradorAdmin)
-admin.site.register(Empleado, AdministradorAdmin)
+admin.site.register(Empleado, EmpleadoAdmin)
 
 
 

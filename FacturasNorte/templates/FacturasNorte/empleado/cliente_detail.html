@@ -7,7 +7,7 @@
 <table id="vertical" style="width:100%">
   <tr>
     <th>DNI</th>
-    <td>{{ cliente.nroDoc }}</td>
+    <td>{{ cliente.dni }}</td>
   </tr>
   <tr>
     <th>Fecha nacimiento</th>
@@ -29,16 +29,16 @@
 </table>
 
     <div id="links">
-        <form action="{% url 'FacturasNorte:facturas_cliente' cliente.nroUsuario.id %}">
+        <form action="{% url 'FacturasNorte:facturas_cliente_empleado' cliente.nroUsuario.id %}">
             <input type="submit" value="Ver Facturas">
         </form>
-        <form action="{% url 'FacturasNorte:modif_cliente' cliente.numero %}">
+        <form action="{% url 'FacturasNorte:modif_cliente' cliente.id %}">
             <input type="submit" value="Modificar">
         </form>
-        <form action="{% url 'FacturasNorte:reestablecer_contrasena' cliente.numero %}">
+        <form action="{% url 'FacturasNorte:reestablecer_contrasena' cliente.id %}">
             <input type="submit" value="Reestablecer contrasena">
         </form>
-        <form action="{% url 'FacturasNorte:elim_cliente' cliente.numero %}">
+        <form action="{% url 'FacturasNorte:elim_cliente' cliente.id %}">
             <input type="submit" value="Eliminar">
         </form>
     </div>

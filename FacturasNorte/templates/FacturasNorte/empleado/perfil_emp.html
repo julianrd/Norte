@@ -59,10 +59,10 @@
 
 
 <div id="links">
-    <form action="{% url 'FacturasNorte:cambiar_contrasena'%}">
+    <form action="{% url 'FacturasNorte:cambiar_contrasena' %}">
             <input type="submit" value="Cambiar contrasena">
     </form>
-    <form action="{% url 'FacturasNorte:modif_empleado' empleado.id %}">
+    <form action="{% url 'FacturasNorte:modif_perfil' empleado.id %}">
             <input type="submit" value="Modificar">
     </form>
 </div>

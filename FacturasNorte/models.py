@@ -5,8 +5,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_delete
 from django.core.urlresolvers import reverse
 
-class Cliente(models.Model):
-    nroUsuario = models.OneToOneField(User)
+class ClienteLegado(models.Model):
     numero = models.AutoField(db_column='NUMERO', primary_key=True)
     nombre = models.CharField(db_column='NOMBRE', max_length=254, blank=True, null=False)  # Field name made lowercase.
     domicilio = models.CharField(db_column='DOMICILIO', max_length=254, blank=True,
@@ -31,7 +30,7 @@ class Cliente(models.Model):
                                                  null=True)  # Field name made lowercase.
     aplicarRecargo = models.CharField(db_column='APLICAR_RECARGO', max_length=1,
                                       blank=True)  # Field name made lowercase.
-    fechaAlta = models.DateTimeField(db_column='FECHAALTA', blank=True, null=True)  # Field name made lowercase.
+    fechaAlta = models.DateTimeField(db_column='FECHAALTA', blank=True, null=True, default='1930-1-1')  # Field name made lowercase.
     idCodigoContable = models.FloatField(db_column='IDCODIGOCONTABLE', blank=True,
                                          null=True)  # Field name made lowercase.
     telefonoRefencia = models.CharField(db_column='TELEFONOREFENCIA', max_length=20,
@@ -150,24 +149,19 @@ class Cliente(models.Model):
         self.telefono = telefono
 
     class Meta:
-        db_table = 'Clientes'
-        permissions = [('cambiar_cont', 'Puede cambiar su contrasena'), ('view_perfil_cliente', 'Puede ver su perfil de cliente'),
-                       ('view_facturas_cliente', 'Puede ver sus facturas')]
+        db_table = 'FACT0004'#'Clientes'#
 
-
-class Administrador(models.Model):
+class Persona(models.Model):
     nroUsuario = models.OneToOneField(User)
     nombre = models.CharField(max_length=40, null=False)
-    dni = models.CharField(max_length=8, null=False)
+    dni = models.CharField(max_length=8, null=False, default=0)
     email = models.EmailField(max_length=255, blank=True, unique=True, null=False, default='')
     fechaNacimiento = models.DateTimeField(blank=True, null=True)
     domicilio = models.CharField(max_length=254, blank=True, default='')
     telefono = models.CharField(max_length=254, blank=True, default='')
 
     class Meta:
-        db_table = 'Administradores'
-        verbose_name_plural = 'Administradores'
-        permissions = []
+        abstract = 'True'
 
     def get_usuario(self):
         return self.nroUsuario
@@ -199,15 +193,14 @@ class Administrador(models.Model):
     def __unicode__(self):
         return self.nombre
 
+class Empleado(Persona):
+    admin = models.BooleanField(default=False)
 
-class Empleado(models.Model):
-    nroUsuario = models.OneToOneField(User)
-    nombre = models.CharField(max_length=40, null=False)
-    dni = models.CharField(max_length=8, null=False)
-    email = models.EmailField(max_length=255, blank=True, unique=True, null=False, default='')
-    fechaNacimiento = models.DateTimeField(blank=True, null=True)
-    domicilio = models.CharField(max_length=254, blank=True, default='')
-    telefono = models.CharField(max_length=254, blank=True, default='')
+    def set_admin(self, bool):
+        self.admin = bool
+
+    def is_admin(self):
+        return self.admin
 
     class Meta:
         db_table = 'Empleados'
@@ -219,36 +212,13 @@ class Empleado(models.Model):
                        ('view_perfil_empleado', 'Puede ver su perfil de empleado')
                        ]
 
+class Cliente(Persona):
 
-    def get_usuario(self):
-        return self.nroUsuario
-
-    def set_dni(self, dni):
-        self.dni = dni
-
-    def set_usuario(self, usuario):
-        self.nroUsuario = usuario
-
-    def get_password(self):
-        return self.nroUsuario.password
-
-    def set_nombre(self, nombre):
-        self.nombre = nombre
-
-    def set_fechaNacimiento(self, fechaNacimiento):
-        self.fechaNacimiento = fechaNacimiento
-
-    def set_email(self, email):
-        self.email = email
-
-    def set_domicilio(self, domicilio):
-        self.domicilio = domicilio
-
-    def set_telefono(self, telefono):
-        self.telefono = telefono
-
-    def __unicode__(self):
-        return self.nombre
+    class Meta:
+        db_table = 'Clientes'
+        verbose_name_plural = 'Clientes'
+        permissions = [('cambiar_cont', 'Puede cambiar su contrasena'), ('view_perfil_cliente', 'Puede ver su perfil de cliente'),
+                       ('view_facturas_cliente', 'Puede ver sus facturas')]
 
 class Tag(models.Model):
     slug = models.SlugField(max_length=200, unique=True)
@@ -289,10 +259,6 @@ class Entry(models.Model):
         verbose_name_plural = "Novedades"
 
 
-@receiver(post_delete, sender=Administrador)
-def eliminar_usuario_admin(sender, **kwargs):
-    eliminar_usuario(**kwargs)
-
 @receiver(post_delete, sender=Empleado)
 def eliminar_usuario_empleado(sender, **kwargs):
     eliminar_usuario(**kwargs)
@@ -319,6 +285,8 @@ class Historiales(models.Model):
     autenticado = models.CharField(max_length = 10, blank = True)
     ip = models.IPAddressField(max_length = 30, blank = True)
 
-
     def __str__(self):
         return self.nroUsuario
+
+    class Meta:
+        db_table = 'Historiales'

@@ -1,55 +1,59 @@
+# -*- coding: utf-8 -*-
 from time import strptime
 from datetime import date
 
+from _mysql_exceptions import DatabaseError as DatabaseErrorMySQL
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 __author__ = 'Julian'
 
 from django.contrib.auth.models import Permission
-from django.contrib.auth.models import User
 from django.core import mail
 from django.core.files.storage import FileSystemStorage
 from django.core.mail import EmailMessage, send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from FacturasNorte.custom_classes import Factura
-from FacturasNorte.models import Cliente, Empleado, Administrador, Historiales
+from FacturasNorte.models import Cliente, Empleado, Historiales
 from Norte import settings
-from django import forms
 
-from django.http import HttpRequest
+
 from django.contrib.auth.models import User
-from ipware.ip import get_ip
 
 
 
-def crear_perfil(form, model):
+
+def crear_perfil(form, perfil):
     username = form.cleaned_data['email'].split("@")[0]
     #Nuevo Usuario
-    nuevo_usuario = crear_usuario(form, model)
-    #Nuevo_Perfil
-    nuevo_perfil = crear_persona(form, model)
+    nuevo_usuario = crear_usuario(form)
 
-    if model == Administrador:
+    if perfil == 'admin':
+        #Nuevo_Perfil
+        nuevo_perfil = crear_persona(form, Empleado)
+        nuevo_perfil.set_admin(True)
         nuevo_usuario.is_staff = True
         nuevo_usuario.is_superuser = True
         password = form.cleaned_data['contrasena']
         permissions = []
 
-    elif model == Empleado:
+    elif perfil == 'empleado':
+        #Nuevo_Perfil
+        nuevo_perfil = crear_persona(form, Empleado)
         nuevo_usuario.is_staff = True
         nuevo_usuario.is_superuser = False
         password = form.cleaned_data['contrasena']
         permissions = settings.EMPLEADO_PERMISOS
 
     else:
+        #Nuevo_Perfil
+        nuevo_perfil = crear_persona(form, Cliente)
         nuevo_usuario.is_staff = False
         nuevo_usuario.is_superuser = False
         password = User.objects.make_random_password()
         permissions = settings.CLIENTE_PERMISOS
 
     try:
-
         nuevo_usuario.set_password(password)
         nuevo_usuario.save()
 
@@ -66,9 +70,9 @@ def crear_perfil(form, model):
     except Exception:
         usuario_creado = get_object_or_404(User, username=username)
         usuario_creado.delete()
-        raise ValidationError(('Campo invalido'), code='campos')
+        raise ValidationError((u'Campos invalidos'), code='campos')
 
-def crear_usuario(form, model):
+def crear_usuario(form):
     username = form.cleaned_data['email'].split("@")[0]
     nuevo_usuario = User()
     nuevo_usuario.username = username
@@ -85,7 +89,7 @@ def crear_persona(form, model):
         persona.set_dni(str(form.cleaned_data['dni']))
     persona.set_nombre(form.cleaned_data['nombre'])
     persona.set_email(form.cleaned_data['email'])
-    persona.set_fechaNacimiento(form.cleaned_data['fecha_nacimiento_field'])
+    persona.set_fechaNacimiento(form.cleaned_data['fechaNacimiento'])
     persona.set_domicilio(form.cleaned_data['domicilio'])
     persona.set_telefono(form.cleaned_data['telefono'])
     return persona
@@ -119,7 +123,7 @@ def send_email_contact(email, subject, body):
     body = body.encode("utf-8")
     body = '{} ha enviado un email de contacto\n\n{}\n\n{}'.format(email, subject, body)
     send_mail(
-        subject = 'Nuevo email de contacto',
+        subject = subject,
         message = body,
         from_email = 'julian.rd7@gmail.com',
         recipient_list =['julian_rd7@hotmail.com'],
@@ -136,7 +140,7 @@ def buscar_pdfs(pk, field=None, query=None):
 
      for a in archivos:
          doc = a.split('-')[1]
-         if (doc == cliente.nroDoc):
+         if (doc == cliente.dni):
              nroPed = a.split('-')[2]
              fec = a.split('-')[3].split('.')[0]
              fecstr = fec[:2] + ' ' + fec[2:4] + ' ' + fec[4:8]
@@ -149,7 +153,6 @@ def buscar_pdfs(pk, field=None, query=None):
                  f.set_ruta(a)
                  f.set_fecha(fecha)
                  facturas.append(f)
-
 
      return facturas
 
@@ -167,12 +170,17 @@ def search_person(model, searchField, searchQuery):
     if searchField == 'nombre':
         return model.objects.filter(nombre__icontains=searchQuery)
     elif searchField == 'dni':
-        if model == Cliente:
-            return model.objects.filter(nroDoc__icontains=int(searchQuery))
-        else:
-            return model.objects.filter(dni__icontains=int(searchQuery))
+        return model.objects.filter(dni__icontains=int(searchQuery))
     else:
         return model.objects.filter(email__icontains=searchQuery)
+
+def search_legado(model, searchField, searchQuery):
+    if searchField == 'nombre':
+        return model.objects.using('clientes_legados').filter(nombre__icontains=searchQuery)
+    elif searchField == 'dni':
+        return model.objects.using('clientes_legados').filter(dni__icontains=int(searchQuery))
+    else:
+        return model.objects.using('clientes_legados').filter(email__icontains=searchQuery)
 
 def verificar_usuario(username):
     try:
@@ -180,7 +188,6 @@ def verificar_usuario(username):
         return False
     except ObjectDoesNotExist:
         return True
-
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -191,7 +198,6 @@ def get_client_ip(request):
     return ip
 
 def crear_historial_correcto(user, request):
-
   nuevo_historial = Historiales()
   nuevo_historial.fecha = timezone.now()
   nuevo_historial.ip = get_client_ip(request)
@@ -209,8 +215,6 @@ def crear_historial_correcto(user, request):
   nuevo_historial.save()
 
 def crear_historial_incorrecto(request, form):
-
-
    nuevo_historial = Historiales()
    nuevo_historial.fecha = timezone.now()
    nuevo_historial.ip = get_client_ip(request)
@@ -218,5 +222,4 @@ def crear_historial_incorrecto(request, form):
    nuevo_historial.nroUsuario = ''
    nuevo_historial.nombre = form['email']
    nuevo_historial.save()
-
 

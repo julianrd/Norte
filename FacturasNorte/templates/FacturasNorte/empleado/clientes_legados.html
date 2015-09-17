@@ -35,21 +35,17 @@
     <th>Nombre</th>
     <th>Email</th>
     <th></th>
-    <th></th>
      </tr>
      {% for cliente in cliente_list %}
 
         <tr>
-            <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.id %}>{{ cliente.dni }}</a></td>
-            <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.id %}>{{ cliente.nombre }}</a></td>
-            <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.id %}>{{ cliente.email }}</a></td>
+            <td>{{ cliente.dni }}</td>
+            <td>{{ cliente.nombre }}</td>
+            <td>{{ cliente.email }}</td>
 
-            <td><a href={% url 'FacturasNorte:modif_cliente' cliente.id %}>
+            <td><a href={% url 'FacturasNorte:registro_cliente' cliente.numero %}>
 
-                <img src="{% static "FacturasNorte/img/edit.gif" %}" width="12", alt="Editar"/> Editar</a></td>
-
-            <td><a href={% url 'FacturasNorte:elim_cliente' cliente.id %}>
-                <img src="{% static "FacturasNorte/img/delete.gif" %}" width="12", alt="Borrar"/> Borrar</a></td>
+                <img src="{% static "FacturasNorte/img/edit.gif" %}" width="12", alt="Editar"/> Dar de alta</a></td>
         </tr>
 
      {% endfor %}
