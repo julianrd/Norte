@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from django.core.validators import validate_email
 from FacturasNorte.models import Empleado, Cliente, ClienteLegado
 from FacturasNorte.validators import validate_emailExistente, validate_nombre, validate_dni, validate_domicilio, \
-    validate_telefono
+    validate_telefono, validate_cuit
 
 __author__ = 'Julian'
 from django.contrib.auth.models import User
@@ -64,11 +64,11 @@ class ClienteForm(PersonaForm):
 
     class Meta:
         model = Cliente
-        fields = ('nombre', 'dni', 'email', 'fechaNacimiento', 'domicilio', 'telefono')
+        fields = ('nombre', 'dni', 'cuit', 'email', 'fechaNacimiento', 'domicilio', 'telefono')
 
 class ClienteLegadoForm(forms.ModelForm):
     nombre = forms.CharField(validators=[validate_nombre])
-    nroDoc = forms.CharField(label='DNI', validators=[validate_dni])
+    nroDoc = forms.CharField(label='CUIT', validators=[validate_cuit])
     email = forms.EmailField(validators=[validate_email])
     fechaNacimiento = forms.DateField(label='Fecha de nacimiento', widget=SelectDateWidget(years=range(1930, datetime.date.today().year+1)))
     domicilio = forms.CharField(validators=[validate_domicilio])
@@ -130,6 +130,17 @@ class FiltroPersonaForm(forms.Form):
                                 required=True,
                                 choices = ( ('nombre',u'Nombre'),
                                             ('dni',u'DNI'),
+                                            ('email',u'Email'),
+                                )
+    )
+
+class FiltroClienteForm(forms.Form):
+    query = forms.CharField(label='Buscar', initial='Ej. Messi')
+    tipo = forms.ChoiceField(
+                                required=True,
+                                choices = ( ('nombre',u'Nombre'),
+                                            ('dni',u'DNI'),
+                                            ('cuit', u'CUIT'),
                                             ('email',u'Email'),
                                 )
     )

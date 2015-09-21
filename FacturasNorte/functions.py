@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-from time import strptime
-from datetime import date
-
-from _mysql_exceptions import DatabaseError as DatabaseErrorMySQL
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
-
 __author__ = 'Julian'
 
+from time import strptime
+from datetime import date
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.auth.models import Permission
 from django.core import mail
 from django.core.files.storage import FileSystemStorage
@@ -16,12 +13,7 @@ from django.utils import timezone
 from FacturasNorte.custom_classes import Factura
 from FacturasNorte.models import Cliente, Empleado, Historiales
 from Norte import settings
-
-
 from django.contrib.auth.models import User
-
-
-
 
 def crear_perfil(form, perfil):
     username = form.cleaned_data['email'].split("@")[0]
@@ -84,7 +76,9 @@ def crear_usuario(form):
 def crear_persona(form, model):
     persona = model()
     if model == Cliente:
-        persona.set_dni(str(form.cleaned_data['nroDoc']))
+        persona.set_cuit(str(form.cleaned_data['nroDoc']))
+        dni = persona.get_cuit()[2:len(persona.get_cuit())-1]
+        persona.set_dni(dni)
     else:
         persona.set_dni(str(form.cleaned_data['dni']))
     persona.set_nombre(form.cleaned_data['nombre'])
@@ -171,14 +165,16 @@ def search_person(model, searchField, searchQuery):
         return model.objects.filter(nombre__icontains=searchQuery)
     elif searchField == 'dni':
         return model.objects.filter(dni__icontains=int(searchQuery))
+    elif searchField == 'cuit':
+        return model.objects.filter(cuit__icontains=int(searchQuery))
     else:
         return model.objects.filter(email__icontains=searchQuery)
 
 def search_legado(model, searchField, searchQuery):
     if searchField == 'nombre':
         return model.objects.using('clientes_legados').filter(nombre__icontains=searchQuery)
-    elif searchField == 'dni':
-        return model.objects.using('clientes_legados').filter(dni__icontains=int(searchQuery))
+    elif searchField == 'cuit':
+        return model.objects.using('clientes_legados').filter(nroDoc__icontains=int(searchQuery))
     else:
         return model.objects.using('clientes_legados').filter(email__icontains=searchQuery)
 

@@ -16,11 +16,6 @@
 
         </form>
     </div>
-    <div id="nuevo">
-
-        <p><a href={% url 'FacturasNorte:clientes_legados' %}>
-             <img src="{% static "FacturasNorte/img/add.gif" %}" width="12", alt="Nuevo"/> Dar de alta cliente</a></p>
-    </div>
 <br/>
 <br/>
 
@@ -31,7 +26,7 @@
  <table style="width:100%">
 
   <tr>
-    <th>DNI</th>
+    <th>CUIT</th>
     <th>Nombre</th>
     <th>Email</th>
     <th></th>
@@ -39,7 +34,7 @@
      {% for cliente in cliente_list %}
 
         <tr>
-            <td>{{ cliente.dni }}</td>
+            <td>{{ cliente.nroDoc }}</td>
             <td>{{ cliente.nombre }}</td>
             <td>{{ cliente.email }}</td>
 

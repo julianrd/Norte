@@ -213,6 +213,14 @@ class Empleado(Persona):
                        ]
 
 class Cliente(Persona):
+    cuit = models.CharField(max_length=11, null=True, default=0)
+
+    def set_cuit(self, cuit):
+        self.cuit = cuit
+        return
+
+    def get_cuit(self):
+        return self.cuit
 
     class Meta:
         db_table = 'Clientes'

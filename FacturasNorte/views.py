@@ -28,7 +28,7 @@ from django.contrib import messages
 
 from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
     IniciarSesionForm, RegenerarContrasenaForm, FiltroPersonaForm, FiltroFacturaForm, ClienteForm, \
-    EmpleadoForm, ClienteLegadoForm
+    EmpleadoForm, ClienteLegadoForm, FiltroClienteForm
 
 from FacturasNorte.forms import  EmpleadoRegisterForm
 from FacturasNorte.models import Empleado, Cliente, ClienteLegado
@@ -345,10 +345,10 @@ class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView)
     context_object_name = 'cliente_list'
     paginate_by = 10
     permission_required = 'FacturasNorte.view_lista_cliente'
-    form_class = FiltroPersonaForm
+    form_class = FiltroClienteForm
 
     def post(self, request, *args, **kwargs):
-        form = self.get_form(FiltroPersonaForm)
+        form = self.get_form(FiltroClienteForm)
         if form.is_valid():
             URL = 'FacturasNorte/staff/clientes/'
             return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['query'])
@@ -365,10 +365,10 @@ class ClientesLegadosView(ClienteListView):
     context_object_name = 'cliente_list'
     paginate_by = 10
     permission_required = 'FacturasNorte.view_lista_cliente'
-    form_class = FiltroPersonaForm
+    form_class = FiltroClienteForm
 
     def post(self, request, *args, **kwargs):
-        form = self.get_form(FiltroPersonaForm)
+        form = self.get_form(FiltroClienteForm)
         if form.is_valid():
             URL = 'FacturasNorte/staff/clientes_legados/'
             return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['query'])

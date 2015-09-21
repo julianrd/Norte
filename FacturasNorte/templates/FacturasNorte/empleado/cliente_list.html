@@ -19,19 +19,19 @@
     <div id="nuevo">
 
         <p><a href={% url 'FacturasNorte:clientes_legados' %}>
-             <img src="{% static "FacturasNorte/img/add.gif" %}" width="12", alt="Nuevo"/> Dar de alta cliente</a></p>
+             <img src="{% static "FacturasNorte/img/add.gif" %}" width="12", alt="Nuevo"/> Registrar cliente</a></p>
     </div>
 <br/>
 <br/>
 
 {% if not page_obj.object_list %}
       <h3> No se han encontrado resultados.</h3>
-  {% else %}
+{% else %}
 
- <table style="width:100%">
+<table style="width:100%">
 
   <tr>
-    <th>DNI</th>
+    <th>CUIT</th>
     <th>Nombre</th>
     <th>Email</th>
     <th></th>
@@ -40,7 +40,7 @@
      {% for cliente in cliente_list %}
 
         <tr>
-            <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.id %}>{{ cliente.dni }}</a></td>
+            <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.id %}>{{ cliente.cuit}}</a></td>
             <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.id %}>{{ cliente.nombre }}</a></td>
             <td><a href={% url 'FacturasNorte:detalle_cliente' cliente.id %}>{{ cliente.email }}</a></td>
 
@@ -55,7 +55,6 @@
      {% endfor %}
   {% endif %}
 </table>
-
 
     {% if is_paginated %}
         <div class="pagination">

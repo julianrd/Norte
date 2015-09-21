@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
+__author__ = 'Julian'
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
-__author__ = 'Julian'
 
 def validate_nombre(nombre):
     if len(nombre) < 3:
@@ -26,3 +27,24 @@ def validate_emailExistente(email):
        User.objects.get(email=email)
     except ObjectDoesNotExist:
         raise ValidationError('El email ingresado es incorrecto', code='email incorrecto')
+
+def validate_cuit(cuit):
+    # validaciones minimas
+    if len(cuit) != 11:
+        raise ValidationError(u'El CUIT ingresado es inválido', code='cuit_invalido')
+
+    base = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2]
+
+    # calculo el digito verificador:
+    aux = 0
+    for i in xrange(10):
+        aux += int(cuit[i]) * base[i]
+
+    aux = 11 - (aux - (int(aux / 11) * 11))
+
+    if aux == 11:
+        aux = 0
+    if aux == 10:
+        aux = 9
+
+    return aux == int(cuit[10])
