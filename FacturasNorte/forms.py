@@ -50,14 +50,14 @@ class EmpleadoForm(PersonaForm):
         fields = ['nombre', 'dni', 'email', 'fechaNacimiento', 'domicilio', 'telefono']
 
 class EmpleadoRegisterForm(EmpleadoForm):
-    contrasena = forms.CharField(label='Contraseña', widget=forms.PasswordInput(), initial='')
-    confirmar_contrasena = forms.CharField(label='Confirmar contraseña', widget=forms.PasswordInput(), initial='')
+    contrasena = forms.CharField(label='ContraseÃ±a', widget=forms.PasswordInput(), initial='')
+    confirmar_contrasena = forms.CharField(label='Confirmar contraseÃ±a', widget=forms.PasswordInput(), initial='')
 
     def clean(self):
         password1 = self.data['contrasena']
         password2 = self.data['confirmar_contrasena']
         if password1 and password1 != password2:
-            raise forms.ValidationError("Contraseñas no coinciden, vuelva a ingresar")
+            raise forms.ValidationError("ContraseÃ±as no coinciden, vuelva a ingresar")
         return super(EmpleadoRegisterForm, self).clean()
 
 class ClienteForm(PersonaForm):
@@ -103,15 +103,15 @@ class ContactUsuarioLoginForm(forms.Form):
     )
 
 class CambiarContrasenaForm(forms.Form):
-    contrasena_anterior = forms.CharField(label = "Contraseña anterior", widget=forms.PasswordInput())
-    contrasena_nueva = forms.CharField(label = "Contraseña nueva", widget=forms.PasswordInput())
-    confirmar_contrasena = forms.CharField(label = "Confirmar contraseña",widget=forms.PasswordInput())
+    contrasena_anterior = forms.CharField(label = "ContraseÃ±a anterior", widget=forms.PasswordInput())
+    contrasena_nueva = forms.CharField(label = "ContraseÃ±a nueva", widget=forms.PasswordInput())
+    confirmar_contrasena = forms.CharField(label = "Confirmar contraseÃ±a",widget=forms.PasswordInput())
 
     def clean(self):
         password2 = self.cleaned_data.get('confirmar_contrasena')
         password1 = self.cleaned_data.get('contrasena_nueva')
         if password1 and password1 != password2:
-            raise forms.ValidationError(u"Las contraseñas ingresadas no coinciden", code='match_passwords')
+            raise forms.ValidationError(u"Las contraseÃ±as ingresadas no coinciden", code='match_passwords')
         return self.cleaned_data
 
 class RegenerarContrasenaForm(forms.Form):
@@ -125,7 +125,7 @@ class RegenerarContrasenaForm(forms.Form):
 
 
 class FiltroPersonaForm(forms.Form):
-    query = forms.CharField(label='Buscar', initial='Ej. Messi')
+    query = forms.CharField(label='Buscar', show_hidden_initial='Ej. Messi')
     tipo = forms.ChoiceField(
                                 required=True,
                                 choices = ( ('nombre',u'Nombre'),
@@ -133,16 +133,25 @@ class FiltroPersonaForm(forms.Form):
                                             ('email',u'Email'),
                                 )
     )
+    activo = forms.ChoiceField(label='Activo',
+                               choices= ( (True, u'Si'),
+                                          (False, u'No')
+                               )
+    )
 
 class FiltroClienteForm(forms.Form):
-    query = forms.CharField(label='Buscar', initial='Ej. Messi')
+    query = forms.CharField(label='Buscar', show_hidden_initial='Ej. Messi')
     tipo = forms.ChoiceField(
                                 required=True,
                                 choices = ( ('nombre',u'Nombre'),
-                                            ('dni',u'DNI'),
                                             ('cuit', u'CUIT'),
                                             ('email',u'Email'),
                                 )
+    )
+    activo = forms.ChoiceField(label='Activo',
+                               choices= ( (True, u'Si'),
+                                          (False, u'No')
+                               )
     )
 
 class FiltroFacturaForm(forms.Form):

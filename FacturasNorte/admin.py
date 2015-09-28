@@ -18,7 +18,7 @@ class PermissionAdmin(admin.ModelAdmin):
 
 class ClienteAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ['nroUsuario', 'nombre', 'email', 'domicilio']}),
+        (None, {'fields': ['nroUsuario', 'nombre', 'email', 'domicilio', 'cuit', 'activo']}),
         ('Date information', {'fields':['fechaNacimiento'], 'classes':['collapse']}),
     ]
     list_display = ('nombre', 'fechaNacimiento', 'email', 'domicilio', 'telefono')

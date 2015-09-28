@@ -3,7 +3,6 @@ from Norte import settings
 
 __author__ = 'Julian'
 from django.conf.urls import patterns, include, url
-from django.contrib.auth import views as auth_views
 from django.contrib import admin
 from . import views, feed
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -60,24 +59,11 @@ urlpatterns = patterns('',
     url(r'^staff/facturas/(?P<pk>\d+)/$', views.EmpleadoListaFacturasView.as_view(), name = 'facturas_cliente_empleado'),
 
     url(r'^cliente/perfil/(?P<pk>\d+)/$', views.ClientePerfilView.as_view(), name = 'perfil_cliente'),
-    url(r'^cliente/factura/$', views.pdf_view, name = 'factura'),
+    # url(r'^cliente/factura/$', views.pdf_view, name = 'factura'),
     url(r'^cliente/facturas/(?P<pk>\d+)/$', views.ClienteFacturasView.as_view(), name = 'facturas_cliente'),
 
 
     url(r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name = 'media'),
-
-    url('^cliente/facturas/(?P<pk>\d+)/(?P<tipo>.+)=(?P<query>.+)/$', views.ClienteFacturasView.as_view(), name = 'facturas_search'),
-    url('^cliente/facturas/(?P<pk>\d+)/(?P<tipo>.+)=/$', views.ClienteFacturasView.as_view(), name = 'facturas_search'),
-    url('^staff/facturas/(?P<pk>\d+)/(?P<tipo>.+)=(?P<query>.+)/$', views.EmpleadoListaFacturasView.as_view(), name = 'facturas_search'),
-    url('^staff/facturas/(?P<pk>\d+)/(?P<tipo>.+)=/$', views.EmpleadoListaFacturasView.as_view(), name = 'facturas_search'),
-    url('^staff/clientes/(?P<tipo>.+)=(?P<query>.+)/$', views.ClienteListView.as_view(), name = 'clientes_search'),
-    url('^staff/clientes/(?P<tipo>.+)=/$', views.ClienteListView.as_view(), name = 'clientes_search'),
-    url('^staff/clientes_legados/(?P<tipo>.+)=(?P<query>.+)/$', views.ClientesLegadosView.as_view(), name = 'clientes_search'),
-    url('^staff/clientes_legados/(?P<tipo>.+)=/$', views.ClientesLegadosView.as_view(), name = 'clientes_search'),
-    url('^admin/empleados/(?P<tipo>.+)=(?P<query>.+)/$', views.EmpListView.as_view(), name = 'empleados_search'),
-    url('^admin/empleados/(?P<tipo>.+)=/$', views.EmpListView.as_view(), name = 'empleados_search'),
-    url('^admin/admins/(?P<tipo>.+)=(?P<query>.+)/$', views.AdminListView.as_view(), name = 'admins_search'),
-    url('^admin/admins/(?P<tipo>.+)=/$', views.AdminListView.as_view(), name = 'admins_search'),
 )
 
 # static files (images, css, javascript, etc.)

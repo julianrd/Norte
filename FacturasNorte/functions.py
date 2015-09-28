@@ -11,7 +11,7 @@ from django.core.mail import EmailMessage, send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from FacturasNorte.custom_classes import Factura
-from FacturasNorte.models import Cliente, Empleado, Historiales
+from FacturasNorte.models import Cliente, Empleado, Historiales, ClienteLegado
 from Norte import settings
 from django.contrib.auth.models import User
 
@@ -157,26 +157,49 @@ def reset_password(usuario):
     usuario.save()
     return
 
-def search_redirect(baseUrl, queryField, queryText):
+def search_pdf_redirect(baseUrl, queryField, queryText):
     return redirect('/' + baseUrl + queryField + '=' + queryText)
 
-def search_person(model, searchField, searchQuery):
+def search_cliente(searchField, searchQuery, activo):
     if searchField == 'nombre':
-        return model.objects.filter(nombre__icontains=searchQuery)
+        return Cliente.objects.filter(activo=activo, nombre__icontains=searchQuery)
     elif searchField == 'dni':
-        return model.objects.filter(dni__icontains=int(searchQuery))
+        return Cliente.objects.filter(activo=activo, dni__icontains=int(searchQuery))
     elif searchField == 'cuit':
-        return model.objects.filter(cuit__icontains=int(searchQuery))
+        return Cliente.objects.filter(activo=activo, cuit__icontains=int(searchQuery))
     else:
-        return model.objects.filter(email__icontains=searchQuery)
+        return Cliente.objects.filter(activo=activo, email__icontains=searchQuery)
 
-def search_legado(model, searchField, searchQuery):
+def search_empleado(searchField, searchQuery, activo):
     if searchField == 'nombre':
-        return model.objects.using('clientes_legados').filter(nombre__icontains=searchQuery)
+        return Empleado.objects.filter(admin=True, activo=activo, nombre__icontains=searchQuery)
+    elif searchField == 'dni':
+        return Empleado.objects.filter(admin=True, activo=activo, dni__icontains=int(searchQuery))
     elif searchField == 'cuit':
-        return model.objects.using('clientes_legados').filter(nroDoc__icontains=int(searchQuery))
+        return Empleado.objects.filter(admin=True, activo=activo, cuit__icontains=int(searchQuery))
     else:
-        return model.objects.using('clientes_legados').filter(email__icontains=searchQuery)
+        return Empleado.objects.filter(admin=True, activo=activo, email__icontains=searchQuery)
+
+def search_legado(searchField, searchQuery):
+    if searchField == 'nombre':
+        return ClienteLegado.objects.using('clientes_legados').filter(nombre__icontains=searchQuery)
+    elif searchField == 'cuit':
+        return ClienteLegado.objects.using('clientes_legados').filter(nroDoc__icontains=int(searchQuery))
+    else:
+        return ClienteLegado.objects.using('clientes_legados').filter(email__icontains=searchQuery)
+
+def search_model(model, searchField, searchQuery, active, admin=False):
+
+    if active == u'True':
+        active = True
+    else:
+        active = False
+
+    return model.filter(searchField, searchQuery, active, admin)
+
+
+
+
 
 def verificar_usuario(username):
     try:

@@ -5,15 +5,13 @@
 <h1>Empleados</h1>
 
     <div id="searchbar">
-        <form action="" id="filter" method="post">
+        <form action="" id="filter" method="get">
         {% csrf_token %}
 
             <div class="fieldWrapper">
-
-                <p> {{ form.query.label_tag }} {{ form.query }}   {{ form.tipo.label_tag }} {{ form.tipo }}</p>
-
+                <p> {{ form.query.label_tag }} {{ form.query }} {{ form.tipo.label_tag }} {{ form.tipo }} </p>
+                <button id="boton" type="submit", style = margin-left:20px;padding:2px;border-right-width:3px;> Filtrar  </button>
             </div>
-            <button id="boton" type="submit", style = margin:-4px;padding:2px;border-right-width:3px;> Filtrar  </button>
         </form>
     </div>
     <div id="nuevo">

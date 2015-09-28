@@ -111,6 +111,14 @@ class ClienteLegado(models.Model):
         self.telefono = telefono
         self.nroUsuario = usuario
     """
+    @classmethod
+    def filter(self, searchField, searchQuery, active=True, admin=False):
+        if searchField == 'nombre':
+            return self.objects.filter(nombre__icontains=searchQuery)
+        elif searchField == 'dni':
+            return self.objects.filter(nroDoc__icontains=int(searchQuery))
+        else:
+            return self.objects.filter(email__icontains=searchQuery)
 
     def __unicode__(self):
         return self.nombre
@@ -159,9 +167,15 @@ class Persona(models.Model):
     fechaNacimiento = models.DateTimeField(blank=True, null=True)
     domicilio = models.CharField(max_length=254, blank=True, default='')
     telefono = models.CharField(max_length=254, blank=True, default='')
+    activo = models.BooleanField(default=True, null=False)
 
     class Meta:
         abstract = 'True'
+
+    @classmethod
+    def filter(self, searchField, searchQuery, active, admin):
+        pass
+
 
     def get_usuario(self):
         return self.nroUsuario
@@ -190,11 +204,27 @@ class Persona(models.Model):
     def set_telefono(self, telefono):
         self.telefono = telefono
 
+    def is_activo(self):
+        return self.activo
+
+    def set_activo(self, bool):
+        self.activo = bool
+        return
+
     def __unicode__(self):
         return self.nombre
 
 class Empleado(Persona):
     admin = models.BooleanField(default=False)
+
+    @classmethod
+    def filter(self, searchField, searchQuery, active=True, admin=False):
+        if searchField == 'nombre':
+            return self.objects.filter(admin=admin, activo=active, nombre__icontains=searchQuery)
+        elif searchField == 'dni':
+            return self.objects.filter(admin=admin, activo=active, dni__icontains=int(searchQuery))
+        else:
+            return self.objects.filter(admin=admin, activo=active, email__icontains=searchQuery)
 
     def set_admin(self, bool):
         self.admin = bool
@@ -214,6 +244,15 @@ class Empleado(Persona):
 
 class Cliente(Persona):
     cuit = models.CharField(max_length=11, null=True, default=0)
+
+    @classmethod
+    def filter(self, searchField, searchQuery, active, admin):
+        if searchField == 'nombre':
+            return self.objects.filter(activo=active, nombre__icontains=searchQuery)
+        elif searchField == 'cuit':
+            return self.objects.filter(activo=active, dni__icontains=int(searchQuery))
+        else:
+            return self.objects.filter(activo=active, email__icontains=searchQuery)
 
     def set_cuit(self, cuit):
         self.cuit = cuit

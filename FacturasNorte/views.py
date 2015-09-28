@@ -1,25 +1,29 @@
 # -*- coding: utf-8 -*-
-import urlparse
+
+import urllib.parse
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect
 from django.utils.decorators import method_decorator
+from django.utils.encoding import force_text
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.edit import FormMixin
 from django.utils import timezone
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
-from django.views.generic import DetailView, FormView, ListView, UpdateView, DeleteView, CreateView
+from django.views.generic import DetailView, FormView, UpdateView, CreateView
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.views import generic
 
-from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView
-from FacturasNorte.functions import send_email_contact, reset_password, buscar_pdfs, search_redirect, search_person, \
-    crear_perfil, search_legado
+from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView, \
+    LogicDeleteView, FormListView
+from FacturasNorte.functions import send_email_contact, reset_password, buscar_pdfs, \
+    crear_perfil, search_legado, search_model
 from Norte import settings
 from . import models
+
 
 #Importaciones para conficuracion de contacto
 
@@ -38,26 +42,6 @@ from FacturasNorte.functions import crear_historial_correcto, crear_historial_in
 #Pruebas de Usuario
 def is_admin_o_emp(user):
     return user.is_superuser or user.is_staff
-
-class FormListView(FormMixin, ListView):
-    def get(self, request, *args, **kwargs):
-        # From ProcessFormMixin
-        form_class = self.get_form_class()
-        self.form = self.get_form(form_class)
-
-        # From BaseListView
-        self.object_list = self.get_queryset()
-        allow_empty = self.get_allow_empty()
-        if not allow_empty and len(self.object_list) == 0:
-            raise Http404(_(u"Empty list and '%(class_name)s.allow_empty' is False.")
-                          % {'class_name': self.__class__.__name__})
-
-        context = self.get_context_data(object_list=self.object_list, form=self.form)
-        return self.render_to_response(context)
-
-    def post(self, request, *args, **kwargs):
-        return self.get(request, *args, **kwargs)
-
 
 def base(request):
     return render(request, 'FacturasNorte/base/base.html')
@@ -100,7 +84,8 @@ class LoginView(FormView):
         else:
             redirect_to = self.request.REQUEST.get(self.redirect_field_name, '')
 
-        netloc = urlparse.urlparse(redirect_to)[1]
+        redirect_to_string = str(redirect_to)
+        netloc = urllib.parse.urlsplit(redirect_to_string)[1]
         if not redirect_to:
             redirect_to = settings.LOGIN_REDIRECT_URL
         # Security check -- don't allow redirection to a different host.
@@ -170,7 +155,7 @@ class AdminModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     permission_required = 'FacturasNorte.update_admin'
 
 
-class AdminDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+class AdminDeleteView(LoginRequiredMixin, PermissionRequiredMixin, LogicDeleteView):
     model = Empleado
     template_name = "FacturasNorte/admin/del_admin.html"
     success_url = reverse_lazy('FacturasNorte:lista_admin')
@@ -183,20 +168,13 @@ class AdminListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     model = Empleado
     context_object_name = 'admin_list'
     permission_required = 'FacturasNorte.view_admin'
-
     form_class = FiltroPersonaForm
-
-    def post(self, request, *args, **kwargs):
-        form = self.get_form(FiltroPersonaForm)
-        if form.is_valid():
-            URL = 'FacturasNorte/admin/admins/'
-            return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['query'])
 
     def get_queryset(self):
         try:
-            return search_person(Empleado, self.kwargs['tipo'], self.kwargs['query'])
+            return search_model(Empleado,self.request.GET['tipo'], self.request.GET['query'], True, True)
         except KeyError:
-            return Empleado.objects.filter(admin=True)
+            return Empleado.objects.filter(activo=True, admin=True)
 
 class AdminDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/admin/admin_detail.html"
@@ -244,7 +222,7 @@ class EmpModifPerfilView(EmpModifView):
         self.success_url = reverse_lazy('FacturasNorte:perfil_empleado',kwargs={'pk' : self.request.user.id})
         return super(EmpModifPerfilView, self).form_valid(form)
 
-class EmpDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+class EmpDeleteView(LoginRequiredMixin, PermissionRequiredMixin, LogicDeleteView):
     model = Empleado
     template_name = "FacturasNorte/admin/del_emp.html"
     success_url = reverse_lazy('FacturasNorte:lista_empleado')
@@ -256,20 +234,13 @@ class EmpListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     model = Empleado
     context_object_name = 'emp_list'
     permission_required = 'FacturasNorte.view_empleado'
-
     form_class = FiltroPersonaForm
-
-    def post(self, request, *args, **kwargs):
-        form = self.get_form(FiltroPersonaForm)
-        if form.is_valid():
-            URL = 'FacturasNorte/admin/empleados/'
-            return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['query'])
 
     def get_queryset(self):
         try:
-            return search_person(Empleado, self.kwargs['tipo'], self.kwargs['query'])
+            return search_model(Empleado, self.request.GET['tipo'], self.request.GET['query'], True, False)
         except KeyError:
-            return Empleado.objects.all()
+            return Empleado.objects.filter(activo=True)
 
 class EmpDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/admin/emp_detail.html"
@@ -308,7 +279,7 @@ class CambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, FormVie
 
     def form_valid(self, form):
         if not self.request.user.check_password(form.cleaned_data.get('contrasena_anterior')):
-            raise ValidationError(u"La contraseña anterior es inválida", code='old_invalid')
+            raise ValidationError(u"La contraseÃ±a anterior es invÃ¡lida", code='old_invalid')
         return super(CambiarContrasenaView, self).form_valid(form)
 
 def cambiar_password_conf(request):
@@ -332,7 +303,7 @@ class ClienteRegistroView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
         crear_perfil(form, 'cliente')
         return super(ClienteRegistroView, self).form_valid(form)
 
-class ClienteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+class ClienteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, LogicDeleteView):
     model = Cliente
     template_name = "FacturasNorte/empleado/del_cliente.html"
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
@@ -347,17 +318,29 @@ class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView)
     permission_required = 'FacturasNorte.view_lista_cliente'
     form_class = FiltroClienteForm
 
-    def post(self, request, *args, **kwargs):
-        form = self.get_form(FiltroClienteForm)
-        if form.is_valid():
-            URL = 'FacturasNorte/staff/clientes/'
-            return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['query'])
+    # def get_initial(self):
+    #     """
+    #     Returns the initial data to use for forms on this view.
+    #     """
+    #     initial = super(ClienteListView, self).get_initial()
+    #     try:
+    #         initial['query'] = self.request.session['query']
+    #         initial['tipo'] = self.request.session['tipo']
+    #         initial['activo'] = self.request.session['activo']
+    #     finally:
+    #         return initial
+    #
+    # def post(self, request, *args, **kwargs):
+    #     request.session.__setitem__('query', request.form.cleaned_data['query'])
+    #     request.session.__setitem__('tipo', request.form.cleaned_data['tipo'])
+    #     request.session.__setitem__('activo', request.form.cleaned_data['activo'])
+    #     return self.get(request, *args, **kwargs)
 
     def get_queryset(self):
         try:
-            return search_person(Cliente, self.kwargs['tipo'], self.kwargs['query'])
+            return search_model(Cliente, self.request.GET['tipo'], self.request.GET['query'], self.request.GET['activo'], False)
         except KeyError:
-            return Cliente.objects.all()
+            return Cliente.objects.filter(activo=True)
 
 class ClientesLegadosView(ClienteListView):
     template_name = "FacturasNorte/empleado/clientes_legados.html"
@@ -367,17 +350,11 @@ class ClientesLegadosView(ClienteListView):
     permission_required = 'FacturasNorte.view_lista_cliente'
     form_class = FiltroClienteForm
 
-    def post(self, request, *args, **kwargs):
-        form = self.get_form(FiltroClienteForm)
-        if form.is_valid():
-            URL = 'FacturasNorte/staff/clientes_legados/'
-            return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['query'])
-
     def get_queryset(self):
         try:
-            return search_legado(ClienteLegado, self.kwargs['tipo'], self.kwargs['query'])
+            return search_model(ClienteLegado, self.request.GET['tipo'], self.request.GET['query'], False, False )
         except KeyError:
-            return ClienteLegado.objects.using('clientes_legados').all()
+            return ClienteLegado.objects.all()
 
 class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/empleado/cliente_detail.html"
@@ -395,30 +372,29 @@ class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomCli
     model = Cliente
     context_object_name = 'cliente'
     permission_required = 'FacturasNorte.view_facturas'
-
     form_class = FiltroFacturaForm
 
-    def post(self, request, *args, **kwargs):
-        form = self.get_form(FiltroFacturaForm)
-        URL = 'FacturasNorte/cliente/facturas/' + self.kwargs.get(self.pk_url_kwarg) + '/'
-        if form.is_valid():
-            if (form.cleaned_data['tipo'] == 'fecha'):
-                fecha = form.cleaned_data['fecha'].strftime("%Y-%m-%d")
-                return search_redirect(URL, form.cleaned_data['tipo'], fecha)
-            elif (form.cleaned_data['tipo'] == 'pedido'):
-                return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['pedido'])
-            else:
-                return redirect(URL)
-        else:
-            return redirect('/' + URL)
+    # def post(self, request, *args, **kwargs):
+    #     form = self.get_form(FiltroFacturaForm)
+    #     URL = 'FacturasNorte/cliente/facturas/' + self.kwargs.get(self.pk_url_kwarg) + '/'
+    #     if form.is_valid():
+    #         if (form.cleaned_data['tipo'] == 'fecha'):
+    #             fecha = form.cleaned_data['fecha'].strftime("%Y-%m-%d")
+    #             return search_redirect(URL, form.cleaned_data['tipo'], fecha)
+    #         elif (form.cleaned_data['tipo'] == 'pedido'):
+    #             return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['pedido'])
+    #         else:
+    #             return redirect(URL)
+    #     else:
+    #         return redirect('/' + URL)
 
     def get_context_data(self, **kwargs):
         context = super(ClienteFacturasView, self).get_context_data(**kwargs)
         context['form'] = self.get_form(FiltroFacturaForm)
         try:
             context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg),
-                                                    self.kwargs['tipo'],
-                                                    self.kwargs['query'])
+                                                    self.request.GET['tipo'],
+                                                    self.request.GET['query'])
         except KeyError:
             context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg))
         return context
@@ -426,20 +402,6 @@ class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomCli
 class EmpleadoListaFacturasView(ClienteFacturasView):
     template_name = "FacturasNorte/empleado/facturas_cliente.html"
     permission_required = 'FacturasNorte.view_facturas'
-
-    def post(self, request, *args, **kwargs):
-        form = self.get_form(FiltroFacturaForm)
-        URL = 'FacturasNorte/staff/facturas/' + self.kwargs.get(self.pk_url_kwarg) + '/'
-        if form.is_valid():
-            if (form.cleaned_data['tipo'] == 'fecha'):
-                fecha = form.cleaned_data['fecha'].strftime("%Y-%m-%d")
-                return search_redirect(URL, form.cleaned_data['tipo'], fecha)
-            elif (form.cleaned_data['tipo'] == 'pedido'):
-                return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['pedido'])
-            else:
-                return redirect(URL)
-        else:
-            return redirect('/' + URL)
 
     def get_context_data(self, **kwargs):
         context = super(EmpleadoListaFacturasView, self).get_context_data(**kwargs)
@@ -514,12 +476,7 @@ class BlogDetail(generic.DetailView):
     model = models.Entry
     template_name = "FacturasNorte/post.html"
 
-def pdf_view(request):
-    with open('C:\Users\Julian\Documents\Diario Norte\Proyecto Norte\PDFs\Hola.pdf', 'rb') as pdf:
-        response = HttpResponse(pdf.read(), content_type='application/pdf')
-        response['Content-Disposition'] = 'inline;filename=some_file.pdf'
-        return response
-    pdf.closed
+
 
 def reestablecer_password(request, pk):
     usuario = get_object_or_404(User, id=pk)
