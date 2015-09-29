@@ -48,13 +48,12 @@ def crear_perfil(form, perfil):
     try:
         nuevo_usuario.set_password(password)
         nuevo_usuario.save()
-
         for perm in permissions:
-            p = Permission.objects.get(codename=perm[0])
-            nuevo_usuario.user_permissions.add(p)
-
+             p = Permission.objects.get(codename=perm[0])
+             nuevo_usuario.user_permissions.add(p)
         nuevo_usuario.save()
         nuevo_perfil.set_usuario(nuevo_usuario)
+        nuevo_perfil.set_activo(True)
         nuevo_perfil.save()
         enviar_password(password)
         return

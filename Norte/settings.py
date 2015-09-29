@@ -60,10 +60,15 @@ WSGI_APPLICATION = 'Norte.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'facturasnorte',
-        'USER': 'dacs2015',
-        'PASSWORD': 'dacs2015',#'dni36017874',
+        'ENGINE': 'sqlserver_ado',
+        'NAME': 'FacturasNorte',#'ClientesLegados',
+        'HOST': 'PABLOHP',#'PABLOHP',
+        'USER': 'sa',
+        'PASSWORD': 'Norte1234',#'Norte1234',
+        'OPTIONS': {
+            'provider': 'SQLNCLI',
+            'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;',
+        }
     },
 
     'clientes_legados': {
@@ -75,7 +80,6 @@ DATABASES = {
         'OPTIONS': {
             'provider': 'SQLNCLI',
             'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;',
-            'use_legacy_date_fields' : 'True'
         }
     }
 }

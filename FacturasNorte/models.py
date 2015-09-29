@@ -4,6 +4,7 @@ from django.contrib.auth.models import User, Permission, AbstractUser
 from django.dispatch import receiver
 from django.db.models.signals import post_delete
 from django.core.urlresolvers import reverse
+import sqlserver_ado.fields as fields
 
 class ClienteLegado(models.Model):
     numero = models.AutoField(db_column='NUMERO', primary_key=True)

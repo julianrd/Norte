@@ -37,7 +37,7 @@ def validate_cuit(cuit):
 
     # calculo el digito verificador:
     aux = 0
-    for i in xrange(10):
+    for i in range(10):
         aux += int(cuit[i]) * base[i]
 
     aux = 11 - (aux - (int(aux / 11) * 11))
