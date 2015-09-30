@@ -43,6 +43,12 @@ class PersonaForm(forms.ModelForm):
     domicilio = forms.CharField(validators=[validate_domicilio], initial='')
     telefono = forms.CharField(validators=[validate_telefono], initial='')
 
+class ClienteForm(PersonaForm):
+
+    class Meta:
+        model = Cliente
+        fields = ['nombre', 'dni', 'email', 'fechaNacimiento', 'domicilio', 'telefono']
+
 class EmpleadoForm(PersonaForm):
     
     class Meta:

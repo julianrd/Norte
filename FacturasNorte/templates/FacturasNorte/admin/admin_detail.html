@@ -32,7 +32,7 @@
         <form action="{% url 'FacturasNorte:modif_admin' admin.id %}">
             <input type="submit" value="Modificar">
         </form>
-        <form action="{% url 'FacturasNorte:reestablecer_contrasena' admin.id %}">
+        <form action="{% url 'FacturasNorte:reestablecer_contrasena' admin.nroUsuario.id %}">
             <input type="submit" value="Reestablecer contrasena">
         </form>
         <form action="{% url 'FacturasNorte:elim_admin' admin.id %}">

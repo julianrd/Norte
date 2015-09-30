@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import urllib.parse
+from datetime import date
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponseRedirect
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_text
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.edit import FormMixin
@@ -20,9 +20,10 @@ from django.views import generic
 from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView, \
     LogicDeleteView, FormListView
 from FacturasNorte.functions import send_email_contact, reset_password, buscar_pdfs, \
-    crear_perfil, search_legado, search_model
+    crear_perfil, search_model
 from Norte import settings
 from . import models
+
 
 
 #Importaciones para conficuracion de contacto
@@ -170,9 +171,21 @@ class AdminListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     permission_required = 'FacturasNorte.view_admin'
     form_class = FiltroPersonaForm
 
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super(AdminListView, self).get_initial()
+        try:
+            initial['query'] = self.request.GET['query']
+            initial['tipo'] = self.request.GET['tipo']
+            initial['activo'] = self.request.GET['activo']
+        finally:
+            return initial
+
     def get_queryset(self):
         try:
-            return search_model(Empleado,self.request.GET['tipo'], self.request.GET['query'], True, True)
+            return search_model(Empleado,self.request.GET['tipo'], self.request.GET['query'], u'True', True)
         except KeyError:
             return Empleado.objects.filter(activo=True, admin=True)
 
@@ -236,9 +249,21 @@ class EmpListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     permission_required = 'FacturasNorte.view_empleado'
     form_class = FiltroPersonaForm
 
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super(EmpListView, self).get_initial()
+        try:
+            initial['query'] = self.request.GET['query']
+            initial['tipo'] = self.request.GET['tipo']
+            initial['activo'] = self.request.GET['activo']
+        finally:
+            return initial
+
     def get_queryset(self):
         try:
-            return search_model(Empleado, self.request.GET['tipo'], self.request.GET['query'], True, False)
+            return search_model(Empleado, self.request.GET['tipo'], self.request.GET['query'], u'True', False)
         except KeyError:
             return Empleado.objects.filter(activo=True)
 
@@ -303,6 +328,17 @@ class ClienteRegistroView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
         crear_perfil(form, 'cliente')
         return super(ClienteRegistroView, self).form_valid(form)
 
+class ClienteDeBajaRegistroView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = Cliente
+    form_class = ClienteForm
+    template_name = "FacturasNorte/empleado/registro_cliente.html"
+    success_url = reverse_lazy('FacturasNorte:lista_cliente')
+    permission_required = 'FacturasNorte.update_cliente'
+
+    def form_valid(self, form):
+        self.object.set_activo(True)
+        return super(ClienteDeBajaRegistroView, self).form_valid(form)
+
 class ClienteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, LogicDeleteView):
     model = Cliente
     template_name = "FacturasNorte/empleado/del_cliente.html"
@@ -318,23 +354,17 @@ class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView)
     permission_required = 'FacturasNorte.view_lista_cliente'
     form_class = FiltroClienteForm
 
-    # def get_initial(self):
-    #     """
-    #     Returns the initial data to use for forms on this view.
-    #     """
-    #     initial = super(ClienteListView, self).get_initial()
-    #     try:
-    #         initial['query'] = self.request.session['query']
-    #         initial['tipo'] = self.request.session['tipo']
-    #         initial['activo'] = self.request.session['activo']
-    #     finally:
-    #         return initial
-    #
-    # def post(self, request, *args, **kwargs):
-    #     request.session.__setitem__('query', request.form.cleaned_data['query'])
-    #     request.session.__setitem__('tipo', request.form.cleaned_data['tipo'])
-    #     request.session.__setitem__('activo', request.form.cleaned_data['activo'])
-    #     return self.get(request, *args, **kwargs)
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super(ClienteListView, self).get_initial()
+        try:
+            initial['query'] = self.request.GET['query']
+            initial['tipo'] = self.request.GET['tipo']
+            initial['activo'] = self.request.GET['activo']
+        finally:
+            return initial
 
     def get_queryset(self):
         try:
@@ -349,6 +379,17 @@ class ClientesLegadosView(ClienteListView):
     paginate_by = 10
     permission_required = 'FacturasNorte.view_lista_cliente'
     form_class = FiltroClienteForm
+
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super(ClientesLegadosView, self).get_initial()
+        try:
+            initial['query'] = self.request.GET['query']
+            initial['tipo'] = self.request.GET['tipo']
+        finally:
+            return initial
 
     def get_queryset(self):
         try:
@@ -388,28 +429,75 @@ class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomCli
     #     else:
     #         return redirect('/' + URL)
 
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super(ClienteFacturasView, self).get_initial()
+        try:
+            initial['pedido'] = self.request.GET['pedido']
+            initial['tipo'] = self.request.GET['tipo']
+            initial['fecha_day'] = self.request.GET['fecha_day']
+            initial['fecha_month'] = self.request.GET['fecha_month']
+            initial['fecha_year'] = self.request.GET['fecha_year']
+        finally:
+            return initial
+
     def get_context_data(self, **kwargs):
         context = super(ClienteFacturasView, self).get_context_data(**kwargs)
         context['form'] = self.get_form(FiltroFacturaForm)
         try:
+            dia = int(self.request.GET['fecha_day'])
+            mes = int(self.request.GET['fecha_month'])
+            anio = int(self.request.GET['fecha_year'])
+            fecha = date(anio, mes, dia)
+        except ValueError:
+            fecha = None
+        try:
             context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg),
                                                     self.request.GET['tipo'],
-                                                    self.request.GET['query'])
+                                                    self.request.GET['pedido'],
+                                                    fecha)
         except KeyError:
             context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg))
         return context
 
-class EmpleadoListaFacturasView(ClienteFacturasView):
+class EmpleadoListaFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomClienteDetailView, FormMixin):
     template_name = "FacturasNorte/empleado/facturas_cliente.html"
+    model = Cliente
+    context_object_name = 'cliente'
     permission_required = 'FacturasNorte.view_facturas'
+    form_class = FiltroFacturaForm
+
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super(EmpleadoListaFacturasView, self).get_initial()
+        try:
+            initial['pedido'] = self.request.GET['pedido']
+            initial['tipo'] = self.request.GET['tipo']
+            initial['fecha_day'] = self.request.GET['fecha_day']
+            initial['fecha_month'] = self.request.GET['fecha_month']
+            initial['fecha_year'] = self.request.GET['fecha_year']
+        finally:
+            return initial
 
     def get_context_data(self, **kwargs):
         context = super(EmpleadoListaFacturasView, self).get_context_data(**kwargs)
         context['form'] = self.get_form(FiltroFacturaForm)
         try:
-            context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg),
-                                                    self.kwargs['tipo'],
-                                                    self.kwargs['query'])
+            dia = int(self.request.GET['fecha_day'])
+            mes = int(self.request.GET['fecha_month'])
+            anio = int(self.request.GET['fecha_year'])
+            fecha = date(anio, mes, dia)
+        except ValueError:
+            fecha = None
+        try:
+                context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg),
+                                                        self.request.GET['tipo'],
+                                                        self.request.GET['pedido'],
+                                                        fecha)
         except KeyError:
             context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg))
         return context
@@ -434,9 +522,9 @@ def reset_password_view(request, pk):
 @user_passes_test(is_admin_o_emp)
 def reset_password_conf(request, pk):
     try:
-        usuario = get_object_or_404(Cliente, id=pk).nroUsuario
+        usuario = Cliente.objects.get(id=pk).nroUsuario
     except ObjectDoesNotExist:
-        usuario = get_object_or_404(Empleado, id=pk).nroUsuario
+        usuario = Empleado.objects.get(id=pk).nroUsuario
 
     return render(request, 'FacturasNorte/base/reset_contrasena.html', {'usuario':usuario})
 

@@ -45,9 +45,13 @@
             <td><a href={% url 'FacturasNorte:modif_cliente' cliente.id %}>
 
                 <img src="{% static "FacturasNorte/img/edit.gif" %}" width="12", alt="Editar"/> Editar</a></td>
-
+            {% if cliente.activo %}
             <td><a href={% url 'FacturasNorte:elim_cliente' cliente.id %}>
                 <img src="{% static "FacturasNorte/img/delete.gif" %}" width="12", alt="Borrar"/> Borrar</a></td>
+            {% else %}
+            <td><a href={% url 'FacturasNorte:registro_cliente_de_baja' cliente.id %}>
+                <img src="{% static "FacturasNorte/img/add.gif" %}" width="12", alt="Borrar"/> Registrar</a></td>
+            {% endif %}
         </tr>
 
      {% endfor %}

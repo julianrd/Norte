@@ -122,14 +122,16 @@ def send_email_contact(email, subject, body):
         recipient_list =['julian_rd7@hotmail.com'],
         )
 
-def buscar_pdfs(pk, field=None, query=None):
+def buscar_pdfs(pk, field=None, pedido=None, fecha=None):
      cliente = get_object_or_404(Cliente, nroUsuario=pk)
      storageManager = FileSystemStorage()
      archivos = storageManager.listdir(settings.MEDIA_ROOT)[1]
      facturas = []
+
      if (field == 'fecha'):
-                 query = strptime(query, "%Y-%m-%d")
-                 query = date(query.tm_year, query.tm_mon, query.tm_mday)
+        query = fecha
+     else:
+        query = pedido
 
      for a in archivos:
          doc = a.split('-')[1]
