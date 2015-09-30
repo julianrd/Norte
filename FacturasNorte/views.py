@@ -483,3 +483,6 @@ def reestablecer_password(request, pk):
     reset_password(usuario)
     return render(request, 'FacturasNorte/base/reset_contrasena_hecho.html', {})
 
+class Historial(generic.DetailView):
+    model = models.Historiales
+    template_name = "FacturasNorte/historial.html"

@@ -103,9 +103,9 @@ class ContactUsuarioLoginForm(forms.Form):
     )
 
 class CambiarContrasenaForm(forms.Form):
-    contrasena_anterior = forms.CharField(label = "ContraseÃ±a anterior", widget=forms.PasswordInput())
-    contrasena_nueva = forms.CharField(label = "ContraseÃ±a nueva", widget=forms.PasswordInput())
-    confirmar_contrasena = forms.CharField(label = "Confirmar contraseÃ±a",widget=forms.PasswordInput())
+    contrasena_anterior = forms.CharField(label = "Contraseña anterior", widget=forms.PasswordInput())
+    contrasena_nueva = forms.CharField(label = "Contraseña nueva", widget=forms.PasswordInput())
+    confirmar_contrasena = forms.CharField(label = "Confirmar contraseña",widget=forms.PasswordInput())
 
     def clean(self):
         password2 = self.cleaned_data.get('confirmar_contrasena')

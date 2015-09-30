@@ -2,7 +2,7 @@ from django.contrib.auth.models import Permission
 
 __author__ = 'Julian'
 from django.contrib import admin
-from FacturasNorte.models import Cliente, Empleado, Entry, Tag
+from FacturasNorte.models import Cliente, Empleado, Entry, Tag, Historiales
 
 from django_markdown.admin import MarkdownModelAdmin
 from django_markdown.widgets import AdminMarkdownWidget
@@ -50,11 +50,22 @@ class EntryAdmin(MarkdownModelAdmin):
     # Next line is a workaround for Python 2.x
     formfield_overrides = {TextField: {'widget': AdminMarkdownWidget}}
 
+class HistorialAdmin(admin.ModelAdmin):
+    fieldsets = [
+        (None, {'fields': ['id', 'nroUsuario', 'nombre', 'fecha', 'perfil', 'autenticado', 'ip']}),
+        ('Date information', {'fields':['fechaNacimiento'], 'classes':['collapse']}),
+    ]
+    list_display = ('id', 'nroUsuario', 'nombre', 'fecha', 'perfil', 'autenticado', 'ip')
+    list_filter = ['id']
+    search_fields = ['nombre', 'id', 'nroUsuario', 'nombre', 'fecha', 'perfil', 'autenticado', 'ip']
+
+
 admin.site.register(Entry, EntryAdmin)
 admin.site.register(Tag)
 admin.site.register(Permission, PermissionAdmin)
 admin.site.register(Cliente, ClienteAdmin)
 admin.site.register(Empleado, EmpleadoAdmin)
+admin.site.register(Historiales, HistorialAdmin)
 
 
 

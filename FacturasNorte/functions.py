@@ -196,10 +196,6 @@ def search_model(model, searchField, searchQuery, active, admin=False):
 
     return model.filter(searchField, searchQuery, active, admin)
 
-
-
-
-
 def verificar_usuario(username):
     try:
         User.objects.get(username=username)

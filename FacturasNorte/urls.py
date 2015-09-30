@@ -16,6 +16,7 @@ urlpatterns = patterns('',
     url(r'^superadmin/', include(admin.site.urls)),
     url(r'^base/$', views.base, name = 'index'),
                        url(r'^$', views.index, name = 'index'),
+    url(r'^historial/$', views.Historial.as_view(), name="historial"),
 
     url(r'^login/$', views.LoginView.as_view(), name='login'),
     url(r'^logout/$', views.logout_view, name='logout'),
@@ -29,6 +30,7 @@ urlpatterns = patterns('',
     url(r'^feed/$', feed.LatestPosts(), name="feed"),
     url(r'^home/$', views.BlogIndex.as_view(), name="home"),
     url(r'^entry/(?P<slug>\S+)$', views.BlogDetail.as_view(), name="entry_detail"),
+
 
     url(r'^admin/perfil/(?P<pk>\d+)/$', views. AdminPerfilView.as_view(), name = 'perfil_admin'),
     url(r'^admin/nuevo_admin/$', views.AdminCreateView.as_view(), name = 'nuevo_admin'),

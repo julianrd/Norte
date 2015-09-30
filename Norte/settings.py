@@ -62,11 +62,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'sqlserver_ado',
         'NAME': 'FacturasNorte',#'ClientesLegados',
-        'HOST': 'PABLOHP',#'PABLOHP',
+        'HOST': 'localhost',#'PABLOHP',
         'USER': 'sa',
         'PASSWORD': 'Norte1234',#'Norte1234',
         'OPTIONS': {
-            'provider': 'SQLNCLI',
+            'provider': 'SQLNCLI11',
             'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;',
         }
     },
@@ -76,9 +76,9 @@ DATABASES = {
         'NAME': 'DB_EditorialChacoGestion',#'ClientesLegados',
         'HOST': '10.0.4.162',#'PABLOHP',
         'USER': 'sa',
-        'PASSWORD': 'Norte1234',#'Norte1234',
+        'PASSWORD': 'Norte1234',#'DNI36017',
         'OPTIONS': {
-            'provider': 'SQLNCLI',
+            'provider': 'SQLNCLI11',
             'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;',
         }
     }
@@ -179,3 +179,4 @@ NORECAPTCHA_SITE_KEY = '6Ld8HgwTAAAAAO8EB6lFkjWgHd6DYUoKL2u3R6Y4'
 NORECAPTCHA_SECRET_KEY = '6Ld8HgwTAAAAAM5fqalC3jaXEQbJqlW7GCboJ5YY'
 
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

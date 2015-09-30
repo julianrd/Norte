@@ -251,7 +251,7 @@ class Cliente(Persona):
         if searchField == 'nombre':
             return self.objects.filter(activo=active, nombre__icontains=searchQuery)
         elif searchField == 'cuit':
-            return self.objects.filter(activo=active, dni__icontains=int(searchQuery))
+            return self.objects.filter(activo=active, cuit__icontains=int(searchQuery))
         else:
             return self.objects.filter(activo=active, email__icontains=searchQuery)
 
@@ -338,3 +338,5 @@ class Historiales(models.Model):
 
     class Meta:
         db_table = 'Historiales'
+        verbose_name = "Historial"
+        verbose_name_plural = "Historial de sesiones"
