@@ -5,6 +5,7 @@ from datetime import date
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponseRedirect
+from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
@@ -451,7 +452,7 @@ class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomCli
             mes = int(self.request.GET['fecha_month'])
             anio = int(self.request.GET['fecha_year'])
             fecha = date(anio, mes, dia)
-        except ValueError:
+        except (MultiValueDictKeyError, ValueError):
             fecha = None
         try:
             context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg),
@@ -491,7 +492,7 @@ class EmpleadoListaFacturasView(LoginRequiredMixin, PermissionRequiredMixin, Cus
             mes = int(self.request.GET['fecha_month'])
             anio = int(self.request.GET['fecha_year'])
             fecha = date(anio, mes, dia)
-        except ValueError:
+        except (MultiValueDictKeyError, ValueError):
             fecha = None
         try:
                 context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg),
