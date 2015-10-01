@@ -14,8 +14,7 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^superadmin/', include(admin.site.urls)),
-    url(r'^base/$', views.base, name = 'index'),
-    url(r'^$', views.index, name = 'index'),
+    url(r'^$', views.BlogIndex.as_view(), name = 'index'),
 
     url(r'^login/$', views.LoginView.as_view(), name='login'),
     url(r'^logout/$', views.logout_view, name='logout'),
@@ -27,7 +26,6 @@ urlpatterns = patterns('',
     url(r'^contacto/$', views.ContactView.as_view(), name = 'contacto'),
     url(r'^thankyou/$', views.ThankYou, name ='thankyou'),
     url(r'^feed/$', feed.LatestPosts(), name="feed"),
-    url(r'^home/$', views.BlogIndex.as_view(), name="home"),
     url(r'^entry/(?P<slug>\S+)$', views.BlogDetail.as_view(), name="entry_detail"),
 
 

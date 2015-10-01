@@ -3,6 +3,6 @@
 {% block content %}
 <form action="" method="post">{% csrf_token %}
     <p>¿Esta seguro de querer eliminar al Administrador "{{ admin.nombre }}"?</p>
-    <input type="submit" value="Aceptar" />
+   <button id="boton" type="submit"> Aceptar </button>
 </form>
 {% endblock %}

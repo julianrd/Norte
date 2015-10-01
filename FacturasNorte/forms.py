@@ -23,7 +23,7 @@ from django.forms.extras.widgets import SelectDateWidget
 
 class IniciarSesionForm(forms.Form):
     email = forms.EmailField(label='E-mail', show_hidden_initial='ejemplo@dominio.com', validators=[validate_emailExistente])
-    password = forms.CharField(label='Contrasena', widget=forms.PasswordInput(), initial='')
+    password = forms.CharField(label=u'Contraseña', widget=forms.PasswordInput(), initial='')
     if authenticate(username=email, password=password):
         captcha = NoReCaptchaField(required=False)
 
@@ -56,14 +56,14 @@ class EmpleadoForm(PersonaForm):
         fields = ['nombre', 'dni', 'email', 'fechaNacimiento', 'domicilio', 'telefono']
 
 class EmpleadoRegisterForm(EmpleadoForm):
-    contrasena = forms.CharField(label='ContraseÃ±a', widget=forms.PasswordInput(), initial='')
-    confirmar_contrasena = forms.CharField(label='Confirmar contraseÃ±a', widget=forms.PasswordInput(), initial='')
+    contrasena = forms.CharField(label=u'Contraseña', widget=forms.PasswordInput(), initial='')
+    confirmar_contrasena = forms.CharField(label=u'Confirmar contraseña', widget=forms.PasswordInput(), initial='')
 
     def clean(self):
         password1 = self.data['contrasena']
         password2 = self.data['confirmar_contrasena']
         if password1 and password1 != password2:
-            raise forms.ValidationError("ContraseÃ±as no coinciden, vuelva a ingresar")
+            raise forms.ValidationError(u"Contraseñas no coinciden, vuelva a ingresar")
         return super(EmpleadoRegisterForm, self).clean()
 
 class ClienteForm(PersonaForm):
@@ -109,9 +109,9 @@ class ContactUsuarioLoginForm(forms.Form):
     )
 
 class CambiarContrasenaForm(forms.Form):
-    contrasena_anterior = forms.CharField(label = "Contraseña anterior", widget=forms.PasswordInput())
-    contrasena_nueva = forms.CharField(label = "Contraseña nueva", widget=forms.PasswordInput())
-    confirmar_contrasena = forms.CharField(label = "Confirmar contraseña",widget=forms.PasswordInput())
+    contrasena_anterior = forms.CharField(label = u'Contraseña anterior', widget=forms.PasswordInput())
+    contrasena_nueva = forms.CharField(label = u'Contraseña nueva', widget=forms.PasswordInput())
+    confirmar_contrasena = forms.CharField(label = u'Confirmar contraseña',widget=forms.PasswordInput())
 
     def clean(self):
         password2 = self.cleaned_data.get('confirmar_contrasena')

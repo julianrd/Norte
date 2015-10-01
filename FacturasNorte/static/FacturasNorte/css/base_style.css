@@ -744,18 +744,6 @@ table tr td
 
 }
 
-#filter .fieldWrapper, #filter p , #filter
-{
-  float: left
-}
-#filter button
-{
-  alignment: right;
-}
-#list ul
-{
-  display: inline;
-}
 
 .column {
   float: left;
@@ -2366,3 +2354,9 @@ ul.errorlist
   padding: 4px 5px;
 }
 
+button
+{
+  margin-left: 20px;
+  padding:2px;
+  border-right-width:3px;
+}

@@ -30,16 +30,16 @@
 
     <div id="links">
         <form action="{% url 'FacturasNorte:facturas_cliente_empleado' cliente.nroUsuario.id %}">
-            <input type="submit" value="Ver Facturas">
+           <button id="boton" type="submit"> Ver facturas </button>
         </form>
         <form action="{% url 'FacturasNorte:modif_cliente' cliente.id %}">
-            <input type="submit" value="Modificar">
+            <button id="boton" type="submit"> Modificar  </button>
         </form>
         <form action="{% url 'FacturasNorte:reestablecer_contrasena' cliente.id %}">
-            <input type="submit" value="Reestablecer contrasena">
+            <button id="boton" type="submit"> Registrar contrase&ntilde;a  </button>
         </form>
         <form action="{% url 'FacturasNorte:elim_cliente' cliente.id %}">
-            <input type="submit" value="Eliminar">
+            <button id="boton" type="submit"> Eliminar  </button>
         </form>
     </div>
 {% endblock %}
