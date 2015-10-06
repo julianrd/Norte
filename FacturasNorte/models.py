@@ -177,6 +177,12 @@ class Persona(models.Model):
     def filter(self, searchField, searchQuery, active, admin):
         pass
 
+    def set_nombre(self, nombre):
+        self.nombre = nombre
+        return
+
+    def get_nombre(self):
+        return self.nombre
 
     def get_usuario(self):
         return self.nroUsuario
@@ -340,3 +346,18 @@ class Historiales(models.Model):
         db_table = 'Historiales'
         verbose_name = "Historial"
         verbose_name_plural = "Historial de sesiones"
+
+class Historiales_registros (models.Model):  #Aquí se guardarán las altas, y bajas de un cliente
+     cuit_cli = models.CharField(max_length=200, blank = False)
+     nombre = models.CharField(max_length=200, blank = True)
+     fecha = models.DateTimeField(max_length=200, blank = True)
+     operador = models.CharField(max_length = 20, blank = True)
+     accion = models.CharField(max_length = 20, blank = True)
+
+     def __str__(self):
+        return self.cuit_cli
+
+     class Meta:
+        db_table = 'Historiales_registros'
+        verbose_name = "Historiales_registros"
+        verbose_name_plural = "Historial de Registro de Usuarios"

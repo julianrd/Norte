@@ -62,11 +62,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'sqlserver_ado',
         'NAME': 'FacturasNorte',#'ClientesLegados',
-        'HOST': 'PABLOHP',#'PABLOHP',
+        'HOST': 'localhost',#'PABLOHP',
         'USER': 'sa',
         'PASSWORD': 'Norte1234',#'Norte1234',
         'OPTIONS': {
-            'provider': 'SQLNCLI',
+            'provider': 'SQLNCLI11',
             'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;',
         }
     },
@@ -78,7 +78,7 @@ DATABASES = {
         'USER': 'sa',
         'PASSWORD': 'Norte1234',#'DNI36017',
         'OPTIONS': {
-            'provider': 'SQLNCLI',
+            'provider': 'SQLNCLI11',
             'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;',
         }
     }
@@ -158,7 +158,7 @@ EMAIL_USE_TLS = True
 
 
 #MEDIA
-MEDIA_ROOT = 'C:/Users/Julian/Documents/Diario Norte/Proyecto Norte/PDFs/'
+MEDIA_ROOT = 'C:/Apache24/htdocs/PDFs/'
 
 MEDIA_ULR = '/pdf/'
 
@@ -167,7 +167,7 @@ MEDIA_ULR = '/pdf/'
 CLIENTE_PERMISOS = [('cambiar_cont', 'Puede cambiar su contrasena'), ('view_perfil_cliente', 'Puede ver su perfil de cliente'),
                        ('view_facturas', 'Puede ver sus facturas')]
 
-EMPLEADO_PERMISOS = [('cambiar_cont', 'Puede cambiar su contrasena'), ('view_facturas', 'Puede ver las facutras de los clientes'),
+EMPLEADO_PERMISOS = [ ('view_facturas', 'Puede ver las facutras de los clientes'),
                        ('view_lista_cliente', 'Puede ver la lista de clientes'),
                        ('view_detalle_cliente', 'Puede ver detalle cliente'), ('update_cliente', 'Puede modificar cliente'),
                        ('agregar_cliente', 'Puede agregar cliente'), ('del_cliente', 'Puede eliminar cliente'),

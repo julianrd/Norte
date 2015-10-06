@@ -9,9 +9,9 @@ from django.core import mail
 from django.core.files.storage import FileSystemStorage
 from django.core.mail import EmailMessage, send_mail
 from django.shortcuts import get_object_or_404, redirect
-from django.utils import timezone
+#from django.utils import timezone
 from FacturasNorte.custom_classes import Factura
-from FacturasNorte.models import Cliente, Empleado, Historiales, ClienteLegado
+from FacturasNorte.models import Cliente, Empleado, Historiales, ClienteLegado, Historiales_registros
 from Norte import settings
 from django.contrib.auth.models import User
 
@@ -63,6 +63,8 @@ def crear_perfil(form, perfil):
         usuario_creado.delete()
         raise ValidationError((u'Campos invalidos'), code='campos')
 
+
+
 def crear_usuario(form):
     username = form.cleaned_data['email'].split("@")[0]
     nuevo_usuario = User()
@@ -71,6 +73,8 @@ def crear_usuario(form):
     nuevo_usuario.is_active = True
     nuevo_usuario.date_joined = timezone.now()
     return nuevo_usuario
+
+
 
 def crear_persona(form, model):
     persona = model()
@@ -86,6 +90,7 @@ def crear_persona(form, model):
     persona.set_domicilio(form.cleaned_data['domicilio'])
     persona.set_telefono(form.cleaned_data['telefono'])
     return persona
+
 
 def enviar_password(password):
     message = 'Su contrasena es: ' + str(password)
@@ -134,8 +139,8 @@ def buscar_pdfs(pk, field=None, pedido=None, fecha=None):
         query = pedido
 
      for a in archivos:
-         doc = a.split('-')[1]
-         if (doc == cliente.dni):
+         cuit = a.split('-')[1]
+         if (cuit == cliente.cuit):
              nroPed = a.split('-')[2]
              fec = a.split('-')[3].split('.')[0]
              fecstr = fec[:2] + ' ' + fec[2:4] + ' ' + fec[4:8]
@@ -213,7 +218,7 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
-def crear_historial_correcto(user, request):
+def crear_historial_correcto(user, request): #Se crea un historial de sesion, cuando se logean de manera correcta
   nuevo_historial = Historiales()
   nuevo_historial.fecha = timezone.now()
   nuevo_historial.ip = get_client_ip(request)
@@ -230,7 +235,7 @@ def crear_historial_correcto(user, request):
 
   nuevo_historial.save()
 
-def crear_historial_incorrecto(request, form):
+def crear_historial_incorrecto(request, form):  #Se crea un historial de sesion, cuando se logean de manera erronea
    nuevo_historial = Historiales()
    nuevo_historial.fecha = timezone.now()
    nuevo_historial.ip = get_client_ip(request)
@@ -238,4 +243,23 @@ def crear_historial_incorrecto(request, form):
    nuevo_historial.nroUsuario = ''
    nuevo_historial.nombre = form['email']
    nuevo_historial.save()
+
+def crear_historial_alta(form, user): #se crea un historial, por cada cliente que se da de alta
+    historial_alta = Historiales_registros()
+    historial_alta.cuit_cli = form.cleaned_data['nroDoc']
+    historial_alta.nombre = form.cleaned_data['nombre']
+    historial_alta.fecha = timezone.now()
+    historial_alta.operador = user.username
+    historial_alta.accion = 'Alta'
+    historial_alta.save()
+
+
+def crear_historial_baja(user, cliente): #se crea un historial, por cada cliente que se da de baja
+    historial_baja = Historiales_registros()
+    historial_baja.cuit_cli = cliente.get_cuit()
+    historial_baja.nombre = cliente.get_nombre()
+    historial_baja.fecha = timezone.now()
+    historial_baja.operador = user.username
+    historial_baja.accion = 'Baja'
+    historial_baja.save()
 

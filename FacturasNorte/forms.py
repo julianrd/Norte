@@ -41,7 +41,7 @@ class PersonaForm(forms.ModelForm):
     email = forms.EmailField(validators=[validate_email], initial='')
     fechaNacimiento = forms.DateField(label='Fecha de nacimiento', widget=SelectDateWidget(years=range(1930, datetime.date.today().year+1)))
     domicilio = forms.CharField(validators=[validate_domicilio], initial='')
-    telefono = forms.CharField(validators=[validate_telefono], initial='')
+    telefono = forms.CharField(required=False, validators=[validate_telefono], initial='')
 
 class ClienteForm(PersonaForm):
 
@@ -78,7 +78,7 @@ class ClienteLegadoForm(forms.ModelForm):
     email = forms.EmailField(validators=[validate_email])
     fechaNacimiento = forms.DateField(label='Fecha de nacimiento', widget=SelectDateWidget(years=range(1930, datetime.date.today().year+1)))
     domicilio = forms.CharField(validators=[validate_domicilio])
-    telefono = forms.CharField(validators=[validate_telefono])
+    telefono = forms.CharField(required=False, validators=[validate_telefono])
 
     class Meta:
         model = ClienteLegado

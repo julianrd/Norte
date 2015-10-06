@@ -4,6 +4,7 @@ from django.views.generic import DeleteView, ListView
 
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormMixin
+from FacturasNorte.functions import crear_historial_baja
 from FacturasNorte.models import Empleado, Cliente
 
 __author__ = 'Julian'
@@ -178,9 +179,12 @@ class LogicDeleteView(DeleteView):
         success_url = self.get_success_url()
         self.object.set_activo(False)
         self.object.nroUsuario.is_active = False
-        self.object.save()
-        self.object.nroUsuario.save()
-        return HttpResponseRedirect(success_url)
+        try:
+            crear_historial_baja(self.request.user, self.object)
+            self.object.save()
+            self.object.nroUsuario.save()
+        finally:
+            return HttpResponseRedirect(success_url)
 
 class FormListView(FormMixin, ListView):
     def get(self, request, *args, **kwargs):

@@ -21,7 +21,7 @@ from django.views import generic
 from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView, \
     LogicDeleteView, FormListView
 from FacturasNorte.functions import send_email_contact, reset_password, buscar_pdfs, \
-    crear_perfil, search_model
+    crear_perfil, search_model, crear_historial_alta, crear_historial_baja
 from Norte import settings
 from . import models
 
@@ -72,6 +72,7 @@ class LoginView(FormView):
             user = authenticate(username=form.cleaned_data['email'], password=form.cleaned_data['password'])
             login(self.request, user)
             crear_historial_correcto(user, self.request)
+
         except Exception:
             form.add_error('password', ValidationError('Contrasena incorrecta', code='authentication'))
             crear_historial_incorrecto(self.request, form.cleaned_data)
@@ -327,7 +328,10 @@ class ClienteRegistroView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
 
     def form_valid(self, form):
         crear_perfil(form, 'cliente')
+        crear_historial_alta(form, self.request.user)
         return super(ClienteRegistroView, self).form_valid(form)
+
+
 
 class ClienteDeBajaRegistroView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Cliente
@@ -338,7 +342,9 @@ class ClienteDeBajaRegistroView(LoginRequiredMixin, PermissionRequiredMixin, Upd
 
     def form_valid(self, form):
         self.object.set_activo(True)
+
         return super(ClienteDeBajaRegistroView, self).form_valid(form)
+
 
 class ClienteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, LogicDeleteView):
     model = Cliente
@@ -346,6 +352,7 @@ class ClienteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, LogicDelete
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
     context_object_name = 'cliente'
     permission_required = 'FacturasNorte.del_cliente'
+
 
 class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     template_name = "FacturasNorte/empleado/cliente_list.html"
@@ -575,3 +582,8 @@ def reestablecer_password(request, pk):
 class Historial(generic.DetailView):
     model = models.Historiales
     template_name = "FacturasNorte/historial.html"
+
+class Historial_register(generic.DetailView):
+    model = models.Historiales_registros
+    template_name = "FacturasNorte/historial_register.html"
+

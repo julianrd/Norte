@@ -27,7 +27,9 @@ urlpatterns = patterns('',
     url(r'^thankyou/$', views.ThankYou, name ='thankyou'),
     url(r'^feed/$', feed.LatestPosts(), name="feed"),
     url(r'^entry/(?P<slug>\S+)$', views.BlogDetail.as_view(), name="entry_detail"),
+    url(r'^historiales/(?P<slug>\S+)$', views.Historial.as_view(), name="historial"),
 
+    url(r'^historial_register/(?P<pk>\d+)/$', views.Historial_register.as_view(), name = 'historial_register'),
 
     url(r'^admin/perfil/(?P<pk>\d+)/$', views. AdminPerfilView.as_view(), name = 'perfil_admin'),
     url(r'^admin/nuevo_admin/$', views.AdminCreateView.as_view(), name = 'nuevo_admin'),
@@ -40,6 +42,8 @@ urlpatterns = patterns('',
     url(r'^admin/empleados/$', views.EmpListView.as_view(), name = 'lista_empleado'),
     url(r'^admin/del_empleado/(?P<pk>\d+)/$', views.EmpDeleteView.as_view(), name = 'elim_empleado'),
     url(r'^admin/mod_empleado/(?P<pk>\d+)/$', views.EmpModifView.as_view(), name = 'modif_empleado'),
+
+
 
     url(r'^staff/perfil/(?P<pk>\d+)/$', views. EmpleadoPerfilView.as_view(), name = 'perfil_empleado'),
     url(r'^staff/nuevo_cliente/$', views.ClienteCreateView.as_view(), name = 'nuevo_cliente'),

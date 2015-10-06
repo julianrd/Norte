@@ -19,8 +19,9 @@ def validate_domicilio(domicilio):
         raise ValidationError("el domicilio debe contener mas caracteres")
 
 def validate_telefono(telefono):
-    if len(telefono) > 14 or len(telefono) <= 9:
-        raise ValidationError("El telefono debe tener un formato valido, ej: 3624XXYYZZ")
+    if telefono != '':
+        if len(telefono) > 14 or len(telefono) <= 9:
+            raise ValidationError("El telefono debe tener un formato valido, ej: 3624XXYYZZ")
 
 def validate_emailExistente(email):
     try:
