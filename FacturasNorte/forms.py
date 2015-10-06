@@ -155,12 +155,14 @@ class FiltroClienteForm(forms.Form):
     )
 
 class FiltroFacturaForm(forms.Form):
-    pedido = forms.CharField(required=False, label='Nro Pedido', initial='')
+    numero = forms.CharField(required=False, label='Nro', initial='')
     fecha = forms.DateField(required=False, label='Fecha', widget=SelectDateWidget(years=range(1995, datetime.date.today().year+1)))
     tipo = forms.ChoiceField(
                                 required=True,
-                                choices = ( ('pedido',u'Pedido'),
-                                            ('fecha',u'Fecha'),
+                                choices = ( ('1',u'Nro Factura'),
+                                            ('2',u'Nro Pedido'),
+                                            ('3',u'Fecha Factura'),
+                                            ('4',u'Fecha Pedido'),
                                 )
     )
 

@@ -497,7 +497,11 @@ ul.errorlist
   background: #FFFFFF;
 }
 
+<<<<<<< HEAD
 .maincontent
+=======
+.maincontainer
+>>>>>>> Busqueda por nro y fecha de factura agregadas
 {
   width: 800px;
 }
@@ -512,3 +516,5 @@ ul.errorlist
 {
   text-decoration: underline;
 }
+
+

@@ -2,37 +2,33 @@
 {% load l10n %}
 
 {% block content %}
-
-<div class="maincontent">
-
-      {% load staticfiles %}
     <h1>Cont&aacute;ctenos</h1>
+    <div class="maincontainer">
 
-    <div class="container">
+    {% load staticfiles %}
+        <div class="container">
             <h2>Por correo electr&oacute;nico:</h2>
             <h5>Complete los siguientes campos:</h5>
-
-    <form action="" method="post">
+            <form action="" method="post">
                      {% csrf_token %}
                      {{ form.non_field_errors }}
                              {% for field in form %}
+                               {% if form.errors %}
                                <p>{{ field.errors }}</p>
+                               {% endif %}
                                <p>{{ field.label }}:</p>
                                <p>{{ field }}</p>
                              {% endfor %}
                              <div style="margin: 5px;">
-                                <button id="flat-boton" type="submit"> Guardar </button>
+                                <button id="flat-boton" type="submit"> Enviar </button>
                              </div>
-                </form>
-    </div>
+            </form>
+        </div>
 
-    <div class="container">
+        <div class="container">
             <h2>Por tel&eacute;fono:</h2>
             <h3>0362 4451222 Interno 39</h3>
+        </div>
     </div>
-</div>
+
 {% endblock %}
-
-
-
-

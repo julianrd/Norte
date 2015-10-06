@@ -140,17 +140,18 @@ def obtener_fecha(fecha):
     fecha = date(fecha.tm_year, fecha.tm_mon, fecha.tm_mday)
     return fecha
 
-def buscar_pdfs_pedidos(pk, field=None, pedido=None, factura=None, fechaFac=None, fechaPed=None):
+def buscar_pdfs_pedidos(pk, field='0', pedido=None, fecha_pedido=None):
      cliente = get_object_or_404(Cliente, nroUsuario=pk)
      storageManager = FileSystemStorage()
      facturas = storageManager.listdir(settings.PDF_FACTURAS)[1]
      pedidos = storageManager.listdir(settings.PDF_PEDIDOS)[1]
      PDFs = []
 
-     if (field == 'fecha'):
-        query = fechaPed
-     else:
-        query = pedido
+     if field != '0':
+        if field == '2':
+            query = pedido
+        else:
+            query = fecha_pedido
 
      for ped in pedidos:
          cuit = ped.split('-')[1]
@@ -159,13 +160,58 @@ def buscar_pdfs_pedidos(pk, field=None, pedido=None, factura=None, fechaFac=None
              fechaPed = ped.split('-')[3].split('.')[0]
              fechaPed = obtener_fecha(fechaPed)
 
-             if (field == None) or ((field == 'pedido') and (query == pedido)) or ((field == 'fechaPed') and (query == fechaPed)):
+             if (field == '0') or \
+             ((field == '2') and (query == nroPed)) or \
+             ((field == '4') and (query == fechaPed)):
+
                  for fac in facturas:
                      pedido_factura = fac.split('-')[3]
                      if (nroPed == pedido_factura):
                          nroFac = fac.split('-')[2]
                          fechaFac = fac.split('-')[4].split('.')[0]
                          fechaFac = obtener_fecha(fechaFac)
+
+                         pdf = PDF()
+                         pdf.set_nroPedido(nroPed)
+                         pdf.set_nroFactura(nroFac)
+                         pdf.set_fechaPed(fechaPed)
+                         pdf.set_fechaFac(fechaFac)
+                         pdf.set_rutaFac('facturas/'+fac)
+                         pdf.set_rutaPed('pedidos/'+ped)
+                         PDFs.append(pdf)
+
+     return PDFs
+
+def buscar_pdfs_facturas(pk, field='0', factura=None, fecha_factura=None):
+     cliente = get_object_or_404(Cliente, nroUsuario=pk)
+     storageManager = FileSystemStorage()
+     facturas = storageManager.listdir(settings.PDF_FACTURAS)[1]
+     pedidos = storageManager.listdir(settings.PDF_PEDIDOS)[1]
+     PDFs = []
+
+     if field != '0':
+        if field == '1':
+            query = factura
+        else:
+            query = fecha_factura
+
+     for fac in facturas:
+         cuit = fac.split('-')[1]
+         if (cuit == cliente.cuit):
+             nroFac = fac.split('-')[2]
+             nroPed = fac.split('-')[3]
+             fechaFac = fac.split('-')[4].split('.')[0]
+             fechaFac = obtener_fecha(fechaFac)
+
+             if (field == '0') or \
+             ((field == '1') and (query == nroFac)) or \
+             ((field == '3') and (query == fechaFac)):
+
+                 for ped in pedidos:
+                     numero_pedido = ped.split('-')[2]
+                     if (numero_pedido == nroPed):
+                         fechaPed = ped.split('-')[3].split('.')[0]
+                         fechaPed = obtener_fecha(fechaPed)
 
                          pdf = PDF()
                          pdf.set_nroPedido(nroPed)

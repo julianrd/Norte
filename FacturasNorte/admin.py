@@ -25,22 +25,12 @@ class ClienteAdmin(admin.ModelAdmin):
     list_filter = ['fechaNacimiento']
     search_fields = ['nombre']
 
-class AdministradorAdmin(admin.ModelAdmin):
-    fieldsets = [
-        (None, {'fields': ['nroUsuario', 'nombre', 'dni', 'email', 'domicilio', 'telefono']}),
-        ('Date information', {'fields':['fechaNacimiento'], 'classes':['collapse']}),
-    ]
-    list_display = ('nombre', 'fechaNacimiento', 'dni', 'email', 'domicilio', 'telefono')
-    list_filter = ['fechaNacimiento']
-    search_fields = ['nombre']
-
-
 class EmpleadoAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields': ['nroUsuario', 'nombre', 'email', 'domicilio', 'admin']}),
         ('Date information', {'fields':['fechaNacimiento'], 'classes':['collapse']}),
     ]
-    list_display = ('nombre', 'fechaNacimiento', 'email', 'domicilio', 'telefono')
+    list_display = ('nombre', 'fechaNacimiento', 'email', 'domicilio', 'telefono', 'admin')
     list_filter = ['fechaNacimiento']
     search_fields = ['nombre']
 

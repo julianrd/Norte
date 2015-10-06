@@ -21,7 +21,9 @@ from django.views import generic
 from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView, \
     LogicDeleteView, FormListView
 from FacturasNorte.functions import send_email_contact, reset_password, \
-    crear_perfil, search_model, buscar_pdfs_pedidos, registrar_cambio_contrasena, crear_historial_alta
+    crear_perfil, search_model, buscar_pdfs_pedidos, registrar_cambio_contrasena, crear_historial_alta, buscar_pdfs_facturas
+
+
 from Norte import settings
 from . import models
 
@@ -417,31 +419,14 @@ class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomCli
     permission_required = 'FacturasNorte.view_facturas'
     form_class = FiltroFacturaForm
 
-    # def post(self, request, *args, **kwargs):
-    #     form = self.get_form(FiltroFacturaForm)
-    #     URL = 'FacturasNorte/cliente/facturas/' + self.kwargs.get(self.pk_url_kwarg) + '/'
-    #     if form.is_valid():
-    #         if (form.cleaned_data['tipo'] == 'fecha'):
-    #             fecha = form.cleaned_data['fecha'].strftime("%Y-%m-%d")
-    #             return search_redirect(URL, form.cleaned_data['tipo'], fecha)
-    #         elif (form.cleaned_data['tipo'] == 'pedido'):
-    #             return search_redirect(URL, form.cleaned_data['tipo'], form.cleaned_data['pedido'])
-    #         else:
-    #             return redirect(URL)
-    #     else:
-    #         return redirect('/' + URL)
-
     def get_initial(self):
         """
         Returns the initial data to use for forms on this view.
         """
         initial = super(ClienteFacturasView, self).get_initial()
         try:
-            initial['pedido'] = self.request.GET['pedido']
+            initial['numero'] = self.request.GET['numero']
             initial['tipo'] = self.request.GET['tipo']
-            initial['fecha_day'] = self.request.GET['fecha_day']
-            initial['fecha_month'] = self.request.GET['fecha_month']
-            initial['fecha_year'] = self.request.GET['fecha_year']
         finally:
             return initial
 
@@ -456,10 +441,18 @@ class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomCli
         except (MultiValueDictKeyError, ValueError):
             fecha = None
         try:
-            context['lista_facturas'] = buscar_pdfs_pedidos(self.kwargs.get(self.pk_url_kwarg),
+            field = self.request.GET['tipo']
+            if field in ('2', '4'):
+                context['lista_facturas'] = buscar_pdfs_pedidos(self.kwargs.get(self.pk_url_kwarg),
                                                     field=self.request.GET['tipo'],
-                                                    pedido=self.request.GET['pedido'],
-                                                    fechaPed=fecha)
+                                                    pedido=self.request.GET['numero'],
+                                                    fecha_pedido=fecha)
+            else:
+                 context['lista_facturas'] = buscar_pdfs_facturas(self.kwargs.get(self.pk_url_kwarg),
+                                                    field=self.request.GET['tipo'],
+                                                    factura=self.request.GET['numero'],
+                                                    fecha_factura=fecha)
+
         except KeyError:
             context['lista_facturas'] = buscar_pdfs_pedidos(self.kwargs.get(self.pk_url_kwarg))
         return context
@@ -496,10 +489,18 @@ class EmpleadoListaFacturasView(LoginRequiredMixin, PermissionRequiredMixin, Cus
         except (MultiValueDictKeyError, ValueError):
             fecha = None
         try:
+            field = self.request.GET['tipo']
+            if field in ('2', '4'):
                 context['lista_facturas'] = buscar_pdfs_pedidos(self.kwargs.get(self.pk_url_kwarg),
-                                                        field=self.request.GET['tipo'],
-                                                        pedido=self.request.GET['pedido'],
-                                                        fechaPed=fecha)
+                                                    field=self.request.GET['tipo'],
+                                                    pedido=self.request.GET['numero'],
+                                                    fecha_pedido=fecha)
+            else:
+                 context['lista_facturas'] = buscar_pdfs_facturas(self.kwargs.get(self.pk_url_kwarg),
+                                                    field=self.request.GET['tipo'],
+                                                    factura=self.request.GET['numero'],
+                                                    fecha_factura=fecha)
+
         except KeyError:
             context['lista_facturas'] = buscar_pdfs_pedidos(self.kwargs.get(self.pk_url_kwarg))
         return context
