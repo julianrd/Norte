@@ -1,8 +1,0 @@
-<h1>Administradores</h1>
-<ul>
-{% for admin in object_list %}
-    <li><a href={% url 'FacturasNorte:detalle_admin' admin.id %}>{{ admin.nombre }} - {{ admin.email }}</a> -- <a href={% url 'FacturasNorte:modif_admin' admin.id %}>Modificar</a> -- <a href={% url 'FacturasNorte:elim_admin' admin.id %}>Eliminar</a></li>
-{% empty %}
-    <li> No hay administradores disponibles.</li>
-{% endfor %}
-</ul>

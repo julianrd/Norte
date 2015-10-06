@@ -405,6 +405,7 @@ table tr td
 {
   display: inline;
   float: right;
+  margin-right: 2%;
 }
 
 #vertical th
@@ -497,11 +498,7 @@ ul.errorlist
   background: #FFFFFF;
 }
 
-<<<<<<< HEAD
-.maincontent
-=======
 .maincontainer
->>>>>>> Busqueda por nro y fecha de factura agregadas
 {
   width: 800px;
 }
