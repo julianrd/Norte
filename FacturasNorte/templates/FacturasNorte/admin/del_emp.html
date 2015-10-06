@@ -3,7 +3,8 @@
 {% block content %}
 {% load l10n %}
 <form action="" method="post">{% csrf_token %}
-    <p>¿Esta seguro de querer eliminar al empleado "{{ empleado.nombre }}"?</p>
-    <button id="boton" type="submit"> Aceptar </button>
+    <h1>Eliminar empleado</h1>
+    <p>¿Esta seguro de querer eliminar al empleado "{{ object.nombre }}"?</p>
+    <button id="flat-boton" type="submit"> Eliminar  </button>
 </form>
 {% endblock %}

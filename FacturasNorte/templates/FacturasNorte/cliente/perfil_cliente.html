@@ -40,7 +40,13 @@
 {% csrf_token %}
 <button id="boton" type="submit"> Cambiar contrase&ntilde;a </button>
 </form>
+<div id="links">
 
+    <form method="post" action="{% url 'FacturasNorte:cambiar_contrasena' %}">
+    {% csrf_token %}
+    <button id="flat-boton" type="submit"> Cambiar contrase&ntilde;a </button>
+    </form>
+</div>
 {% else %}
     <p>No tiene permiso para visualizar los datos de esta persona.</p>
 {% endif %}

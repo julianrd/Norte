@@ -3,38 +3,24 @@
 {% block content %}
 
 {%  if user.id == empleado.nroUsuario.id %}
-<form action="" class="register" method="post">
-
-            <fieldset class="row1">
-                <legend>Modificar Empleado
-                </legend>
-                    {% load l10n %}
-                    <form action="" method="post">
-                        {% csrf_token %}
-                             {{ form.non_field_errors }}
-                             {% for field in form %}
-
-
-                                  <div class="fieldWrapper">
-                                    <br> * {{ field.label }} <br>
-
-                                         {{ field.errors }}
-                                         {{ field }}
-
-
-                                  </div>
-
-                             {% endfor %}
-
-
-                              <p></p>
-                              <p></p>
-                         <div style="width: 170px; margin: 0 auto;">
-                            <button id="boton" type="submit"> Guardar  </button>
+<form action="" method="post">
+                 {% csrf_token %}
+                 <h1>Modificar perfil</h1>
+                 {{ form.non_field_errors }}
+                     <h6> (*) estos campos son obligatorios </h6>
+                         <table id="vertical" style="width:100%">
+                         {% for field in form %}
+                           <tr>
+                                <th>* {{ field.label }}</th>
+                               <td>{{ field }}</td>
+                               <td id="error">{{ field.errors }}</td>
+                           </tr>
+                         {% endfor %}
+                         </table>
+                         <div style="margin: 5px;">
+                            <button id="flat-boton" type="submit"> Guardar </button>
                          </div>
-                    </form>
-            </fieldset>
-</form>
+            </form>
 
 {% else %}
     <p>No tiene permiso para visualizar los datos de esta persona.</p>

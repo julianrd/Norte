@@ -38,16 +38,10 @@ class IniciarSesionForm(forms.Form):
 class PersonaForm(forms.ModelForm):
     nombre = forms.CharField(validators=[validate_nombre], initial='')
     dni = forms.CharField(label='DNI', validators=[validate_dni], initial='')
-    email = forms.EmailField(validators=[validate_email], initial='')
+    email = forms.EmailField(initial='')
     fechaNacimiento = forms.DateField(label='Fecha de nacimiento', widget=SelectDateWidget(years=range(1930, datetime.date.today().year+1)))
     domicilio = forms.CharField(validators=[validate_domicilio], initial='')
     telefono = forms.CharField(required=False, validators=[validate_telefono], initial='')
-
-class ClienteForm(PersonaForm):
-
-    class Meta:
-        model = Cliente
-        fields = ['nombre', 'dni', 'email', 'fechaNacimiento', 'domicilio', 'telefono']
 
 class EmpleadoForm(PersonaForm):
     
@@ -117,7 +111,7 @@ class CambiarContrasenaForm(forms.Form):
         password2 = self.cleaned_data.get('confirmar_contrasena')
         password1 = self.cleaned_data.get('contrasena_nueva')
         if password1 and password1 != password2:
-            raise forms.ValidationError(u"Las contraseÃ±as ingresadas no coinciden", code='match_passwords')
+            raise forms.ValidationError(u"Las contraseñas ingresadas no coinciden", code='match_passwords')
         return self.cleaned_data
 
 class RegenerarContrasenaForm(forms.Form):

@@ -29,14 +29,8 @@
 </table>
 
     <div id="links">
-        <form action="{% url 'FacturasNorte:modif_admin' admin.id %}">
-            <button id="boton" type="submit"> Modificar  </button>
-        </form>
-        <form action="{% url 'FacturasNorte:reestablecer_contrasena' admin.nroUsuario.id %}">
-            <button id="boton" type="submit"> Reestablecer contrase&ntilde;a </button>
-        </form>
-        <form action="{% url 'FacturasNorte:elim_admin' admin.id %}">
-            <button id="boton" type="submit"> Eliminar </button>
-        </form>
+        <a id="flat-boton" href="{% url 'FacturasNorte:modif_admin' admin.id %}"> Modificar </a>
+        <a id="flat-boton" href="{% url 'FacturasNorte:reestablecer_contrasena' admin.id %}"> Reestablecer contrase&ntilde;a </a>
+        <a id="flat-boton" href="{% url 'FacturasNorte:elim_admin' admin.id %}"> Eliminar </a>
     </div>
 {% endblock %}

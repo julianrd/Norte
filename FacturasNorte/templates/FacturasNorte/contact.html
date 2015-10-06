@@ -2,19 +2,35 @@
 {% load l10n %}
 
 {% block content %}
-<form action="" method="post">
+
+<div class="maincontent">
 
       {% load staticfiles %}
-     <title>Formulario de Contacto</title>
-        <h1>Formulario de Contacto Facturas Norte</h1>
-        <h5>Complete los siguientes campos:</h5>
+    <h1>Cont&aacute;ctenos</h1>
 
-        <link rel="stylesheet" href="{% static "FacturasNorte/css/../../static/FacturasNorte/img/index_style.css" %}">
+    <div class="container">
+            <h2>Por correo electr&oacute;nico:</h2>
+            <h5>Complete los siguientes campos:</h5>
 
-    {% csrf_token %}
-    {{ form.as_p }}
-        <button id="boton" type="submit"> Enviar mensaje </button>
-</form>
+    <form action="" method="post">
+                     {% csrf_token %}
+                     {{ form.non_field_errors }}
+                             {% for field in form %}
+                               <p>{{ field.errors }}</p>
+                               <p>{{ field.label }}:</p>
+                               <p>{{ field }}</p>
+                             {% endfor %}
+                             <div style="margin: 5px;">
+                                <button id="flat-boton" type="submit"> Guardar </button>
+                             </div>
+                </form>
+    </div>
+
+    <div class="container">
+            <h2>Por tel&eacute;fono:</h2>
+            <h3>0362 4451222 Interno 39</h3>
+    </div>
+</div>
 {% endblock %}
 
 

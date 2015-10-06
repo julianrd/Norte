@@ -26,17 +26,22 @@
 
      <table style="width:100%">
 
-      <tr>
+       <tr>
+        <th>Nro Factura</th>
+        <th>Fecha Factura</th>
         <th>Nro Pedido</th>
-        <th>Fecha</th>
+        <th>Fecha Pedido</th>
+        <th>Factura</th>
         <th>Detalle</th>
         </tr>
          {% for fac in lista_facturas %}
-
             <tr>
-                <td><a href={% url 'FacturasNorte:media' fac.ruta %}>{{ fac.nroPedido }}</a></td>
-                <td><a href={% url 'FacturasNorte:media' fac.ruta %}>{{ fac.fecha }}</a></td>
-                <td><a href={% url 'FacturasNorte:media' fac.ruta %}> <img src="{% static "FacturasNorte/img/view.png" %}" width="12", alt="Editar"/> Ver</a></td></td>
+                <td>{{ fac.nroFactura }}</td>
+                <td>{{ fac.fechaFac }}</td>
+                <td>{{ fac.nroPedido }}</td>
+                <td>{{ fac.fechaPed }}</td>
+                <td><a href={% url 'FacturasNorte:media' fac.rutaFac %}> <img src="{% static "FacturasNorte/img/view.png" %}" width="12", alt="Editar"/> Ver Factura</a></td>
+                <td><a href={% url 'FacturasNorte:media' fac.rutaPed %}> <img src="{% static "FacturasNorte/img/view.png" %}" width="12", alt="Editar"/> Ver Detalle</a></td>
             </tr>
 
          {% endfor %}

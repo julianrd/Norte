@@ -16,18 +16,17 @@
     <div id="main">
         <div id="header">
 
-            {% if user.is_active %}
+
 
             <div id="user-tools">
+            {% if user.is_active %}
                 {% block welcome-msg %}
-                    <p>Bienvenido, <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+                    <span>Bienvenido, <strong>{% firstof user.get_short_name user.get_username %}.</strong></span>
                 {% endblock %}
-                <a href="{% url 'FacturasNorte:logout' %}">Cerrar sesi&oacute;n</a></p>
+                <a href="{% url 'FacturasNorte:logout' %}"><strong>Cerrar sesi&oacute;n</strong></a>
             </div>
             {% else %}
-                <div id="user-tools">
-                    <p>Bienvenido.
-                <a href="{% url 'FacturasNorte:login' %}">Inicie sesi&oacute;n</a></p>
+                <a href="{% url 'FacturasNorte:login' %}"><strong>Inicie sesi&oacute;n</strong></a></p>
             </div>
 
             {% endif %}

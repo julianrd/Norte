@@ -2,8 +2,21 @@
 {% load l10n %}
 {% block content %}
 <form action="" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button id="boton" type="submit"> Guardar  </button>
-</form>
+                 {% csrf_token %}
+                 <h1>Modificar cliente</h1>
+                 {{ form.non_field_errors }}
+                     <h6> (*) estos campos son obligatorios </h6>
+                         <table id="vertical" style="width:100%">
+                         {% for field in form %}
+                           <tr>
+                                <th>* {{ field.label }}</th>
+                               <td>{{ field }}</td>
+                               <td id="error">{{ field.errors }}</td>
+                           </tr>
+                         {% endfor %}
+                         </table>
+                         <div style="margin: 5px;">
+                            <button id="flat-boton" type="submit"> Guardar </button>
+                         </div>
+            </form>
 {% endblock %}

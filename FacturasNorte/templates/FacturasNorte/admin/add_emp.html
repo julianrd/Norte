@@ -3,30 +3,22 @@
 
 
 {% block content %}
-        <form action="" class="register" method="post">
-
-            <fieldset class="row1">
-                <legend>Facturas Norte
-                </legend>
-
-                    <form action="" method="post">
-                        {% csrf_token %}
-                            <h1> Formulario de Registro Empleado</h1>
-                            {{ form.non_field_errors }}
-                                <h6> (*) este campo es obligatorio </h6>
-                             {% for field in form %}
-                                  <div class="fieldWrapper">
-                                    <br> * {{ field.label_tag }} <br>
-                                         {{ field.errors }}
-                                         {{ field }}
-                                  </div>
-                             {% endfor %}
-                              <p></p>
-                              <p></p>
-                            <div style="width: 170px; margin: 0 auto;">
-                            <button id="boton" type="submit"> Registrar  </button>
+        <form action="" method="post">
+                 {% csrf_token %}
+                 <h1>Registro empleado</h1>
+                 {{ form.non_field_errors }}
+                     <h6> (*) estos campos son obligatorios </h6>
+                         <table id="vertical" style="width:100%">
+                         {% for field in form %}
+                           <tr>
+                                <th>* {{ field.label }}</th>
+                               <td>{{ field }}</td>
+                               <td id="error">{{ field.errors }}</td>
+                           </tr>
+                         {% endfor %}
+                         </table>
+                         <div style="margin: 5px;">
+                            <button id="flat-boton" type="submit"> Registrar  </button>
                          </div>
-                    </form>
-            </fieldset>
-        </form>
+            </form>
 {% endblock %}

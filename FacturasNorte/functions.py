@@ -2,18 +2,25 @@
 __author__ = 'Julian'
 
 from time import strptime
-from datetime import date
+from datetime import date, datetime
+
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.auth.models import Permission
 from django.core import mail
 from django.core.files.storage import FileSystemStorage
 from django.core.mail import EmailMessage, send_mail
 from django.shortcuts import get_object_or_404, redirect
-#from django.utils import timezone
-from FacturasNorte.custom_classes import Factura
+
 from FacturasNorte.models import Cliente, Empleado, Historiales, ClienteLegado, Historiales_registros
 from Norte import settings
+
+from django.utils import timezone
+
 from django.contrib.auth.models import User
+
+from FacturasNorte.models import Cliente, Empleado, Historiales, ClienteLegado, HistorialContrasena, Persona
+from Norte import settings
+
 
 def crear_perfil(form, perfil):
     username = form.cleaned_data['email'].split("@")[0]
@@ -127,38 +134,55 @@ def send_email_contact(email, subject, body):
         recipient_list =['julian_rd7@hotmail.com'],
         )
 
-def buscar_pdfs(pk, field=None, pedido=None, fecha=None):
+def obtener_fecha(fecha):
+    fecstr = fecha[:2] + ' ' + fecha[2:4] + ' ' + fecha[4:8]
+    fecha = strptime(fecstr, "%d %m %Y")
+    fecha = date(fecha.tm_year, fecha.tm_mon, fecha.tm_mday)
+    return fecha
+
+def buscar_pdfs_pedidos(pk, field=None, pedido=None, factura=None, fechaFac=None, fechaPed=None):
      cliente = get_object_or_404(Cliente, nroUsuario=pk)
      storageManager = FileSystemStorage()
-     archivos = storageManager.listdir(settings.MEDIA_ROOT)[1]
-     facturas = []
+     facturas = storageManager.listdir(settings.PDF_FACTURAS)[1]
+     pedidos = storageManager.listdir(settings.PDF_PEDIDOS)[1]
+     PDFs = []
 
      if (field == 'fecha'):
-        query = fecha
+        query = fechaPed
      else:
         query = pedido
 
-     for a in archivos:
-         cuit = a.split('-')[1]
+     for ped in pedidos:
+         cuit = ped.split('-')[1]
          if (cuit == cliente.cuit):
-             nroPed = a.split('-')[2]
-             fec = a.split('-')[3].split('.')[0]
-             fecstr = fec[:2] + ' ' + fec[2:4] + ' ' + fec[4:8]
-             fec = strptime(fecstr, "%d %m %Y")
-             fecha = date(fec.tm_year, fec.tm_mon, fec.tm_mday)
+             nroPed = ped.split('-')[2]
+             fechaPed = ped.split('-')[3].split('.')[0]
+             fechaPed = obtener_fecha(fechaPed)
 
-             if (field == None) or ((field == 'pedido') and (query == nroPed)) or ((field == 'fecha') and (query == fecha)):
-                 f = Factura()
-                 f.set_nroPedido(nroPed)
-                 f.set_ruta(a)
-                 f.set_fecha(fecha)
-                 facturas.append(f)
+             if (field == None) or ((field == 'pedido') and (query == pedido)) or ((field == 'fechaPed') and (query == fechaPed)):
+                 for fac in facturas:
+                     pedido_factura = fac.split('-')[3]
+                     if (nroPed == pedido_factura):
+                         nroFac = fac.split('-')[2]
+                         fechaFac = fac.split('-')[4].split('.')[0]
+                         fechaFac = obtener_fecha(fechaFac)
 
-     return facturas
+                         pdf = PDF()
+                         pdf.set_nroPedido(nroPed)
+                         pdf.set_nroFactura(nroFac)
+                         pdf.set_fechaPed(fechaPed)
+                         pdf.set_fechaFac(fechaFac)
+                         pdf.set_rutaFac('facturas/'+fac)
+                         pdf.set_rutaPed('pedidos/'+ped)
+                         PDFs.append(pdf)
 
-def reset_password(usuario):
+     return PDFs
+
+
+def reset_password(usuario, empleado):
     password = User.objects.make_random_password()
     usuario.set_password(password)
+    registrar_cambio_contrasena(usuario, empleado)
     enviar_password_regenerada(usuario, password)
     usuario.save()
     return
@@ -262,4 +286,38 @@ def crear_historial_baja(user, cliente): #se crea un historial, por cada cliente
     historial_baja.operador = user.username
     historial_baja.accion = 'Baja'
     historial_baja.save()
+
+def registrar_cambio_contrasena(usuario, empleado=None):
+    try:
+        persona = buscar_persona(usuario)
+    except ObjectDoesNotExist:
+        raise ValidationError('Ha ocurrido un error al buscar la persona')
+    registro = HistorialContrasena()
+    registro.nroUsuario = usuario.id
+    registro.nombre = persona.nombre
+    registro.email = persona.email
+    registro.fecha = datetime.now()
+    if empleado != None:
+        registro.reestablecida_por_empleado = True
+        registro.dni_empleado = empleado.dni
+        registro.nombre_empleado = empleado.nombre
+    else:
+        registro.reestablecida_por_empleado = False
+    try:
+        registro.save()
+    except Exception:
+        raise ValidationError('Ha ocurrido un error al tratar de registrar su cambio')
+    return
+
+def buscar_persona(usuario):
+    result = None
+    try:
+        result = Cliente.objects.get(email=usuario.email)
+    except ObjectDoesNotExist:
+        try:
+            result = Empleado.objects.get(email=usuario.email)
+        except ObjectDoesNotExist:
+            pass
+    finally:
+        return result
 

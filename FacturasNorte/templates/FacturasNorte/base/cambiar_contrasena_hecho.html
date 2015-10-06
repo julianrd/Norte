@@ -3,15 +3,11 @@
 {% block content %}
         <form action="" class="register" method="post">
 
-            <fieldset class="row1">
-                <legend>Facturas Norte
-                </legend>
                     {% load l10n %}
                     <form action="" method="post">
                         {% csrf_token %}
                          <h1> Cambio contrase&ntilde;a</h1>
                          <p>Contrase&ntilde;a cambiada exitosamente</p>
                     </form>
-            </fieldset>
-        </form>
+
 {% endblock %}

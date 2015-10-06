@@ -138,39 +138,63 @@ class CustomClienteDetailView(DetailView):
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
 
-class Factura(object):
-    ruta = None
-    nroPedido = None
+class PDF(object):
     cliente = None
-    fecha = None
+    fechaPed = None
+    fechaFac = None
+    nroPedido = None
+    nroFactura = None
+    rutaPed = None
+    rutaFac = None
+
+    def get_nroFactura(self):
+        return self.nroFactura
+
+    def set_nroFactura(self, nroFactura):
+        self.nroFactura = nroFactura
+        return
 
     def get_nroPedido(self):
         return self.nroPedido
-
-    def get_ruta(self):
-        return self.ruta
-
-    def get_cliente(self):
-        return self.cliente
-
-    def get_fecha(self):
-        return self.fecha()
 
     def set_nroPedido(self, nroPedido):
         self.nroPedido = nroPedido
         return
 
-    def set_ruta(self, ruta):
-        self.ruta = ruta
-        return
+    def get_cliente(self):
+        return self.cliente
+
+    def get_fechaPed(self):
+        return self.fechaPed
+
+    def get_fechaFac(self):
+        return self.fechaFac
 
     def set_cliente(self, cliente):
         self.cliente = cliente
         return
 
-    def set_fecha(self, fecha):
-        self.fecha = fecha
+    def set_fechaPed(self, fecha):
+        self.fechaPed = fecha
         return
+
+    def set_fechaFac(self, fecha):
+        self.fechaFac = fecha
+        return
+
+    def set_rutaPed(self, ruta):
+        self.rutaPed = ruta
+        return
+
+    def set_rutaFac(self, ruta):
+        self.rutaFac = ruta
+        return
+
+    def get_rutaPed(self):
+        return self.rutaPed
+
+    def get_rutaFac(self):
+        return self.rutaFac
 
 class LogicDeleteView(DeleteView):
 

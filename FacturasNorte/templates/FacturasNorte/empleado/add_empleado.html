@@ -1,9 +1,0 @@
-{% extends "FacturasNorte/base/base.html" %}
-{% load l10n %}
-{% block content %}
-<form action="" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button id="boton" type="submit"> Registrar  </button>
-</form>
-{% endblock %}

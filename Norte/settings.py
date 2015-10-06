@@ -66,7 +66,7 @@ DATABASES = {
         'USER': 'sa',
         'PASSWORD': 'Norte1234',#'Norte1234',
         'OPTIONS': {
-            'provider': 'SQLNCLI11',
+            'provider': 'SQLNCLI',
             'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;',
         }
     },
@@ -78,7 +78,7 @@ DATABASES = {
         'USER': 'sa',
         'PASSWORD': 'Norte1234',#'DNI36017',
         'OPTIONS': {
-            'provider': 'SQLNCLI11',
+            'provider': 'SQLNCLI',
             'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;',
         }
     }
@@ -161,6 +161,9 @@ EMAIL_USE_TLS = True
 MEDIA_ROOT = 'C:/Apache24/htdocs/PDFs/'
 
 MEDIA_ULR = '/pdf/'
+
+PDF_FACTURAS = MEDIA_ROOT + 'facturas/'
+PDF_PEDIDOS = MEDIA_ROOT + 'pedidos/'
 
 
 #PERMISSIONS

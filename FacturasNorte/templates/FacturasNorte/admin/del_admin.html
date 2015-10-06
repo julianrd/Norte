@@ -2,7 +2,8 @@
 {% load l10n %}
 {% block content %}
 <form action="" method="post">{% csrf_token %}
-    <p>¿Esta seguro de querer eliminar al Administrador "{{ admin.nombre }}"?</p>
-   <button id="boton" type="submit"> Aceptar </button>
+    <h1>Eliminar A\administrador</h1>
+    <p>¿Esta seguro de querer eliminar al administrador "{{ object.nombre }}"?</p>
+    <button id="flat-boton" type="submit"> Eliminar  </button>
 </form>
 {% endblock %}

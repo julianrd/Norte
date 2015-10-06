@@ -18,7 +18,6 @@
                             <li><a href="{% url 'FacturasNorte:facturas_cliente' user.id %}">Mis Facturas</a></li>
                         {% endif %}
                     {% endif %}
-                    <li><a href="{% url 'FacturasNorte:home' %}">Novedades</a></li>
                     <li><a href="{% url 'FacturasNorte:contacto' %}">Contactenos</a></li>
                 </ul>
 {% endblock %}
@@ -59,13 +58,10 @@
 
 
 <div id="links">
-    <form action="{% url 'FacturasNorte:cambiar_contrasena' %}">
-            <button id="boton" type="submit"> Guardar  </button>
-    </form>
-    <form action="{% url 'FacturasNorte:modif_perfil' empleado.id %}">
-            <button id="boton" type="submit"> Guardar  </button>
-    </form>
+    <a id="flat-boton" href="{% url 'FacturasNorte:cambiar_contrasena' %}"> Cambiar contrase&ntilde;a </a>
+    <a id="flat-boton" href="{% url 'FacturasNorte:modif_perfil' empleado.id %}"> Modificar </a>
 </div>
+
 
 {% else %}
     <p>No tiene permiso para visualizar los datos de esta persona</p>

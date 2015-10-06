@@ -7,19 +7,18 @@
 
 
 {% load staticfiles %}
-<link rel="stylesheet" href="{% static "FacturasNorte/css/forms.css" %}?v=00002">
-
+    <link rel="stylesheet" href="{% static "FacturasNorte/css/forms.css" %}?v=00002">
 
 <form method="post" action="{% url 'FacturasNorte:login' %}">
 {% csrf_token %}
-
+<br>
   <div>
       <div>{{ form.email.errors }}</div>
       <div>{{ form.password.errors }}</div>
 
   </div>
   <div id="form-group">
-    <div id="label">{{ form.email.label_tag }}</div>
+    <div id="label" style="width: 7%">{{ form.email.label_tag }}</div>
     <div id="field">{{ form.email }}</div>
       {% if form.captcha.errors %}
         <div><ul class="errorlist"><li>Captcha no verificado.</li></ul></div>
@@ -28,28 +27,28 @@
 
   </div>
   <div id="form-group">
-    <div id="label">{{ form.password.label_tag }}</div>
+    <div id="label" style="width: 7%">{{ form.password.label_tag }}</div>
     <div id="field">{{ form.password }}</div>
   </div>
   <div id="form-group">
       {% if form.password.errors or form.email.error %}
            <div id="field">{{ form.captcha }}</div>
-               <div class="g-recaptcha" data-sitekey="6Ld8HgwTAAAAAO8EB6lFkjWgHd6DYUoKL2u3R6Y4"> </div>
+           <div class="g-recaptcha" data-sitekey="6Ld8HgwTAAAAAO8EB6lFkjWgHd6DYUoKL2u3R6Y4"> </div>
       {% endif %}
 
   </div>
 
 
-<input type="submit" value="Iniciar Sesion" />
+<button id="flat-boton" type="submit">Iniciar Sesi&oacute;n</button>
 
-<input type="hidden" name="next" value="{{ next }}" />
+<input  type="hidden" name="next" value="{{ next }}"/>
 
-</form>
-
-<form method="post" action="{% url 'FacturasNorte:reestablecer_contrasena_form' %}">
     {% csrf_token %}
-<input type="submit" value="Olvid&oacute; su contrase&ntilde;a?" />
-</form>
+    <br>
+ <a type="submit" href="{% url 'FacturasNorte:reestablecer_contrasena_form' %}" class="link">&iquest;Olvid&oacute; su contrase&ntilde;a?</a>
+
+<br>
+
 
 <script src="https://www.google.com/recaptcha/api.js"></script>
 

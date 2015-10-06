@@ -20,10 +20,11 @@ from django.views import generic
 
 from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView, \
     LogicDeleteView, FormListView
-from FacturasNorte.functions import send_email_contact, reset_password, buscar_pdfs, \
-    crear_perfil, search_model, crear_historial_alta, crear_historial_baja
+from FacturasNorte.functions import send_email_contact, reset_password, \
+    crear_perfil, search_model, buscar_pdfs_pedidos, registrar_cambio_contrasena, crear_historial_alta
 from Norte import settings
 from . import models
+
 
 
 
@@ -212,7 +213,7 @@ class EmpleadoPerfilView(LoginRequiredMixin, PermissionRequiredMixin, CustomEmpl
     context_object_name = 'empleado'
     permission_required = 'FacturasNorte.view_perfil_empleado'
 
-class EmpCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class EmpCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     model = Empleado
     form_class = EmpleadoRegisterForm
     template_name = "FacturasNorte/admin/add_emp.html"
@@ -267,7 +268,7 @@ class EmpListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
         try:
             return search_model(Empleado, self.request.GET['tipo'], self.request.GET['query'], u'True', False)
         except KeyError:
-            return Empleado.objects.filter(activo=True)
+            return Empleado.objects.filter(activo=True, admin=False)
 
 class EmpDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "FacturasNorte/admin/emp_detail.html"
@@ -286,18 +287,6 @@ class ClientePerfilView(LoginRequiredMixin, PermissionRequiredMixin, CustomClien
     context_object_name = 'cliente'
     permission_required = 'FacturasNorte.view_perfil_cliente'
 
-class ClienteCreateView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
-    template_name = "FacturasNorte/empleado/add_cliente.html"
-    form_class = ClienteForm
-    success_url = reverse_lazy('FacturasNorte:lista_cliente')
-    permission_required = 'FacturasNorte.agregar_cliente'
-
-    def form_valid(self, form):
-        # if form.non_field_errors():
-        #     return reverse('FacturasNorte:nuevo_cliente')
-        crear_perfil(form, 'cliente')
-        return super(ClienteCreateView, self).form_valid(form)
-
 class CambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "FacturasNorte/base/cambiar_contrasena.html"
     form_class = CambiarContrasenaForm
@@ -306,7 +295,12 @@ class CambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, FormVie
 
     def form_valid(self, form):
         if not self.request.user.check_password(form.cleaned_data.get('contrasena_anterior')):
-            raise ValidationError(u"La contraseÃ±a anterior es invÃ¡lida", code='old_invalid')
+            form.add_error(None, ValidationError(u"La contraseña anterior es inválida", code='old_invalid'))
+            return self.form_invalid(form)
+        else:
+            self.request.user.set_password(form.cleaned_data['contrasena_nueva'])
+            registrar_cambio_contrasena(self.request.user, None)
+            self.request.user.save()
         return super(CambiarContrasenaView, self).form_valid(form)
 
 def cambiar_password_conf(request):
@@ -462,12 +456,12 @@ class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomCli
         except (MultiValueDictKeyError, ValueError):
             fecha = None
         try:
-            context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg),
-                                                    self.request.GET['tipo'],
-                                                    self.request.GET['pedido'],
-                                                    fecha)
+            context['lista_facturas'] = buscar_pdfs_pedidos(self.kwargs.get(self.pk_url_kwarg),
+                                                    field=self.request.GET['tipo'],
+                                                    pedido=self.request.GET['pedido'],
+                                                    fechaPed=fecha)
         except KeyError:
-            context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg))
+            context['lista_facturas'] = buscar_pdfs_pedidos(self.kwargs.get(self.pk_url_kwarg))
         return context
 
 class EmpleadoListaFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomClienteDetailView, FormMixin):
@@ -502,12 +496,12 @@ class EmpleadoListaFacturasView(LoginRequiredMixin, PermissionRequiredMixin, Cus
         except (MultiValueDictKeyError, ValueError):
             fecha = None
         try:
-                context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg),
-                                                        self.request.GET['tipo'],
-                                                        self.request.GET['pedido'],
-                                                        fecha)
+                context['lista_facturas'] = buscar_pdfs_pedidos(self.kwargs.get(self.pk_url_kwarg),
+                                                        field=self.request.GET['tipo'],
+                                                        pedido=self.request.GET['pedido'],
+                                                        fechaPed=fecha)
         except KeyError:
-            context['lista_facturas'] = buscar_pdfs(self.kwargs.get(self.pk_url_kwarg))
+            context['lista_facturas'] = buscar_pdfs_pedidos(self.kwargs.get(self.pk_url_kwarg))
         return context
 
 class ClienteRegenerarContrasenaView(FormView):
@@ -516,7 +510,8 @@ class ClienteRegenerarContrasenaView(FormView):
 
     def form_valid(self, form):
         usuario = User.objects.get(email=form.cleaned_data['email'])
-        reset_password(usuario)
+        empleado = Empleado.objects.get(nroUsuario=self.request.user.username)
+        reset_password(usuario, empleado)
         return render(self.request, 'FacturasNorte/base/reset_contrasena_hecho.html', {})
 
 @login_required
@@ -573,10 +568,10 @@ class BlogDetail(generic.DetailView):
     template_name = "FacturasNorte/post.html"
 
 
-
 def reestablecer_password(request, pk):
     usuario = get_object_or_404(User, id=pk)
-    reset_password(usuario)
+    empleado = get_object_or_404(Empleado, email=request.user.email)
+    reset_password(usuario, empleado)
     return render(request, 'FacturasNorte/base/reset_contrasena_hecho.html', {})
 
 class Historial(generic.DetailView):

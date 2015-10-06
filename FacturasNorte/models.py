@@ -184,6 +184,9 @@ class Persona(models.Model):
     def get_nombre(self):
         return self.nombre
 
+    def get_clase(self):
+        return self.__class__
+
     def get_usuario(self):
         return self.nroUsuario
 
@@ -195,9 +198,6 @@ class Persona(models.Model):
 
     def get_password(self):
         return self.nroUsuario.password
-
-    def set_nombre(self, nombre):
-        self.nombre = nombre
 
     def set_fechaNacimiento(self, fechaNacimiento):
         self.fechaNacimiento = fechaNacimiento
@@ -347,7 +347,7 @@ class Historiales(models.Model):
         verbose_name = "Historial"
         verbose_name_plural = "Historial de sesiones"
 
-class Historiales_registros (models.Model):  #Aquí se guardarán las altas, y bajas de un cliente
+class Historiales_registros (models.Model):  #Aquï¿½ se guardarï¿½n las altas, y bajas de un cliente
      cuit_cli = models.CharField(max_length=200, blank = False)
      nombre = models.CharField(max_length=200, blank = True)
      fecha = models.DateTimeField(max_length=200, blank = True)
@@ -361,3 +361,18 @@ class Historiales_registros (models.Model):  #Aquí se guardarán las altas, y baj
         db_table = 'Historiales_registros'
         verbose_name = "Historiales_registros"
         verbose_name_plural = "Historial de Registro de Usuarios"
+
+class HistorialContrasena(models.Model):
+    nroUsuario = models.CharField(max_length=200, null=False)
+    nombre = models.CharField(max_length=50, null=False)
+    email = models.EmailField(max_length=255, null=False, default='')
+    fecha = models.DateTimeField(null=False)
+    reestablecida_por_empleado = models.BooleanField(default=False, null=False, verbose_name='reestablecido por empleado')
+    dni_empleado = models.CharField(max_length=8, null=True)
+    nombre_empleado = models.CharField(max_length=50, null=True)
+
+    class Meta:
+        db_table = 'Historiales_Contrasenas'
+        verbose_name = u"Cambio de contraseÃ±a"
+        verbose_name_plural = u"Cambios de contraseÃ±a"
+

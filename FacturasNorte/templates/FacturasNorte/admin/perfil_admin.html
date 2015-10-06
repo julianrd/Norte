@@ -36,13 +36,10 @@
 </table>
 
 <div id="links">
-    <form action="{% url 'FacturasNorte:cambiar_contrasena'%}">
-            <button id="boton" type="submit"> Cambiar contrase&ntilde;a  </button>
-    </form>
-    <form action="{% url 'FacturasNorte:modif_admin' admin.id %}">
-            <button id="boton" type="submit"> Modificar </button>
-    </form>
+        <a id="flat-boton" href="{% url 'FacturasNorte:cambiar_contrasena' %}"> Cambiar contrase&ntilde;a </a>
+        <a id="flat-boton" methods="post" href="{% url 'FacturasNorte:modif_admin' admin.id %}"> Modificar </a>
 </div>
+
 
 {% else %}
     <p>No tiene permiso para visualizar los datos de esta persona</p>

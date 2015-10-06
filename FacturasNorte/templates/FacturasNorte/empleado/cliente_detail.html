@@ -29,17 +29,9 @@
 </table>
 
     <div id="links">
-        <form action="{% url 'FacturasNorte:facturas_cliente_empleado' cliente.nroUsuario.id %}">
-           <button id="boton" type="submit"> Ver facturas </button>
-        </form>
-        <form action="{% url 'FacturasNorte:modif_cliente' cliente.id %}">
-            <button id="boton" type="submit"> Modificar  </button>
-        </form>
-        <form action="{% url 'FacturasNorte:reestablecer_contrasena' cliente.id %}">
-            <button id="boton" type="submit"> Regenerar contrase&ntilde;a  </button>
-        </form>
-        <form action="{% url 'FacturasNorte:elim_cliente' cliente.id %}">
-            <button id="boton" type="submit"> Eliminar  </button>
-        </form>
+        <a id="flat-boton" href="{% url 'FacturasNorte:facturas_cliente_empleado' cliente.nroUsuario.id %}"> Ver facturas </a>
+        <a id="flat-boton" href="{% url 'FacturasNorte:modif_cliente' cliente.id %}"> Modificar </a>
+        <a id="flat-boton" href="{% url 'FacturasNorte:reestablecer_contrasena' cliente.id %}"> Reestablecer contrase&ntilde;a </a>
+        <a id="flat-boton" href="{% url 'FacturasNorte:elim_cliente' cliente.id %}"> Eliminar  </a>
     </div>
 {% endblock %}
