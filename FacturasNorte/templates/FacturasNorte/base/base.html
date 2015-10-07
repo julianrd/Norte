@@ -17,20 +17,6 @@
         <div id="header">
 
 
-
-            <div id="user-tools">
-            {% if user.is_active %}
-                {% block welcome-msg %}
-                    <span>Bienvenido, <strong>{% firstof user.get_short_name user.get_username %}.</strong></span>
-                {% endblock %}
-                <a href="{% url 'FacturasNorte:logout' %}"><strong>Cerrar sesi&oacute;n</strong></a>
-            </div>
-            {% else %}
-                <a href="{% url 'FacturasNorte:login' %}"><strong>Inicie sesi&oacute;n</strong></a></p>
-            </div>
-
-            {% endif %}
-
             <div id="logo">
                 <div id="logo_text">
                     <!-- class="logo_colour", allows you to change the colour of the text -->
@@ -39,6 +25,17 @@
                 </div>
             </div>
 
+            <div id="user-tools">
+            {% if user.is_active %}
+                {% block welcome-msg %}
+                    <span>Bienvenido, <strong>{% firstof user.get_short_name user.get_username %}.</strong></span>
+                {% endblock %}
+                <a href="{% url 'FacturasNorte:logout' %}"><strong>Cerrar sesi&oacute;n</strong></a>
+                </div>
+            {% else %}
+                <a href="{% url 'FacturasNorte:login' %}"><strong>Inicie sesi&oacute;n</strong></a></p>
+                </div>
+            {% endif %}
 
             <div id="nav">
                 {% block nav-global %}
@@ -69,7 +66,9 @@
     </div>
 
     <div id="site_content">
+        <div  id="contenido">
         {% block content %}{% endblock %}
+        </div>
     </div><!-- content -->
 
     <div id="footer" class="row">

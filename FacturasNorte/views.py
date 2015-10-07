@@ -338,7 +338,7 @@ class ClienteDeBajaRegistroView(LoginRequiredMixin, PermissionRequiredMixin, Upd
 
     def form_valid(self, form):
         self.object.set_activo(True)
-
+        crear_historial_alta(form, self.request.user)
         return super(ClienteDeBajaRegistroView, self).form_valid(form)
 
 

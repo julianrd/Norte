@@ -5,7 +5,6 @@
 
 {% block content %}
 
-
 {% load staticfiles %}
     <link rel="stylesheet" href="{% static "FacturasNorte/css/forms.css" %}?v=00002">
 
@@ -15,14 +14,12 @@
   <div>
       <div>{{ form.email.errors }}</div>
       <div>{{ form.password.errors }}</div>
-
   </div>
   <div id="form-group">
     <div id="label" style="width: 7%">{{ form.email.label_tag }}</div>
     <div id="field">{{ form.email }}</div>
       {% if form.captcha.errors %}
         <div><ul class="errorlist"><li>Captcha no verificado.</li></ul></div>
-
       {% endif %}
 
   </div>

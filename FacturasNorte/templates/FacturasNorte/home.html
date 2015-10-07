@@ -8,7 +8,7 @@
     <h2><a href="{% url "FacturasNorte:entry_detail" slug=object.slug %}">{{ object.title }}</a></h2>
     <p class="meta">
       {{ object.created }} |
-      Tagged under {{  object.tags.all|join:", " }}
+      {{  object.tags.all|join:", " }}
     </p>
     {{ object.body|markdown }}
   </div>

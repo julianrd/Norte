@@ -89,7 +89,9 @@ ol li
 
 #logo, #menubar, #content_header, #site_content, #content_footer, #footer
 { margin-left: auto;
-  margin-right: auto;}
+  margin-right: auto;
+
+}
 
 #main
 { width: 100%;
@@ -106,10 +108,14 @@ ol li
 }
 
 #logo
-{ width: 878px;
+{
+  width: 350px;
   position: relative;
   height: 134px;
-  background: #3A332D url(../img/img_index/logo.png) no-repeat;}
+  background: #3A332D url("../img/img_index/logo.png") no-repeat scroll 0% 0%;
+  float: left;
+  display: inline;
+}
 
 #logo #logo_text
 { position: absolute;
@@ -129,7 +135,7 @@ ol li
   text-decoration: none;}
 
 #logo_text h1 a .logo_colour
-{ color: #11902f;}
+{ color: #13cf41;}
 
 #logo_text h2
 { font-size: 120%;
@@ -201,13 +207,14 @@ ul#menu li a:hover
 }
 
 #site_content
-{ width: 1270px;
-  overflow: hidden;
+{
+  width: 100%;
+  float: left;
   margin: 0 auto 0 auto;
-  padding: 0 20px 20px 40px;
   background: #FFF;
   border-left: 1px solid #ECECE0;
-  border-right: 1px solid #ECECE0;}
+  border-right: 1px solid #ECECE0;
+}
 
 .sidebar
 { float: right;
@@ -232,10 +239,11 @@ ul#menu li a:hover
 { color: #444;
   text-decoration: none;}
 
-#content
+#contenido
 { text-align: left;
-  width: 613px;
-  padding: 0;}
+  width: 95%;
+  padding: 0px 20px 20px 30px;
+}
 
 #content ul
 { margin: 2px 0 22px 0;}
@@ -248,7 +256,9 @@ ul#menu li a:hover
   line-height: 1.5em;}
 
 #footer
-{ width: 916px;
+{
+  width: 100%;
+  display: inline-block;
   font: normal 90% arial, sans-serif;
   height: 28px;
   margin-top: 20px;
@@ -257,7 +267,8 @@ ul#menu li a:hover
   background: transparent;
   color: #333;
   text-transform: uppercase;
-  letter-spacing: 0.1em;}
+  letter-spacing: 0.1em;
+}
 
 #footer a, #footer a:hover
 { color: #888;
@@ -420,22 +431,6 @@ table tr td
   font-weight: bolder;
 }
 
-ul.errorlist
-{
-  margin: 0;
-  padding: 0;
-}
-.errorlist li
-{
-  background-color: #ab0000;
-  color: white;
-  width: 30%;
-  display: block;
-  font-size: 12px;
-  margin: 0 0 3px;
-  padding: 4px 5px;
-}
-
 #user-tools
 {
   margin: 10px;
@@ -493,11 +488,6 @@ ul.errorlist
   border-radius: 5px;
 }
 
-#error
-{
-  background: #FFFFFF;
-}
-
 .maincontainer
 {
   width: 800px;
@@ -514,4 +504,24 @@ ul.errorlist
   text-decoration: underline;
 }
 
+#error
+{
+  background-color: #FFFFFF;
+}
+
+ul.errorlist
+{
+  margin: 0;
+  padding: 0;
+}
+.errorlist li
+{
+  background-color: #ab0000;
+  color: white;
+  width: 30%;
+  display: block;
+  font-size: 12px;
+  margin: 0 0 3px;
+  padding: 4px 5px;
+}
 
