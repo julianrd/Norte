@@ -141,6 +141,7 @@ def obtener_fecha(fecha):
     return fecha
 
 def buscar_pdfs_pedidos(pk, field='0', pedido=None, fecha_pedido=None):
+     from FacturasNorte.custom_classes import PDF
      cliente = get_object_or_404(Cliente, nroUsuario=pk)
      storageManager = FileSystemStorage()
      facturas = storageManager.listdir(settings.PDF_FACTURAS)[1]
@@ -183,6 +184,7 @@ def buscar_pdfs_pedidos(pk, field='0', pedido=None, fecha_pedido=None):
      return PDFs
 
 def buscar_pdfs_facturas(pk, field='0', factura=None, fecha_factura=None):
+     from FacturasNorte.custom_classes import PDF
      cliente = get_object_or_404(Cliente, nroUsuario=pk)
      storageManager = FileSystemStorage()
      facturas = storageManager.listdir(settings.PDF_FACTURAS)[1]

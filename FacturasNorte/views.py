@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic.edit import FormMixin
 from django.utils import timezone
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
-from django.views.generic import DetailView, FormView, UpdateView, CreateView
+from django.views.generic import DetailView, FormView, UpdateView
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
@@ -21,11 +21,11 @@ from django.views import generic
 from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView, \
     LogicDeleteView, FormListView
 from FacturasNorte.functions import send_email_contact, reset_password, \
-    crear_perfil, search_model, buscar_pdfs_pedidos, registrar_cambio_contrasena, crear_historial_alta, buscar_pdfs_facturas
-
-
+    crear_perfil, search_model, buscar_pdfs_pedidos, registrar_cambio_contrasena, crear_historial_alta, buscar_pdfs_facturas, \
+    get_client_ip
 from Norte import settings
 from . import models
+
 
 
 
@@ -40,7 +40,7 @@ from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm
     EmpleadoForm, ClienteLegadoForm, FiltroClienteForm
 
 from FacturasNorte.forms import  EmpleadoRegisterForm
-from FacturasNorte.models import Empleado, Cliente, ClienteLegado
+from FacturasNorte.models import Empleado, Cliente, ClienteLegado, Historiales
 from FacturasNorte.models import User
 from FacturasNorte.functions import crear_historial_correcto, crear_historial_incorrecto
 
@@ -60,11 +60,22 @@ class LoginView(FormView):
     success_url = reverse_lazy('FacturasNorte:index')
     template_name = 'FacturasNorte/registration/login.html'
 
-
     @method_decorator(csrf_protect)
     @method_decorator(never_cache)
     def dispatch(self, *args, **kwargs):
         return super(LoginView, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        time = timezone.now() - timezone.timedelta(minutes=5)
+        ip = get_client_ip(self.request)
+        query = Historiales.objects.filter(autenticado='Incorrecto', ip=ip, fecha__gte=time)
+        if query:
+            kwargs['captcha'] = True
+        else:
+            kwargs['captcha'] = False
+        return super(LoginView, self).get_context_data(**kwargs)
+
+
 
     def form_valid(self, form):
         """
@@ -112,6 +123,7 @@ class LoginView(FormView):
         """
         Same as django.views.generic.edit.ProcessFormView.get(), but adds test cookie stuff
         """
+
         self.set_test_cookie()
         return super(LoginView, self).get(request, *args, **kwargs)
 
@@ -127,6 +139,17 @@ class LoginView(FormView):
         else:
             self.set_test_cookie()
             return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        """
+        If the form is invalid, re-render the context data with the
+        data-filled form and errors.
+        """
+        return self.render_to_response(self.get_context_data(form=form, error=True))
+
+
+
+
 
 @login_required
 def logout_view(request):

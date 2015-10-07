@@ -10,27 +10,27 @@
 <table id="vertical" style="width:100%">
    <tr>
     <th>Nombre</th>
-    <td>{{ cliente.nombre }}</td>
+    <td class="datos">{{ cliente.nombre }}</td>
   </tr>
   <tr>
     <th>DNI</th>
-    <td>{{ cliente.dni }}</td>
+    <td class="datos">{{ cliente.dni }}</td>
   </tr>
   <tr>
     <th>Fecha nacimiento</th>
-    <td>{{ cliente.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</td>
+    <td class="datos">{{ cliente.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</td>
   </tr>
   <tr>
     <th>Email</th>
-    <td>{{ cliente.email }}</td>
+    <td class="datos">{{ cliente.email }}</td>
   </tr>
   <tr>
     <th>Domicilio</th>
-    <td>{{ cliente.domicilio }}</td>
+    <td class="datos">{{ cliente.domicilio }}</td>
   </tr>
   <tr>
     <th>Telefono</th>
-    <td>{{ cliente.telefono }}</td>
+    <td class="datos">{{ cliente.telefono }}</td>
   </tr>
 
 </table>

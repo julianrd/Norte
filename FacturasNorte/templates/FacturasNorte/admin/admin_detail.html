@@ -5,23 +5,23 @@
 <h1>{{ admin.nombre}}</h1>
 
 <table id="vertical" style="width:100%">
-  <tr>
+  <tr class="datos">
     <th>DNI</th>
     <td>{{ admin.dni }}</td>
   </tr>
-  <tr>
+  <tr class="datos">
     <th>Fecha nacimiento</th>
     <td>{{ admin.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</td>
   </tr>
-  <tr>
+  <tr class="datos">
     <th>Email</th>
     <td>{{ admin.email }}</td>
   </tr>
-  <tr>
+  <tr class="datos">
     <th>Domicilio</th>
     <td>{{ admin.domicilio }}</td>
   </tr>
-  <tr>
+  <tr class="datos">
     <th>Telefono</th>
     <td>{{ admin.telefono }}</td>
   </tr>

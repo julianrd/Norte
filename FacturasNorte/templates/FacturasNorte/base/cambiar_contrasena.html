@@ -10,7 +10,7 @@
                      <h6> (*) estos campos son obligatorios </h6>
                          <table id="vertical" style="width:100%">
                          {% for field in form %}
-                           <tr>
+                           <tr class="datos">
                                 <th>* {{ field.label }}</th>
                                <td>{{ field }}</td>
                                <td id="error">{{ field.errors }}</td>

@@ -525,3 +525,7 @@ ul.errorlist
   padding: 4px 5px;
 }
 
+tr.datos
+{
+  width: 400px;
+}

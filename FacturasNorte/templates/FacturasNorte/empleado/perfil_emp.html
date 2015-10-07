@@ -29,29 +29,29 @@
 <h1>Datos personales</h1>
 
 <table id="vertical" style="width:100%">
-   <tr>
+    <tr class="datos">
     <th>Nombre</th>
-    <td>{{ empleado.nombre }}</td>
+   <td>{{ empleado.nombre }}</td>
   </tr>
-  <tr>
+   <tr class="datos">
     <th>DNI</th>
-    <td>{{ empleado.dni }}</td>
+   <td>{{ empleado.dni }}</td>
   </tr>
-  <tr>
+   <tr class="datos">
     <th>Fecha nacimiento</th>
-    <td>{{ empleado.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</td>
+   <td>{{ empleado.fechaNacimiento|date:"SHORT_DATE_FORMAT" }}</td>
   </tr>
-  <tr>
+   <tr class="datos">
     <th>Email</th>
     <td>{{ empleado.email }}</td>
   </tr>
-  <tr>
+   <tr class="datos">
     <th>Domicilio</th>
-    <td>{{ empleado.domicilio }}</td>
+   <td>{{ empleado.domicilio }}</td>
   </tr>
-  <tr>
+   <tr class="datos">
     <th>Telefono</th>
-    <td>{{ empleado.telefono }}</td>
+   <td>{{ empleado.telefono }}</td>
   </tr>
 
 </table>

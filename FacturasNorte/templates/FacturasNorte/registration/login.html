@@ -28,7 +28,7 @@
     <div id="field">{{ form.password }}</div>
   </div>
   <div id="form-group">
-      {% if form.password.errors or form.email.error %}
+      {% if captcha %}
            <div id="field">{{ form.captcha }}</div>
            <div class="g-recaptcha" data-sitekey="6Ld8HgwTAAAAAO8EB6lFkjWgHd6DYUoKL2u3R6Y4"> </div>
       {% endif %}
