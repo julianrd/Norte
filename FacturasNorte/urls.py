@@ -61,11 +61,10 @@ urlpatterns = patterns('',
     url(r'^staff/facturas/(?P<pk>\d+)/$', views.EmpleadoListaFacturasView.as_view(), name = 'facturas_cliente_empleado'),
 
     url(r'^cliente/perfil/(?P<pk>\d+)/$', views.ClientePerfilView.as_view(), name = 'perfil_cliente'),
-    # url(r'^cliente/factura/$', views.pdf_view, name = 'factura'),
     url(r'^cliente/facturas/(?P<pk>\d+)/$', views.ClienteFacturasView.as_view(), name = 'facturas_cliente'),
+    url(r'^pdf/(?P<ruta>.*)$', views.pdf_view, name = 'ver_factura'),
 
 
-    url(r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name = 'media'),
 )
 
 # static files (images, css, javascript, etc.)
@@ -74,3 +73,13 @@ urlpatterns += patterns('',
     'document_root': settings.MEDIA_ROOT}))
 
 urlpatterns += staticfiles_urlpatterns()
+
+#error pages
+
+handler404 = 'FacturasNorte.views.not_found_view'
+
+handler500 = 'FacturasNorte.views.error_view'
+
+handler403 = 'FacturasNorte.views.permission_denied_view'
+
+handler400 = 'FacturasNorte.views.bad_request_view'

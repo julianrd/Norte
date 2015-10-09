@@ -4,7 +4,8 @@ import urllib.parse
 from datetime import date
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
+from django.template import RequestContext
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
@@ -14,7 +15,7 @@ from django.utils import timezone
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, render_to_response
 from django.contrib.auth import login, logout, authenticate
 from django.views import generic
 
@@ -32,7 +33,7 @@ from . import models
 
 #Importaciones para conficuracion de contacto
 
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib import messages
 
 from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
@@ -260,7 +261,7 @@ class EmpModifPerfilView(EmpModifView):
     template_name = 'FacturasNorte/empleado/mod_perfil_emp.html'
 
     def form_valid(self, form):
-        self.success_url = reverse_lazy('FacturasNorte:perfil_empleado',kwargs={'pk' : self.request.user.id})
+        self.success_url = reverse_lazy('FacturasNorte:perfil_empleado', kwargs={'pk' : self.request.user.id})
         return super(EmpModifPerfilView, self).form_valid(form)
 
 class EmpDeleteView(LoginRequiredMixin, PermissionRequiredMixin, LogicDeleteView):
@@ -591,7 +592,6 @@ class BlogDetail(generic.DetailView):
     model = models.Entry
     template_name = "FacturasNorte/post.html"
 
-
 def reestablecer_password(request, pk):
     usuario = get_object_or_404(User, id=pk)
     empleado = get_object_or_404(Empleado, email=request.user.email)
@@ -606,3 +606,48 @@ class Historial_register(generic.DetailView):
     model = models.Historiales_registros
     template_name = "FacturasNorte/historial_register.html"
 
+@login_required
+def pdf_view(request, ruta):
+    cuit = ruta.split('-')[1]
+    if request.user.is_staff or request.user.is_superuser:
+        return open_pdf_view(request, ruta)
+    else:
+        try:
+            id = request.user.id
+            cliente = Cliente.objects.get(nroUsuario=id)
+            if cliente.cuit == cuit:
+                return open_pdf_view(request, ruta)
+            else:
+                return not_found_view(request)
+        except ObjectDoesNotExist:
+            return not_found_view(request)
+
+def open_pdf_view(request, ruta):
+    ruta = settings.MEDIA_ROOT + ruta
+    pdf = open(ruta, 'rb').read()
+    response = HttpResponse(pdf, content_type='application/pdf')
+    return response
+
+def not_found_view(request):
+    response = render_to_response('FacturasNorte/errors/404.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 404
+    return response
+
+def error_view(request):
+    response = render_to_response('FacturasNorte/errors/500.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 500
+    return response
+
+def permission_denied_view(request):
+    response = render_to_response('FacturasNorte/errors/403.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 403
+    return response
+
+def bad_request_view(request):
+    response = render_to_response('FacturasNorte/errors/400.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 400
+    return response

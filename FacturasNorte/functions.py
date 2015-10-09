@@ -216,6 +216,7 @@ def buscar_pdfs_facturas(pk, field='0', factura=None, fecha_factura=None):
                          fechaPed = obtener_fecha(fechaPed)
 
                          pdf = PDF()
+                         pdf.set_cliente(cuit)
                          pdf.set_nroPedido(nroPed)
                          pdf.set_nroFactura(nroFac)
                          pdf.set_fechaPed(fechaPed)
@@ -368,4 +369,3 @@ def buscar_persona(usuario):
             pass
     finally:
         return result
-
