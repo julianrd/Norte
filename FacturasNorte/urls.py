@@ -1,3 +1,4 @@
+import FacturasNorte
 from FacturasNorte.views import ClienteListView
 from Norte import settings
 
@@ -8,10 +9,12 @@ from . import views, feed
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 
+
 urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'admin.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
+
 
     url(r'^superadmin/', include(admin.site.urls)),
     url(r'^$', views.BlogIndex.as_view(), name = 'index'),
@@ -66,6 +69,8 @@ urlpatterns = patterns('',
 
 
     url(r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name = 'media'),
+
+
 )
 
 # static files (images, css, javascript, etc.)

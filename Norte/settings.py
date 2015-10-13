@@ -23,8 +23,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['10.0.4.54', 'servicios.diarionorte.com']
 
 # Application definition
 
@@ -38,6 +37,7 @@ INSTALLED_APPS = (
     'FacturasNorte',
     'django_markdown',
     'nocaptcha_recaptcha',
+    'favicon',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -66,7 +66,7 @@ DATABASES = {
         'USER': 'sa',
         'PASSWORD': 'Norte1234',#'Norte1234',
         'OPTIONS': {
-            'provider': 'SQLNCLI',
+            'provider': 'SQLNCLI11',
             'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;',
         }
     },
@@ -78,7 +78,7 @@ DATABASES = {
         'USER': 'sa',
         'PASSWORD': 'Norte1234',#'DNI36017',
         'OPTIONS': {
-            'provider': 'SQLNCLI',
+            'provider': 'SQLNCLI11',
             'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;',
         }
     }
@@ -119,9 +119,10 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = ''
 
-TEMPLATE_DIRS = ('templates',
-    'FacturasNorte/templates',
-    'FacturasNorte/templates/admin/base_sites.html',
+TEMPLATE_DIRS = (#'templates',
+    #'FacturasNorte/templates',
+    'FacturasNorte/templates/admin/base_site.html',
+
 
 )
 
@@ -183,3 +184,7 @@ NORECAPTCHA_SECRET_KEY = '6Ld8HgwTAAAAAM5fqalC3jaXEQbJqlW7GCboJ5YY'
 
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+FAVICON_PATH = '/static/FacturasNorte/img/favicon_norte.png'
+
+MARKDOWN_EDITOR_SKIN = 'simple'

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
+
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,8 +10,12 @@
 
 </head>
 
+
 {% load staticfiles %}
+
 <link rel="stylesheet" href="{% static "FacturasNorte/css/base_style.css" %}?v=00001">
+
+<link rel="shortcut icon" href="{%  static 'FacturasNorte/img/favicon_norte.png' %}">
 
 <body>
 
@@ -21,7 +27,10 @@
                 <div id="logo_text">
                     <!-- class="logo_colour", allows you to change the colour of the text -->
                     <h1><a href="{% url 'FacturasNorte:index' %}">Facturas <span class="logo_colour">Norte</span></a></h1>
+
+
                     <h2>Sistema de visualizaci&oacute;n de facturas online</h2>
+
                 </div>
             </div>
 

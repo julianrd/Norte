@@ -4,7 +4,7 @@ import urllib.parse
 from datetime import date
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
@@ -26,13 +26,20 @@ from FacturasNorte.functions import send_email_contact, reset_password, \
 from Norte import settings
 from . import models
 
+from django.shortcuts import render_to_response
+from django.template import RequestContext, Context, loader
+
+from django.http import HttpResponseNotFound
+from django.http import Http404
+
+
 
 
 
 
 #Importaciones para conficuracion de contacto
 
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib import messages
 
 from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
@@ -66,7 +73,7 @@ class LoginView(FormView):
         return super(LoginView, self).dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        time = timezone.now() - timezone.timedelta(minutes=5)
+        time = timezone.now() - timezone.timedelta(minutes=1)
         ip = get_client_ip(self.request)
         query = Historiales.objects.filter(autenticado='Incorrecto', ip=ip, fecha__gte=time)
         if query:
@@ -605,4 +612,28 @@ class Historial(generic.DetailView):
 class Historial_register(generic.DetailView):
     model = models.Historiales_registros
     template_name = "FacturasNorte/historial_register.html"
+
+@login_required
+def pdf_view(request, ruta):
+    cuit = ruta.split('-')[1]
+    if request.user.is_staff or request.user.is_superuser:
+        return open_pdf_view(request, ruta)
+    else:
+        try:
+            id = request.user.id
+            cliente = Cliente.objects.get(nroUsuario=id)
+            if cliente.cuit == cuit:
+                return open_pdf_view(request, ruta)
+            else:
+                return reverse('FacturasNorte:404')
+        except ObjectDoesNotExist:
+            return reverse('FacturasNorte:404')
+
+def open_pdf_view(request, ruta):
+    ruta = settings.MEDIA_ROOT + ruta
+    pdf = open(ruta, 'rb').read()
+    response = HttpResponse(pdf, content_type='application/pdf')
+    return response
+
+
 
