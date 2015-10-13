@@ -1,0 +1,11 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+    {% for object in object_list %}
+   <div class="post">
+
+    <h2><a href="{% url "FacturasNorte:historial_register" id=object.id %}">{{ object.cuit_cli }}</a></h2>
+   <div>
+
+    {% endfor %}
+{% endblock %}

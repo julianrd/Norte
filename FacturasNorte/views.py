@@ -5,6 +5,10 @@ from datetime import date
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponseRedirect, HttpResponse
+<<<<<<< HEAD
+=======
+from django.template import RequestContext
+>>>>>>> 96002654671154b4cc14c4e743d446937c83a99a
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
@@ -14,7 +18,7 @@ from django.utils import timezone
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, render_to_response
 from django.contrib.auth import login, logout, authenticate
 from django.views import generic
 
@@ -267,7 +271,7 @@ class EmpModifPerfilView(EmpModifView):
     template_name = 'FacturasNorte/empleado/mod_perfil_emp.html'
 
     def form_valid(self, form):
-        self.success_url = reverse_lazy('FacturasNorte:perfil_empleado',kwargs={'pk' : self.request.user.id})
+        self.success_url = reverse_lazy('FacturasNorte:perfil_empleado', kwargs={'pk' : self.request.user.id})
         return super(EmpModifPerfilView, self).form_valid(form)
 
 class EmpDeleteView(LoginRequiredMixin, PermissionRequiredMixin, LogicDeleteView):
@@ -598,7 +602,6 @@ class BlogDetail(generic.DetailView):
     model = models.Entry
     template_name = "FacturasNorte/post.html"
 
-
 def reestablecer_password(request, pk):
     usuario = get_object_or_404(User, id=pk)
     empleado = get_object_or_404(Empleado, email=request.user.email)
@@ -625,9 +628,15 @@ def pdf_view(request, ruta):
             if cliente.cuit == cuit:
                 return open_pdf_view(request, ruta)
             else:
+<<<<<<< HEAD
                 return reverse('FacturasNorte:404')
         except ObjectDoesNotExist:
             return reverse('FacturasNorte:404')
+=======
+                return not_found_view(request)
+        except ObjectDoesNotExist:
+            return not_found_view(request)
+>>>>>>> 96002654671154b4cc14c4e743d446937c83a99a
 
 def open_pdf_view(request, ruta):
     ruta = settings.MEDIA_ROOT + ruta
@@ -635,5 +644,31 @@ def open_pdf_view(request, ruta):
     response = HttpResponse(pdf, content_type='application/pdf')
     return response
 
+<<<<<<< HEAD
 
 
+=======
+def not_found_view(request):
+    response = render_to_response('FacturasNorte/errors/404.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 404
+    return response
+
+def error_view(request):
+    response = render_to_response('FacturasNorte/errors/500.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 500
+    return response
+
+def permission_denied_view(request):
+    response = render_to_response('FacturasNorte/errors/403.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 403
+    return response
+
+def bad_request_view(request):
+    response = render_to_response('FacturasNorte/errors/400.html', {},
+                                  context_instance=RequestContext(request))
+    response.status_code = 400
+    return response
+>>>>>>> 96002654671154b4cc14c4e743d446937c83a99a

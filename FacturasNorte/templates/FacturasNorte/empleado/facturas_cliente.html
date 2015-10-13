@@ -40,8 +40,8 @@
                 <td>{{ fac.fechaFac|date:"d/m/Y" }}</td>
                 <td>{{ fac.nroPedido }}</td>
                 <td>{{ fac.fechaPed|date:"d/m/Y" }}</td>
-                <td><a href={% url 'FacturasNorte:media' fac.rutaFac %}> <img src="{% static "FacturasNorte/img/view.png" %}" width="12", alt="Editar"/> Ver Factura</a></td>
-                <td><a href={% url 'FacturasNorte:media' fac.rutaPed %}> <img src="{% static "FacturasNorte/img/view.png" %}" width="12", alt="Editar"/> Ver Detalle</a></td>
+                <td><a href={% url 'FacturasNorte:ver_factura' fac.rutaFac %}> <img src="{% static "FacturasNorte/img/view.png" %}" width="12", alt="Editar"/> Ver Factura</a></td>
+                <td><a href={% url 'FacturasNorte:ver_factura' fac.rutaPed %}> <img src="{% static "FacturasNorte/img/view.png" %}" width="12", alt="Editar"/> Ver Detalle</a></td>
             </tr>
 
          {% endfor %}
