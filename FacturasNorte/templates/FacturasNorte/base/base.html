@@ -29,29 +29,60 @@
                     <h1><a href="{% url 'FacturasNorte:index' %}">Facturas <span class="logo_colour">Norte</span></a></h1>
 
 
-                    <h2>Sistema de visualizaci&oacute;n de facturas online</h2>
 
+                    <h2>Sistema de visualizaci&oacute;n de facturas online</h2>
+                    <h2 rel="shortcut icon" href="{%  static 'FacturasNorte/img/favicon_norte.png' %}"><h2>
                 </div>
             </div>
 
             <div id="user-tools">
+
+
             {% if user.is_active %}
+
                 {% block welcome-msg %}
                     <span>Bienvenido, <strong>{% firstof user.get_short_name user.get_username %}.</strong></span>
+
+
                 {% endblock %}
+
                 <a href="{% url 'FacturasNorte:logout' %}"><strong>Cerrar sesi&oacute;n</strong></a>
                 </div>
+
             {% else %}
-                <a href="{% url 'FacturasNorte:login' %}"><strong>Inicie sesi&oacute;n</strong></a></p>
-                </div>
+                {% if not user.is_active and user.is_authenticated%}
+                     <div>
+                     <span>Bienvenido, <strong>{% firstof user.get_short_name user.get_username %}.</strong></span>
+                         <span><p> <font color = #cd5c5c>SU CUENTA NO ESTÁ ACTIVA</font> </p></span>
+
+                     <a href="{% url 'FacturasNorte:logout' %}"><strong>Cerrar sesi&oacute;n</strong></a>
+                     </div>
+                    {% else %}
+
+                         <a href="{% url 'FacturasNorte:login' %}"<a><strong>Inicie sesi&oacute;n</strong></a></p>
+
+               {% endif %}
+
+
+        </div>
+
+
             {% endif %}
+
+
+
 
             <div id="nav">
                 {% block nav-global %}
+                    <div> <a href="{% url 'FacturasNorte:ver_ayuda' %}"> <span id="link"> Obtener ayuda </span></a>
+                    </div>
+
                 <ul id="menu">
                     <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
                     <li><a href="{% url 'FacturasNorte:index' %}">Inicio</a></li>
                     {% if user.is_active %}
+
+
                         {% if user.is_superuser %}
                             <li><a href="{% url 'FacturasNorte:perfil_admin' user.id %}">Mi Perfil</a></li>
                             <li><a href="{% url 'FacturasNorte:lista_admin'%}">Administradores</a></li>
@@ -63,9 +94,12 @@
                         {% else %}
                             <li><a href="{% url 'FacturasNorte:perfil_cliente' user.id %}">Mi Perfil</a></li>
                             <li><a href="{% url 'FacturasNorte:facturas_cliente' user.id %}">Mis Facturas</a></li>
+
+
                         {% endif %}
                     {% endif %}
                     <li><a href="{% url 'FacturasNorte:contacto' %}">Contáctenos</a></li>
+
                 </ul>
                 {% endblock %}
             </div>

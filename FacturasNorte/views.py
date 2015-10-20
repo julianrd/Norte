@@ -5,10 +5,9 @@ from datetime import date
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponseRedirect, HttpResponse
-<<<<<<< HEAD
-=======
+
 from django.template import RequestContext
->>>>>>> 96002654671154b4cc14c4e743d446937c83a99a
+
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
@@ -26,7 +25,7 @@ from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDet
     LogicDeleteView, FormListView
 from FacturasNorte.functions import send_email_contact, reset_password, \
     crear_perfil, search_model, buscar_pdfs_pedidos, registrar_cambio_contrasena, crear_historial_alta, buscar_pdfs_facturas, \
-    get_client_ip
+    get_client_ip, iniciar_sesion
 from Norte import settings
 from . import models
 
@@ -94,17 +93,26 @@ class LoginView(FormView):
         can log him in.
         """
         try:
-            user = authenticate(username=form.cleaned_data['email'], password=form.cleaned_data['password'])
-            login(self.request, user)
-            crear_historial_correcto(user, self.request)
+            #Captcha activo
+            if form.data['g-recaptcha-response'] != '':
+                if iniciar_sesion(self, form):
+                    return HttpResponseRedirect(self.get_success_url())
+                else:
+                    return self.form_invalid(form)
 
-        except Exception:
-            form.add_error('password', ValidationError('Contrasena incorrecta', code='authentication'))
-            crear_historial_incorrecto(self.request, form.cleaned_data)
+            else:
+                crear_historial_incorrecto(self.request, form.cleaned_data)
+                form.add_error ('password', ValidationError('Captcha incorrecto', code='captcha'))
+                return self.form_invalid(form)
 
-            return self.form_invalid(form)
+        except MultiValueDictKeyError:
+            #Captcha inactivo
+            if iniciar_sesion(self, form):
+                return HttpResponseRedirect(self.get_success_url())
+            else:
+                return self.form_invalid(form)
 
-        return HttpResponseRedirect(self.get_success_url())
+
 
     def get_success_url(self):
         if self.success_url:
@@ -616,7 +624,15 @@ class Historial_register(generic.DetailView):
     model = models.Historiales_registros
     template_name = "FacturasNorte/historial_register.html"
 
+def pdf_help(request):
+    pdf = open_pdf_view(settings.MEDIA_ROOT, "ayuda.pdf")
+
+    return pdf
+
+
 @login_required
+
+
 def pdf_view(request, ruta):
     cuit = ruta.split('-')[1]
     if request.user.is_staff or request.user.is_superuser:
@@ -628,15 +644,15 @@ def pdf_view(request, ruta):
             if cliente.cuit == cuit:
                 return open_pdf_view(request, ruta)
             else:
-<<<<<<< HEAD
+
                 return reverse('FacturasNorte:404')
         except ObjectDoesNotExist:
             return reverse('FacturasNorte:404')
-=======
-                return not_found_view(request)
+
+            return not_found_view(request)
         except ObjectDoesNotExist:
             return not_found_view(request)
->>>>>>> 96002654671154b4cc14c4e743d446937c83a99a
+
 
 def open_pdf_view(request, ruta):
     ruta = settings.MEDIA_ROOT + ruta
@@ -644,10 +660,8 @@ def open_pdf_view(request, ruta):
     response = HttpResponse(pdf, content_type='application/pdf')
     return response
 
-<<<<<<< HEAD
 
 
-=======
 def not_found_view(request):
     response = render_to_response('FacturasNorte/errors/404.html', {},
                                   context_instance=RequestContext(request))
@@ -671,4 +685,4 @@ def bad_request_view(request):
                                   context_instance=RequestContext(request))
     response.status_code = 400
     return response
->>>>>>> 96002654671154b4cc14c4e743d446937c83a99a
+

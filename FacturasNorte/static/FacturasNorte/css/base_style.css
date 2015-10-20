@@ -436,6 +436,8 @@ table tr td
 #user-tools
 {
   margin: 10px;
+  margin-top: 30px;
+
 }
 
 #user-tools span
@@ -501,10 +503,20 @@ table tr td
   float: left;
 }
 
-.link
-{
-  text-decoration: underline;
+.link{
+    text-decoration: inherit;
 }
+
+#link{
+
+  text-decoration: inherit;
+  margin: 1250px;
+  margin-top: 10px;
+  color: #dbffdb;
+
+}
+
+
 
 #error
 {
@@ -531,3 +543,4 @@ tr.datos
 {
   width: 400px;
 }
+

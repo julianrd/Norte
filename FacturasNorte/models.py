@@ -374,5 +374,5 @@ class HistorialContrasena(models.Model):
     class Meta:
         db_table = 'Historiales_Contrasenas'
         verbose_name = u"Cambio de contraseña"
-        verbose_name_plural = u"Cambios de contraseña"
+        verbose_name_plural = u"Historial de Cambios de contraseña"
 

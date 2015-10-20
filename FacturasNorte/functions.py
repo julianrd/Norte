@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+from django.contrib.auth import authenticate
+from django.contrib.auth import login
+from django.http import HttpResponseRedirect
+
 __author__ = 'Julian'
 
 from time import strptime
@@ -369,3 +373,16 @@ def buscar_persona(usuario):
             pass
     finally:
         return result
+
+def iniciar_sesion(view, form):
+    try:
+        user = authenticate(username=form.cleaned_data['email'], password=form.cleaned_data['password'])
+        login(view.request, user)
+        crear_historial_correcto(user, view.request)
+
+    except Exception:
+        form.add_error('password', ValidationError('Contrasena incorrecta', code='authentication'))
+        crear_historial_incorrecto(view.request, form.cleaned_data)
+        return False
+
+    return True

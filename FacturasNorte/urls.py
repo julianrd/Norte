@@ -66,14 +66,12 @@ urlpatterns = patterns('',
     url(r'^cliente/perfil/(?P<pk>\d+)/$', views.ClientePerfilView.as_view(), name = 'perfil_cliente'),
     url(r'^cliente/facturas/(?P<pk>\d+)/$', views.ClienteFacturasView.as_view(), name = 'facturas_cliente'),
     url(r'^pdf/(?P<ruta>.*)$', views.pdf_view, name = 'ver_factura'),
+    url(r'^pdf_ayuda/$', views.pdf_help, name = 'ver_ayuda'),
 
 
-<<<<<<< HEAD
     url(r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name = 'media'),
 
 
-=======
->>>>>>> 96002654671154b4cc14c4e743d446937c83a99a
 )
 
 # static files (images, css, javascript, etc.)
