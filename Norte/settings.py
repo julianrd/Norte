@@ -188,3 +188,4 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 FAVICON_PATH = '/static/FacturasNorte/img/favicon_norte.png'
 
 MARKDOWN_EDITOR_SKIN = 'simple'
+

@@ -95,10 +95,17 @@ class LoginView(FormView):
         try:
             #Captcha activo
             if form.data['g-recaptcha-response'] != '':
-                if iniciar_sesion(self, form):
-                    return HttpResponseRedirect(self.get_success_url())
-                else:
+                try:
+                    user = authenticate(username=form.cleaned_data['email'], password=form.cleaned_data['password'])
+                    login(self.request, user)
+                    crear_historial_correcto(user, self.request)
+
+                except Exception:
+                    form.add_error('password', ValidationError('Contrasena incorrecta', code='authentication'))
+                    crear_historial_incorrecto(self.request, form.cleaned_data)
                     return self.form_invalid(form)
+
+                return HttpResponseRedirect(self.get_success_url())
 
             else:
                 crear_historial_incorrecto(self.request, form.cleaned_data)
@@ -107,12 +114,17 @@ class LoginView(FormView):
 
         except MultiValueDictKeyError:
             #Captcha inactivo
-            if iniciar_sesion(self, form):
-                return HttpResponseRedirect(self.get_success_url())
-            else:
+            try:
+                user = authenticate(username=form.cleaned_data['email'], password=form.cleaned_data['password'])
+                login(self.request, user)
+                crear_historial_correcto(user, self.request)
+
+            except Exception:
+                form.add_error('password', ValidationError('Contrasena incorrecta', code='authentication'))
+                crear_historial_incorrecto(self.request, form.cleaned_data)
                 return self.form_invalid(form)
 
-
+            return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         if self.success_url:
