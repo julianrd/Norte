@@ -66,7 +66,7 @@ DATABASES = {
         'USER': 'sa',
         'PASSWORD': 'Norte1234',#'Norte1234',
         'OPTIONS': {
-            'provider': 'SQLNCLI11',
+            'provider': 'SQLNCLI',
             'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;',
         }
     },
@@ -78,7 +78,7 @@ DATABASES = {
         'USER': 'sa',
         'PASSWORD': 'Norte1234',#'DNI36017',
         'OPTIONS': {
-            'provider': 'SQLNCLI11',
+            'provider': 'SQLNCLI',
             'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;',
         }
     }
@@ -131,7 +131,7 @@ AUTH_PROFILE_MODULE = 'FacturasNorte.Administrador'
 AUTH_PROFILE_MODULE = 'FacturasNorte.Empleado'
 AUTH_PROFILE_MODULE = 'FacturasNorte.Cliente'
 
-AUTHENTICATION_BACKENDS = ('FacturasNorte.backends.Emailbackend','django.contrib.auth.backends.ModelBackend')
+AUTHENTICATION_BACKENDS = ('FacturasNorte.backends.Emailbackend', 'django_auth_ldap.backend.LDAPBackend','django.contrib.auth.backends.ModelBackend')
 
 #Path for date formats
 FORMAT_MODULE_PATH  = 'Norte.formats'

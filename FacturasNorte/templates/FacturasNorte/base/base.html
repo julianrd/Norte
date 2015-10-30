@@ -31,18 +31,16 @@
 
 
                     <h2>Sistema de visualizaci&oacute;n de facturas online</h2>
-                    <h2 rel="shortcut icon" href="{%  static 'FacturasNorte/img/favicon_norte.png' %}"><h2>
+                    <h2 rel="shortcut icon" href="{%  static 'FacturasNorte/img/favicon_norte.png' %}"></h2>
                 </div>
             </div>
 
             <div id="user-tools">
 
-
             {% if user.is_active %}
 
                 {% block welcome-msg %}
                     <span>Bienvenido, <strong>{% firstof user.get_short_name user.get_username %}.</strong></span>
-
 
                 {% endblock %}
 
@@ -59,22 +57,17 @@
                      </div>
                     {% else %}
 
-                         <a href="{% url 'FacturasNorte:login' %}"<a><strong>Inicie sesi&oacute;n</strong></a></p>
+                         <a href="{% url 'FacturasNorte:login' %}"><strong>Inicie sesi&oacute;n</strong></a></p>
 
                {% endif %}
-
-
         </div>
-
 
             {% endif %}
 
-
-
-
             <div id="nav">
                 {% block nav-global %}
-                    <div> <a href="{% url 'FacturasNorte:ver_ayuda' %}"> <span id="link"> Obtener ayuda </span></a>
+                    <div>
+                        <a href="{% url 'FacturasNorte:ver_ayuda' %}"> <span id="link"> Obtener ayuda </span></a>
                     </div>
 
                 <ul id="menu">

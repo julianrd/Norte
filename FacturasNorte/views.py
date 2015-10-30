@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import urllib.parse
+#import urllib.parse
 from datetime import date
+import urlparse
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponseRedirect, HttpResponse
-
-from django.template import RequestContext
-
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
@@ -20,6 +18,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.contrib.auth import login, logout, authenticate
 from django.views import generic
+from nocaptcha_recaptcha import NoReCaptchaField
 
 from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView, \
     LogicDeleteView, FormListView
@@ -30,16 +29,7 @@ from Norte import settings
 from . import models
 
 from django.shortcuts import render_to_response
-from django.template import RequestContext, Context, loader
-
-from django.http import HttpResponseNotFound
-from django.http import Http404
-
-
-
-
-
-
+from django.template import RequestContext
 #Importaciones para conficuracion de contacto
 
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -47,7 +37,7 @@ from django.contrib import messages
 
 from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
     IniciarSesionForm, RegenerarContrasenaForm, FiltroPersonaForm, FiltroFacturaForm, ClienteForm, \
-    EmpleadoForm, ClienteLegadoForm, FiltroClienteForm
+    EmpleadoForm, ClienteLegadoForm, FiltroClienteForm, IniciarSesionCaptchaForm
 
 from FacturasNorte.forms import  EmpleadoRegisterForm
 from FacturasNorte.models import Empleado, Cliente, ClienteLegado, Historiales
@@ -66,7 +56,7 @@ def index(request):
     return render(request, 'FacturasNorte/base/index.html')
 
 class LoginView(FormView):
-    form_class = IniciarSesionForm
+    form_class = IniciarSesionCaptchaForm
     success_url = reverse_lazy('FacturasNorte:index')
     template_name = 'FacturasNorte/registration/login.html'
 
@@ -74,6 +64,10 @@ class LoginView(FormView):
     @method_decorator(never_cache)
     def dispatch(self, *args, **kwargs):
         return super(LoginView, self).dispatch(*args, **kwargs)
+
+    def get_form_class(self):
+        self.form_class = IniciarSesionForm
+        return self.form_class
 
     def get_context_data(self, **kwargs):
         time = timezone.now() - timezone.timedelta(minutes=1)
@@ -86,7 +80,6 @@ class LoginView(FormView):
         return super(LoginView, self).get_context_data(**kwargs)
 
 
-
     def form_valid(self, form):
         """
         The user has provided valid credentials (this was checked in AuthenticationForm.is_valid()). So now we
@@ -96,7 +89,9 @@ class LoginView(FormView):
             #Captcha activo
             if form.data['g-recaptcha-response'] != '':
                 try:
-                    user = authenticate(username=form.cleaned_data['email'], password=form.cleaned_data['password'])
+                    email = str(form.cleaned_data['email'])
+                    password = str(form.cleaned_data['password'])
+                    user = authenticate(username=email, password=password)
                     login(self.request, user)
                     crear_historial_correcto(user, self.request)
 
@@ -132,8 +127,9 @@ class LoginView(FormView):
         else:
             redirect_to = self.request.REQUEST.get(self.redirect_field_name, '')
 
-        redirect_to_string = str(redirect_to)
-        netloc = urllib.parse.urlsplit(redirect_to_string)[1]
+        #redirect_to_string = str(redirect_to)
+        #netloc = urllib.parse.urlsplit(redirect_to_string)[1]
+        netloc = urlparse.urlparse(redirect_to)[1]
         if not redirect_to:
             redirect_to = settings.LOGIN_REDIRECT_URL
         # Security check -- don't allow redirection to a different host.
@@ -643,8 +639,6 @@ def pdf_help(request):
 
 
 @login_required
-
-
 def pdf_view(request, ruta):
     cuit = ruta.split('-')[1]
     if request.user.is_staff or request.user.is_superuser:

@@ -20,20 +20,21 @@ import datetime
 
 from django.forms.extras.widgets import SelectDateWidget
 
-
 class IniciarSesionForm(forms.Form):
     email = forms.EmailField(label='E-mail', show_hidden_initial='ejemplo@dominio.com', validators=[validate_emailExistente])
     password = forms.CharField(label=u'Contraseña', widget=forms.PasswordInput(), initial='')
-    if authenticate(username=email, password=password):
-        captcha = NoReCaptchaField(required=False)
-
-    def clean_captcha(self):
-        if not self.cleaned_data.get('captcha'):
-            raise forms.ValidationError('Captcha no verificado, intente de nuevo', code='captcha')
-        return self.cleaned_data.get('captcha')
 
     def get_user(self):
         return get_object_or_404(User, email=self.cleaned_data['usuario'])
+
+class IniciarSesionCaptchaForm(forms.Form):
+    email = forms.EmailField(label='E-mail', show_hidden_initial='ejemplo@dominio.com', validators=[validate_emailExistente])
+    password = forms.CharField(label=u'Contraseña', widget=forms.PasswordInput(), initial='')
+    captcha = NoReCaptchaField(required=False)
+
+    def get_user(self):
+        return get_object_or_404(User, email=self.cleaned_data['usuario'])
+
 
 class PersonaForm(forms.ModelForm):
     nombre = forms.CharField(validators=[validate_nombre], initial='')
