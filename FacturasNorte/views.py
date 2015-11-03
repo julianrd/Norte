@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 
 #import urllib.parse
+
 from datetime import date, datetime
 import urlparse
 
 from Norte import settings as settingsFile
+
+from datetime import date
+import urlparse
+
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponseRedirect, HttpResponse
@@ -17,21 +22,26 @@ from django.utils import timezone
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import render, get_object_or_404, render_to_response
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.views import generic
-from nocaptcha_recaptcha import NoReCaptchaField
+
 
 from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDetailView, CustomEmpleadoDetailView, \
     LogicDeleteView, FormListView
 from FacturasNorte.functions import send_email_contact, reset_password, \
     crear_perfil, search_model, buscar_pdfs_pedidos, registrar_cambio_contrasena, crear_historial_alta, buscar_pdfs_facturas, \
-    get_client_ip, iniciar_sesion
+    get_client_ip
 from django.conf import settings
 from . import models
 
 from django.shortcuts import render_to_response
+
+
+
 from django.template import RequestContext
+
+
 #Importaciones para conficuracion de contacto
 
 from django.core.urlresolvers import reverse_lazy, reverse

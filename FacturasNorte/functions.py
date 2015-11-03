@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
+from django.db.models.sql.datastructures import Date
 from django.http import HttpResponseRedirect
 
 __author__ = 'Julian'
@@ -149,7 +150,7 @@ def send_email_contact(email, subject, body):
         )
 
 def obtener_fecha(fecha):
-    fecstr = fecha[:2] + ' ' + fecha[2:4] + ' ' + fecha[4:8]
+    fecstr = fecha[8:10] + ' ' + fecha[5:7] + ' ' + fecha[:4]
     fecha = strptime(fecstr, "%d %m %Y")
     fecha = date(fecha.tm_year, fecha.tm_mon, fecha.tm_mday)
     return fecha
@@ -169,31 +170,33 @@ def buscar_pdfs_pedidos(pk, field='0', pedido=None, fecha_pedido=None):
             query = fecha_pedido
 
      for ped in pedidos:
-         cuit = ped.split('-')[1]
+         cuit = ped.split('_')[3].split('.')[0]
          if (cuit == cliente.cuit):
-             nroPed = ped.split('-')[2]
-             fechaPed = ped.split('-')[3].split('.')[0]
+             nroPed = ped.split('_')[1]
+             fechaPed = ped.split('_')[2]
              fechaPed = obtener_fecha(fechaPed)
 
-             if (field == '0') or \
-             ((field == '2') and (query == nroPed)) or \
-             ((field == '4') and (query == fechaPed)):
-
-                 for fac in facturas:
-                     pedido_factura = fac.split('-')[3]
-                     if (nroPed == pedido_factura):
-                         nroFac = fac.split('-')[2]
-                         fechaFac = fac.split('-')[4].split('.')[0]
-                         fechaFac = obtener_fecha(fechaFac)
-
-                         pdf = PDF()
-                         pdf.set_nroPedido(nroPed)
-                         pdf.set_nroFactura(nroFac)
-                         pdf.set_fechaPed(fechaPed)
-                         pdf.set_fechaFac(fechaFac)
-                         pdf.set_rutaFac('facturas/'+fac)
-                         pdf.set_rutaPed('pedidos/'+ped)
-                         PDFs.append(pdf)
+             # if (field == '0') or \
+             # ((field == '2') and (query == nroPed)) or \
+             # ((field == '4') and (query == fechaPed)):
+             #
+             #     for fac in facturas:
+             #         pedido_factura = fac.split('-')[3]
+             #         if (nroPed == pedido_factura):
+             #             nroFac = fac.split('-')[2]
+             #             fechaFac = fac.split('-')[4].split('.')[0]
+             #             fechaFac = obtener_fecha(fechaFac)
+             nroFac = 0
+             fechaFac = date(2015, 10, 10)
+             fac = ped
+             pdf = PDF()
+             pdf.set_nroPedido(nroPed)
+             pdf.set_nroFactura(nroFac)
+             pdf.set_fechaPed(fechaPed)
+             pdf.set_fechaFac(fechaFac)
+             pdf.set_rutaFac('facturas/'+fac)
+             pdf.set_rutaPed('pedidos/'+ped)
+             PDFs.append(pdf)
 
      return PDFs
 
