@@ -56,24 +56,23 @@ def crear_perfil(form, perfil):
         password = User.objects.make_random_password()
         permissions = settings.CLIENTE_PERMISOS
 
-    try:
-        nuevo_usuario.set_password(password)
-        nuevo_usuario.save()
-        for perm in permissions:
-             p = Permission.objects.get(codename=perm[0])
-             nuevo_usuario.user_permissions.add(p)
-        nuevo_usuario.save()
-        nuevo_perfil.set_usuario(nuevo_usuario)
-        nuevo_perfil.set_activo(True)
-        nuevo_perfil.save()
-        enviar_password(password)
-        return
+    #try:
+    nuevo_usuario.set_password(password)
+    nuevo_usuario.save()
+    for perm in permissions:
+         p = Permission.objects.get(codename=perm[0])
+         nuevo_usuario.user_permissions.add(p)
+    nuevo_usuario.save()
+    nuevo_perfil.set_usuario(nuevo_usuario)
+    nuevo_perfil.set_activo(True)
+    nuevo_perfil.save()
+    enviar_password(password)
+    return
 
-    except Exception:
-        usuario_creado = get_object_or_404(User, username=username)
-        usuario_creado.delete()
-        raise ValidationError((u'Campos invalidos'), code='campos')
-
+    # except Exception:
+    #     usuario_creado = get_object_or_404(User, username=username)
+    #     usuario_creado.delete()
+    #     raise ValidationError((u'Campos invalidos'), code='campos')
 
 
 def crear_usuario(form):
@@ -85,8 +84,6 @@ def crear_usuario(form):
     nuevo_usuario.date_joined = timezone.now()
     return nuevo_usuario
 
-
-
 def crear_persona(form, model):
     persona = model()
     if model == Cliente:
@@ -97,10 +94,23 @@ def crear_persona(form, model):
         persona.set_dni(str(form.cleaned_data['dni']))
     persona.set_nombre(form.cleaned_data['nombre'])
     persona.set_email(form.cleaned_data['email'])
-    persona.set_fechaNacimiento(form.cleaned_data['fechaNacimiento'])
+    fecha_nac = cast_fecha(form.cleaned_data['fechaNacimiento'])
+    persona.set_fechaNacimiento(fecha_nac)
     persona.set_domicilio(form.cleaned_data['domicilio'])
     persona.set_telefono(form.cleaned_data['telefono'])
     return persona
+
+def cast_fecha(fechaNacimiento):
+    anio =  str(fechaNacimiento.year)
+    if fechaNacimiento.month < 10:
+        mes = '0'+str(fechaNacimiento.month)
+    else:
+        mes = str(fechaNacimiento.month)
+    if fechaNacimiento.day < 10:
+        dia = '0'+str(fechaNacimiento.day)
+    else:
+        dia = str(fechaNacimiento.day)
+    return '' + anio + '-' + mes + '-' + dia
 
 
 def enviar_password(password):
@@ -130,7 +140,7 @@ def enviar_password_regenerada(usuario, password):
 def send_email_contact(email, subject, body):
     subject = subject.encode("utf-8")
     body = body.encode("utf-8")
-    body = '{} ha enviado un email de contacto\n\n{}\n\n{}'.format(email, subject, body)
+    body = '{} ha enviado un username de contacto\n\n{}\n\n{}'.format(email, subject, body)
     send_mail(
         subject = subject,
         message = body,
@@ -318,7 +328,7 @@ def crear_historial_incorrecto(request, form):  #Se crea un historial de sesion,
    nuevo_historial.ip = get_client_ip(request)
    nuevo_historial.autenticado='Incorrecto'
    nuevo_historial.nroUsuario = ''
-   nuevo_historial.nombre = form['email']
+   nuevo_historial.nombre = form['username']
    nuevo_historial.save()
 
 def crear_historial_alta(form, user): #se crea un historial, por cada cliente que se da de alta
@@ -376,7 +386,7 @@ def buscar_persona(usuario):
 
 def iniciar_sesion(view, form):
     try:
-        user = authenticate(username=form.cleaned_data['email'], password=form.cleaned_data['password'])
+        user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
         login(view.request, user)
         crear_historial_correcto(user, view.request)
 

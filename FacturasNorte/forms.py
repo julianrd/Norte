@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 
+from Norte import settings
 from FacturasNorte.functions import verificar_usuario
 
 from django import forms
@@ -21,14 +22,14 @@ import datetime
 from django.forms.extras.widgets import SelectDateWidget
 
 class IniciarSesionForm(forms.Form):
-    email = forms.EmailField(label='E-mail', show_hidden_initial='ejemplo@dominio.com', validators=[validate_emailExistente])
+    username = forms.CharField(label='Usuario o Email', show_hidden_initial='ejemplo@dominio.com')
     password = forms.CharField(label=u'Contraseña', widget=forms.PasswordInput(), initial='')
 
     def get_user(self):
         return get_object_or_404(User, email=self.cleaned_data['usuario'])
 
 class IniciarSesionCaptchaForm(forms.Form):
-    email = forms.EmailField(label='E-mail', show_hidden_initial='ejemplo@dominio.com', validators=[validate_emailExistente])
+    username = forms.CharField(label='Usuario o Email', show_hidden_initial='ejemplo@dominio.com')
     password = forms.CharField(label=u'Contraseña', widget=forms.PasswordInput(), initial='')
     captcha = NoReCaptchaField(required=False)
 
@@ -120,9 +121,9 @@ class RegenerarContrasenaForm(forms.Form):
 
     def clean(self):
         try:
-            User.objects.get(email=self.cleaned_data.get('email'))
+            User.objects.get(email=self.cleaned_data.get('username'))
         except ObjectDoesNotExist:
-            raise forms.ValidationError("El email ingresado no se encuentra registrado")
+            raise forms.ValidationError("El username ingresado no se encuentra registrado")
 
 
 class FiltroPersonaForm(forms.Form):
@@ -131,7 +132,7 @@ class FiltroPersonaForm(forms.Form):
                                 required=True,
                                 choices = ( ('nombre',u'Nombre'),
                                             ('dni',u'DNI'),
-                                            ('email',u'Email'),
+                                            ('username',u'Email'),
                                 )
     )
     activo = forms.ChoiceField(label='Activo',
@@ -146,7 +147,7 @@ class FiltroClienteForm(forms.Form):
                                 required=True,
                                 choices = ( ('nombre',u'Nombre'),
                                             ('cuit', u'CUIT'),
-                                            ('email',u'Email'),
+                                            ('username',u'Email'),
                                 )
     )
     activo = forms.ChoiceField(label='Activo',
@@ -166,4 +167,3 @@ class FiltroFacturaForm(forms.Form):
                                             ('4',u'Fecha Pedido'),
                                 )
     )
-

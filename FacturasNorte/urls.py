@@ -46,6 +46,7 @@ urlpatterns = patterns('',
 
 
 
+
     url(r'^staff/perfil/(?P<pk>\d+)/$', views. EmpleadoPerfilView.as_view(), name = 'perfil_empleado'),
     #url(r'^staff/nuevo_cliente/$', views.ClienteCreateView.as_view(), name = 'nuevo_cliente'),
     url(r'^staff/registro_cliente/$', views.ClientesLegadosView.as_view(), name = 'clientes_legados'),

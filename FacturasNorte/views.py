@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 #import urllib.parse
-from datetime import date
+from datetime import date, datetime
 import urlparse
+
+from Norte import settings as settingsFile
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponseRedirect, HttpResponse
@@ -25,7 +27,7 @@ from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDet
 from FacturasNorte.functions import send_email_contact, reset_password, \
     crear_perfil, search_model, buscar_pdfs_pedidos, registrar_cambio_contrasena, crear_historial_alta, buscar_pdfs_facturas, \
     get_client_ip, iniciar_sesion
-from Norte import settings
+from django.conf import settings
 from . import models
 
 from django.shortcuts import render_to_response
@@ -89,9 +91,9 @@ class LoginView(FormView):
             #Captcha activo
             if form.data['g-recaptcha-response'] != '':
                 try:
-                    email = str(form.cleaned_data['email'])
+                    username = str(form.cleaned_data['username'])
                     password = str(form.cleaned_data['password'])
-                    user = authenticate(username=email, password=password)
+                    user = authenticate(username=username, password=password)
                     login(self.request, user)
                     crear_historial_correcto(user, self.request)
 
@@ -110,7 +112,7 @@ class LoginView(FormView):
         except MultiValueDictKeyError:
             #Captcha inactivo
             try:
-                user = authenticate(username=form.cleaned_data['email'], password=form.cleaned_data['password'])
+                user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
                 login(self.request, user)
                 crear_historial_correcto(user, self.request)
 
@@ -375,7 +377,13 @@ class ClienteRegistroView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
     def form_valid(self, form):
         crear_perfil(form, 'cliente')
         crear_historial_alta(form, self.request.user)
-        return super(ClienteRegistroView, self).form_valid(form)
+        if self.object.fechaUpdate:
+            fecha_update = self.object.fechaUpdate
+            nueva_fecha = datetime(year=fecha_update.year, month=fecha_update.month, day=fecha_update.day, hour=fecha_update.hour,
+                     minute=fecha_update.minute, second=fecha_update.second)
+            self.object.fechaUpdate = nueva_fecha
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
 
 
 
@@ -560,7 +568,7 @@ class ClienteRegenerarContrasenaView(FormView):
     form_class = RegenerarContrasenaForm
 
     def form_valid(self, form):
-        usuario = User.objects.get(email=form.cleaned_data['email'])
+        usuario = User.objects.get(email=form.cleaned_data['username'])
         empleado = Empleado.objects.get(nroUsuario=self.request.user.username)
         reset_password(usuario, empleado)
         return render(self.request, 'FacturasNorte/base/reset_contrasena_hecho.html', {})
@@ -597,7 +605,7 @@ class ContactView(FormView):
     def form_valid(self, form):
         subject = form.cleaned_data.get('subject')
         body = form.cleaned_data.get('body')
-        email = form.cleaned_data.get('email')
+        email = form.cleaned_data.get('username')
 
         if self.request.user.is_authenticated():
             send_email_contact(self.request.user.email, subject, body)
@@ -617,6 +625,7 @@ class BlogIndex(generic.ListView):
 class BlogDetail(generic.DetailView):
     model = models.Entry
     template_name = "FacturasNorte/post.html"
+
 
 def reestablecer_password(request, pk):
     usuario = get_object_or_404(User, id=pk)

@@ -27,7 +27,7 @@ def validate_emailExistente(email):
     try:
        User.objects.get(email=email)
     except ObjectDoesNotExist:
-        raise ValidationError('El email ingresado es incorrecto', code='email incorrecto')
+        raise ValidationError('El username ingresado es incorrecto', code='username incorrecto')
 
 def validate_cuit(cuit):
     # validaciones minimas

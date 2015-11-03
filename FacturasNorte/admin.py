@@ -8,8 +8,6 @@ from django_markdown.admin import MarkdownModelAdmin
 from django_markdown.widgets import AdminMarkdownWidget
 from django.db.models import TextField
 
-
-
 # Register your models here.
 class PermissionAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -64,7 +62,6 @@ class HistorialContrasenaAdmin(admin.ModelAdmin):
     list_display = ('nroUsuario', 'nombre', 'email', 'fecha', 'reestablecida_por_empleado', 'nombre_empleado', 'dni_empleado')
     list_filter = ['reestablecida_por_empleado']
     search_fields = ['nombre', 'email', 'fecha', 'dni_empleado', 'reestablecida_por_empleado']
-
 
 admin.site.register(Entry, EntryAdmin)
 admin.site.register(Tag)
