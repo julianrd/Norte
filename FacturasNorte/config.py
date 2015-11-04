@@ -1,0 +1,5 @@
+PDF_ROOT = 'C:/Apache24/htdocs/PDFs/'
+PDF_FACTURAS = PDF_ROOT + 'facturas/' 
+PDF_PEDIDOS = PDF_ROOT + 'pedidos/' 
+EMAIL_ENTRADA = 'julian_rd7@hotmail.com'
+EMAIL_SALIDA = 'julian.rd7@gmail.com'

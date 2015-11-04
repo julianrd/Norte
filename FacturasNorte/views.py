@@ -4,12 +4,15 @@
 
 from datetime import date, datetime
 import urlparse
+from django.core.files import File
 
-from Norte import settings as settingsFile
+from Norte import settings
+
 
 from datetime import date
 import urlparse
 
+from django.core.files.storage import default_storage
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponseRedirect, HttpResponse
@@ -31,8 +34,9 @@ from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDet
     LogicDeleteView, FormListView
 from FacturasNorte.functions import send_email_contact, reset_password, \
     crear_perfil, search_model, buscar_pdfs_pedidos, registrar_cambio_contrasena, crear_historial_alta, buscar_pdfs_facturas, \
-    get_client_ip
-from django.conf import settings
+    get_client_ip, iniciar_sesion, corregir_fecha_update
+from FacturasNorte import config
+
 from . import models
 
 from django.shortcuts import render_to_response
@@ -49,7 +53,7 @@ from django.contrib import messages
 
 from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
     IniciarSesionForm, RegenerarContrasenaForm, FiltroPersonaForm, FiltroFacturaForm, ClienteForm, \
-    EmpleadoForm, ClienteLegadoForm, FiltroClienteForm, IniciarSesionCaptchaForm
+    EmpleadoForm, ClienteLegadoForm, FiltroClienteForm, IniciarSesionCaptchaForm, ConfigurationForm
 
 from FacturasNorte.forms import  EmpleadoRegisterForm
 from FacturasNorte.models import Empleado, Cliente, ClienteLegado, Historiales
@@ -186,15 +190,11 @@ class LoginView(FormView):
         """
         return self.render_to_response(self.get_context_data(form=form, error=True))
 
-
-
-
-
 @login_required
 def logout_view(request):
     logout(request)
     # Redirect to a success page.
-    return render(request,'FacturasNorte/registration/logged_out.html' )
+    return render(request,'FacturasNorte/registration/logged_out.html')
 
 def ThankYou (request):
     return render (request, 'FacturasNorte/thankyou.html')
@@ -384,18 +384,21 @@ class ClienteRegistroView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
     permission_required = 'FacturasNorte.update_cliente'
 
+    def get_object(self, queryset=None):
+        object = super(ClienteRegistroView, self).get_object()
+        object.nombre = object.nombre.strip()
+        object.domicilio = object.domicilio.strip()
+        object.nroDoc = object.nroDoc.strip()
+        object.telefono = object.telefono.strip()
+        object.email = object.email.strip()
+        return object
+
     def form_valid(self, form):
         crear_perfil(form, 'cliente')
         crear_historial_alta(form, self.request.user)
-        if self.object.fechaUpdate:
-            fecha_update = self.object.fechaUpdate
-            nueva_fecha = datetime(year=fecha_update.year, month=fecha_update.month, day=fecha_update.day, hour=fecha_update.hour,
-                     minute=fecha_update.minute, second=fecha_update.second)
-            self.object.fechaUpdate = nueva_fecha
+        self.object.fechaUpdate = corregir_fecha_update(self.object)
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
-
-
 
 class ClienteDeBajaRegistroView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Cliente
@@ -600,6 +603,35 @@ def reset_password_conf(request, pk):
 
     return render(request, 'FacturasNorte/base/reset_contrasena.html', {'usuario':usuario})
 
+class ConfigurationView(FormView):
+    template_name = 'FacturasNorte/admin/configuration.html'
+    form_class = ConfigurationForm
+    success_url = reverse_lazy('FacturasNorte:config_done')
+
+    def form_valid(self, form):
+        pdf_root = 'PDF_ROOT = ' + "'" + form.cleaned_data['pdf_root'] + "'"
+        email_entrada = 'EMAIL_ENTRADA = ' + "'" + form.cleaned_data['email_entrada'] + "'"
+        email_salida = 'EMAIL_SALIDA = ' + "'" +  form.cleaned_data['email_salida'] + "'"
+        facturas = "PDF_FACTURAS = PDF_ROOT + 'facturas/' "
+        pedidos = "PDF_PEDIDOS = PDF_ROOT + 'pedidos/' "
+
+        f = open('C:\Apache24\htdocs\Norte\FacturasNorte\config.py','w')
+        file = File(f)
+        file.write(pdf_root)
+        file.write('\n')
+        file.write(facturas)
+        file.write('\n')
+        file.write(pedidos)
+        file.write('\n')
+        file.write(email_entrada)
+        file.write('\n')
+        file.write(email_salida)
+        file.close()
+        return render (self.request, 'FacturasNorte/admin/config_success.html')
+
+def configuration_done (request):
+    return render (request, 'FacturasNorte/admin/config_success.html')
+
 class ContactView(FormView):
 
     template_name = 'FacturasNorte/contact.html'
@@ -652,7 +684,7 @@ class Historial_register(generic.DetailView):
     template_name = "FacturasNorte/historial_register.html"
 
 def pdf_help(request):
-    pdf = open_pdf_view(settings.MEDIA_ROOT, "ayuda.pdf")
+    pdf = open_pdf_view(config.PDF_ROOT, "ayuda.pdf")
 
     return pdf
 
@@ -680,12 +712,10 @@ def pdf_view(request, ruta):
 
 
 def open_pdf_view(request, ruta):
-    ruta = settings.MEDIA_ROOT + ruta
+    ruta = config.PDF_ROOT + ruta
     pdf = open(ruta, 'rb').read()
     response = HttpResponse(pdf, content_type='application/pdf')
     return response
-
-
 
 def not_found_view(request):
     response = render_to_response('FacturasNorte/errors/404.html', {},
@@ -710,4 +740,5 @@ def bad_request_view(request):
                                   context_instance=RequestContext(request))
     response.status_code = 400
     return response
+
 

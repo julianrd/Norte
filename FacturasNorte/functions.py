@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.db.models.sql.datastructures import Date
 from django.http import HttpResponseRedirect
+from FacturasNorte import config
 
 __author__ = 'Julian'
 
@@ -16,15 +17,12 @@ from django.core.files.storage import FileSystemStorage
 from django.core.mail import EmailMessage, send_mail
 from django.shortcuts import get_object_or_404, redirect
 
-from FacturasNorte.models import Cliente, Empleado, Historiales, ClienteLegado, Historiales_registros
-from Norte import settings
 
 from django.utils import timezone
 
 from django.contrib.auth.models import User
 
-from FacturasNorte.models import Cliente, Empleado, Historiales, ClienteLegado, HistorialContrasena, Persona
-from Norte import settings
+from FacturasNorte.models import Cliente, Empleado, Historiales, ClienteLegado, HistorialContrasena, Historiales_registros
 
 
 def crear_perfil(form, perfil):
@@ -57,23 +55,23 @@ def crear_perfil(form, perfil):
         password = User.objects.make_random_password()
         permissions = settings.CLIENTE_PERMISOS
 
-    #try:
-    nuevo_usuario.set_password(password)
-    nuevo_usuario.save()
-    for perm in permissions:
-         p = Permission.objects.get(codename=perm[0])
-         nuevo_usuario.user_permissions.add(p)
-    nuevo_usuario.save()
-    nuevo_perfil.set_usuario(nuevo_usuario)
-    nuevo_perfil.set_activo(True)
-    nuevo_perfil.save()
-    enviar_password(password)
-    return
+    try:
+        nuevo_usuario.set_password(password)
+        nuevo_usuario.save()
+        for perm in permissions:
+             p = Permission.objects.get(codename=perm[0])
+             nuevo_usuario.user_permissions.add(p)
+        nuevo_usuario.save()
+        nuevo_perfil.set_usuario(nuevo_usuario)
+        nuevo_perfil.set_activo(True)
+        nuevo_perfil.save()
+        enviar_password(nuevo_perfil, password)
+        return
 
-    # except Exception:
-    #     usuario_creado = get_object_or_404(User, username=username)
-    #     usuario_creado.delete()
-    #     raise ValidationError((u'Campos invalidos'), code='campos')
+    except Exception:
+        usuario_creado = get_object_or_404(User, username=username)
+        usuario_creado.delete()
+        raise ValidationError((u'Campos invalidos'), code='campos')
 
 
 def crear_usuario(form):
@@ -114,12 +112,13 @@ def cast_fecha(fechaNacimiento):
     return '' + anio + '-' + mes + '-' + dia
 
 
-def enviar_password(password):
-    message = 'Su contrasena es: ' + str(password)
-    sender = 'julian.rd7@gmail.com'
-    email = EmailMessage('Cuenta Registrada', message, sender,
-            ['julian_rd7@hotmail.com'],
-            headers = {'Reply-To': 'julian.rd7@gmail.com'})
+def enviar_password(usuario, password):
+    message = u'Señor/a ' + usuario.nombre + u' Su contraseña es: ' + str(password)
+    sender = config.EMAIL_SALIDA
+    receiver = config.EMAIL_ENTRADA #usuario.email
+    email = EmailMessage('Cuenta registrada', message, sender,
+            [receiver],
+            headers = {'Reply-To': config.EMAIL_ENTRADA})
 
     connection = mail.get_connection()
     connection.open()
@@ -127,11 +126,12 @@ def enviar_password(password):
     connection.close()
 
 def enviar_password_regenerada(usuario, password):
-    message = 'Senor/a usuario/a: ' + str(usuario.username) + '.' ' Su nueva contrasena es: ' + str(password)
-    sender = 'julian.rd7@gmail.com'
-    email = EmailMessage('Contrasena regenerada', message, sender,
-            ['julian_rd7@hotmail.com'],
-            headers = {'Reply-To': 'julian.rd7@gmail.com'})
+    message = u'Señor/a usuario/a: ' + str(usuario.username) + '.' u' Su nueva contraseña es: ' + str(password)
+    sender = config.EMAIL_SALIDA
+    receiver = config.EMAIL_ENTRADA #usuario.email
+    email = EmailMessage(u'Contraseña regenerada', message, sender,
+            [receiver],
+            headers = {'Reply-To': config.EMAIL_ENTRADA})
 
     connection = mail.get_connection()
     connection.open()
@@ -145,8 +145,8 @@ def send_email_contact(email, subject, body):
     send_mail(
         subject = subject,
         message = body,
-        from_email = 'julian.rd7@gmail.com',
-        recipient_list =['julian_rd7@hotmail.com'],
+        from_email = email,
+        recipient_list =[config.EMAIL_ENTRADA],
         )
 
 def obtener_fecha(fecha):
@@ -159,8 +159,8 @@ def buscar_pdfs_pedidos(pk, field='0', pedido=None, fecha_pedido=None):
      from FacturasNorte.custom_classes import PDF
      cliente = get_object_or_404(Cliente, nroUsuario=pk)
      storageManager = FileSystemStorage()
-     facturas = storageManager.listdir(settings.PDF_FACTURAS)[1]
-     pedidos = storageManager.listdir(settings.PDF_PEDIDOS)[1]
+     facturas = storageManager.listdir(config.PDF_FACTURAS)[1]
+     pedidos = storageManager.listdir(config.PDF_PEDIDOS)[1]
      PDFs = []
 
      if field != '0':
@@ -204,8 +204,8 @@ def buscar_pdfs_facturas(pk, field='0', factura=None, fecha_factura=None):
      from FacturasNorte.custom_classes import PDF
      cliente = get_object_or_404(Cliente, nroUsuario=pk)
      storageManager = FileSystemStorage()
-     facturas = storageManager.listdir(settings.PDF_FACTURAS)[1]
-     pedidos = storageManager.listdir(settings.PDF_PEDIDOS)[1]
+     facturas = storageManager.listdir(config.PDF_FACTURAS)[1]
+     pedidos = storageManager.listdir(config.PDF_PEDIDOS)[1]
      PDFs = []
 
      if field != '0':
@@ -399,3 +399,11 @@ def iniciar_sesion(view, form):
         return False
 
     return True
+
+def corregir_fecha_update(cliente):
+    nueva_fecha = None
+    if cliente.fechaUpdate:
+        fecha = cliente.fechaUpdate
+        nueva_fecha = datetime(year=fecha.year, month=fecha.month, day=fecha.day, hour=fecha.hour,
+                     minute=fecha.minute, second=fecha.second)
+    return nueva_fecha
