@@ -12,8 +12,6 @@ from Norte import settings
 from datetime import date
 import urlparse
 
-from django.core.files.storage import default_storage
-
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.datastructures import MultiValueDictKeyError
