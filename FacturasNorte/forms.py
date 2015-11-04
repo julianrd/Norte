@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth import authenticate
 from django.core.validators import validate_email
+from FacturasNorte import config
 from FacturasNorte.models import Empleado, Cliente, ClienteLegado
 from FacturasNorte.validators import validate_emailExistente, validate_nombre, validate_dni, validate_domicilio, \
     validate_telefono, validate_cuit
@@ -167,3 +168,8 @@ class FiltroFacturaForm(forms.Form):
                                             ('4',u'Fecha Pedido'),
                                 )
     )
+
+class ConfigurationForm(forms.Form):
+    pdf_root = forms.CharField(label='Carpeta PDFs',initial=config.PDF_ROOT,widget=forms.TextInput(attrs={'size': '40'}))
+    email_salida = forms.EmailField(label=u'Email para envíos', initial=config.EMAIL_SALIDA)
+    email_entrada = forms.EmailField(label='Email para recepciones', initial=config.EMAIL_ENTRADA)

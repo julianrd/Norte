@@ -1,6 +1,6 @@
 import FacturasNorte
 from FacturasNorte.views import ClienteListView
-from Norte import settings
+from FacturasNorte import config
 
 __author__ = 'Julian'
 from django.conf.urls import patterns, include, url
@@ -43,6 +43,8 @@ urlpatterns = patterns('',
     url(r'^admin/empleados/$', views.EmpListView.as_view(), name = 'lista_empleado'),
     url(r'^admin/del_empleado/(?P<pk>\d+)/$', views.EmpDeleteView.as_view(), name = 'elim_empleado'),
     url(r'^admin/mod_empleado/(?P<pk>\d+)/$', views.EmpModifView.as_view(), name = 'modif_empleado'),
+    url(r'^admin/config/$', views.ConfigurationView.as_view(), name = 'config'),
+    url(r'^admin/config/$', views.configuration_done, name = 'config_done'),
 
 
 
@@ -70,7 +72,7 @@ urlpatterns = patterns('',
     url(r'^pdf_ayuda/$', views.pdf_help, name = 'ver_ayuda'),
 
 
-    url(r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}, name = 'media'),
+    url(r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {'document_root': config.PDF_ROOT}, name = 'media'),
 
 
 )
@@ -78,7 +80,7 @@ urlpatterns = patterns('',
 # static files (images, css, javascript, etc.)
 urlpatterns += patterns('',
     (r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {
-    'document_root': settings.MEDIA_ROOT}))
+    'document_root': config.PDF_ROOT}))
 
 urlpatterns += staticfiles_urlpatterns()
 
