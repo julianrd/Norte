@@ -22,6 +22,7 @@ from django.utils import timezone
 
 from django.contrib.auth.models import User
 
+from Norte import settings
 from FacturasNorte.models import Cliente, Empleado, Historiales, ClienteLegado, HistorialContrasena, Historiales_registros
 
 
@@ -156,49 +157,52 @@ def obtener_fecha(fecha):
     return fecha
 
 def buscar_pdfs_pedidos(pk, field='0', pedido=None, fecha_pedido=None):
-     from FacturasNorte.custom_classes import PDF
-     cliente = get_object_or_404(Cliente, nroUsuario=pk)
-     storageManager = FileSystemStorage()
-     facturas = storageManager.listdir(config.PDF_FACTURAS)[1]
-     pedidos = storageManager.listdir(config.PDF_PEDIDOS)[1]
-     PDFs = []
+    from FacturasNorte.custom_classes import PDF
+    cliente = get_object_or_404(Cliente, nroUsuario=pk)
+    storageManager = FileSystemStorage()
+    facturas = storageManager.listdir(config.PDF_FACTURAS)[1]
+    pedidos = storageManager.listdir(config.PDF_PEDIDOS)[1]
+    PDFs = []
 
-     if field != '0':
+    if field != '0':
         if field == '2':
             query = pedido
         else:
             query = fecha_pedido
 
-     for ped in pedidos:
-         cuit = ped.split('_')[3].split('.')[0]
-         if (cuit == cliente.cuit):
-             nroPed = ped.split('_')[1]
-             fechaPed = ped.split('_')[2]
-             fechaPed = obtener_fecha(fechaPed)
+    for ped in pedidos:
+        cuit = ped.split('_')[3].split('.')[0]
+        if (cuit == cliente.cuit):
+            nroPed = ped.split('_')[1]
+            fechaPed = ped.split('_')[2]
+            fechaPed = obtener_fecha(fechaPed)
+            rutaPed = 'pedidos/'+ped
 
-             # if (field == '0') or \
-             # ((field == '2') and (query == nroPed)) or \
-             # ((field == '4') and (query == fechaPed)):
-             #
-             #     for fac in facturas:
-             #         pedido_factura = fac.split('-')[3]
-             #         if (nroPed == pedido_factura):
-             #             nroFac = fac.split('-')[2]
-             #             fechaFac = fac.split('-')[4].split('.')[0]
-             #             fechaFac = obtener_fecha(fechaFac)
-             nroFac = 0
-             fechaFac = date(2015, 10, 10)
-             fac = ped
-             pdf = PDF()
-             pdf.set_nroPedido(nroPed)
-             pdf.set_nroFactura(nroFac)
-             pdf.set_fechaPed(fechaPed)
-             pdf.set_fechaFac(fechaFac)
-             pdf.set_rutaFac('facturas/'+fac)
-             pdf.set_rutaPed('pedidos/'+ped)
-             PDFs.append(pdf)
+            if (field == '0') or \
+               ((field == '2') and (query == nroPed)) or \
+               ((field == '4') and (query == fechaPed)):
 
-     return PDFs
+                nroFac = None
+                fechaFac = None
+                rutaFac = None
+
+                for fac in facturas:
+                    pedido_factura = fac.split('-')[3]
+                    if (nroPed == pedido_factura):
+                        nroFac = fac.split('-')[2]
+                        fechaFac = fac.split('-')[4].split('.')[0]
+                        fechaFac = obtener_fecha(fechaFac)
+                        rutaFac = 'facturas/'+fac
+
+                pdf = PDF()
+                pdf.set_nroPedido(nroPed)
+                pdf.set_nroFactura(nroFac)
+                pdf.set_fechaPed(fechaPed)
+                pdf.set_fechaFac(fechaFac)
+                pdf.set_rutaFac(rutaFac)
+                pdf.set_rutaPed(rutaPed)
+                PDFs.append(pdf)
+    return PDFs
 
 def buscar_pdfs_facturas(pk, field='0', factura=None, fecha_factura=None):
      from FacturasNorte.custom_classes import PDF

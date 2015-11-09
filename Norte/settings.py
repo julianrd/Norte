@@ -1,9 +1,7 @@
 """
 Django settings for Norte project.
-
 For more information on this file, see
 https://docs.djangoproject.com/en/1.7/topics/settings/
-
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
@@ -62,11 +60,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'sqlserver_ado',
         'NAME': 'FacturasNorte',#'ClientesLegados',
-        'HOST': 'localhost',#'PABLOHP',
+        'HOST': '10.0.4.54',#'PABLOHP',
         'USER': 'sa',
         'PASSWORD': 'Norte1234',#'Norte1234',
         'OPTIONS': {
-            'provider': 'SQLNCLI',
+            'provider': 'SQLNCLI10',
             'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;',
         }
     },
@@ -78,7 +76,7 @@ DATABASES = {
         'USER': 'sa',
         'PASSWORD': 'Norte1234',#'DNI36017',
         'OPTIONS': {
-            'provider': 'SQLNCLI',
+            'provider': 'SQLNCLI10',
             'use_mars': 'DataTypeCompatibility=80;MARS Connection=True;',
         }
     }
@@ -131,7 +129,7 @@ AUTH_PROFILE_MODULE = 'FacturasNorte.Administrador'
 AUTH_PROFILE_MODULE = 'FacturasNorte.Empleado'
 AUTH_PROFILE_MODULE = 'FacturasNorte.Cliente'
 
-AUTHENTICATION_BACKENDS = ('FacturasNorte.backends.Emailbackend', 'django_auth_ldap.backend.LDAPBackend','django.contrib.auth.backends.ModelBackend')
+AUTHENTICATION_BACKENDS = ('FacturasNorte.backends.Emailbackend','django.contrib.auth.backends.ModelBackend')
 
 #Path for date formats
 FORMAT_MODULE_PATH  = 'Norte.formats'
@@ -156,7 +154,6 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'julian.rd7@gmail.com'
 EMAIL_HOST_PASSWORD = 'tel563539'
 EMAIL_USE_TLS = True
-
 
 
 #MEDIA
@@ -190,27 +187,3 @@ FAVICON_PATH = '/static/FacturasNorte/img/favicon_norte.png'
 
 MARKDOWN_EDITOR_SKIN = 'simple'
 
-import ldap
-from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion, PosixGroupType, NestedActiveDirectoryGroupType
-
-# Binding and connection options
-AUTH_LDAP_SERVER_URI = "ldap://diarionorte.com"
-
-# AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = True
-AUTH_LDAP_BIND_DN = "cn=Administrador,cn=Users,DC=diarionorte,DC=com"
-AUTH_LDAP_BIND_PASSWORD = "Moxtezuma100215"
-
-# AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn"}
-# AUTH_LDAP_PROFILE_ATTR_MAP = {"home_directory": "homeDirectory"}
-
-AUTH_LDAP_USER_SEARCH = LDAPSearch("DC=diarionorte, DC=com", ldap.SCOPE_SUBTREE, "(&(objectClass=*)(sAMAccountName=%(user)s))")
-# Para agregar el grupo permitido a acceder al sistema solo escribir algo como esto "ou=Departamento Sistemas,"
-AUTH_LDAP_GROUP_SEARCH = LDAPSearch("ou=groups,dc=diarionorte, dc =com",
-                                    ldap.SCOPE_SUBTREE,  # allow searching from current node to all nodes below
-                                    "(objectClass=*)"  # type of object
-)
-AUTH_LDAP_GROUP_TYPE = PosixGroupType(name_attr="cn")  # a posixGroup is identified by the keyword "cn" into ldap server
-AUTH_LDAP_FIND_GROUP_PERMS = True
-AUTH_LDAP_CONNECTION_OPTIONS = {
-    ldap.OPT_REFERRALS: 0
-}

@@ -9,7 +9,11 @@
                          <table id="vertical" style="width:100%">
                          {% for field in form %}
                            <tr class="datos">
-                                <th>* {{ field.label }}</th>
+                           {% if field.field.required %}
+                               <th>* {{ field.label }}</th>
+                           {% else %}
+                               <th>  {{ field.label }}</th>
+                           {% endif %}
                                <td>{{ field }}</td>
                                <td id="error">{{ field.errors }}</td>
                            </tr>

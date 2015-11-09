@@ -355,6 +355,14 @@ class CambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, FormVie
     success_url = reverse_lazy('FacturasNorte:cambiar_contrasena_hecho')
     permission_required = 'FacturasNorte.cambiar_cont'
 
+    def get(self, request, *args, **kwargs):
+        """
+        Handles GET requests and instantiates a blank version of the form.
+        """
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        return self.render_to_response(self.get_context_data(form=form))
+
     def form_valid(self, form):
         if not self.request.user.check_password(form.cleaned_data.get('contrasena_anterior')):
             form.add_error(None, ValidationError(u"La contraseña anterior es inválida", code='old_invalid'))
@@ -686,10 +694,9 @@ def pdf_help(request):
 
     return pdf
 
-
 @login_required
-def pdf_view(request, ruta):
-    cuit = ruta.split('-')[1]
+def pdf_factura_view(request, ruta,):
+    cuit = ruta.split('_')[3].split('.')[0]
     if request.user.is_staff or request.user.is_superuser:
         return open_pdf_view(request, ruta)
     else:
@@ -699,7 +706,28 @@ def pdf_view(request, ruta):
             if cliente.cuit == cuit:
                 return open_pdf_view(request, ruta)
             else:
+                return reverse('FacturasNorte:404')
+        except ObjectDoesNotExist:
+            return reverse('FacturasNorte:404')
 
+            return not_found_view(request)
+        except ObjectDoesNotExist:
+            return not_found_view(request)
+
+
+
+@login_required
+def pdf_pedido_view(request, ruta,):
+    cuit = ruta.split('_')[3].split('.')[0]
+    if request.user.is_staff or request.user.is_superuser:
+        return open_pdf_view(request, ruta)
+    else:
+        try:
+            id = request.user.id
+            cliente = Cliente.objects.get(nroUsuario=id)
+            if cliente.cuit == cuit:
+                return open_pdf_view(request, ruta)
+            else:
                 return reverse('FacturasNorte:404')
         except ObjectDoesNotExist:
             return reverse('FacturasNorte:404')

@@ -5,7 +5,9 @@
 <form action="{% url 'FacturasNorte:reestablecer_contrasena_hecho' usuario.id %}" method="post">
 {% csrf_token %}
     <h2>Regenerar contrase&ntilde;a</h2>
-    <p>Esta seguro?</p>
-<button id="boton" type="submit"> Continuar  </button>
+    <p>¿Esta seguro?</p>
+    <div style="margin: 5px;">
+        <button id="flat-boton" type="submit"> Continuar  </button>
+    </div>
 </form>
 {% endblock %}

@@ -35,13 +35,8 @@
 
 </table>
 
-
 <div id="links">
-
-    <form method="post" action="{% url 'FacturasNorte:cambiar_contrasena' %}">
-    {% csrf_token %}
-    <button id="flat-boton" type="submit"> Cambiar contrase&ntilde;a </button>
-    </form>
+    <a id="flat-boton" methods="post" href="{% url 'FacturasNorte:cambiar_contrasena' %}"> Cambiar contrase&ntilde;a </a>
 </div>
 {% else %}
     <p>No tiene permiso para visualizar los datos de esta persona.</p>
