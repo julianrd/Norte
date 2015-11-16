@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
-from django.db.models.sql.datastructures import Date
-from django.http import HttpResponseRedirect
 from FacturasNorte import config
+
 
 __author__ = 'Julian'
 
@@ -411,3 +410,5 @@ def corregir_fecha_update(cliente):
         nueva_fecha = datetime(year=fecha.year, month=fecha.month, day=fecha.day, hour=fecha.hour,
                      minute=fecha.minute, second=fecha.second)
     return nueva_fecha
+
+

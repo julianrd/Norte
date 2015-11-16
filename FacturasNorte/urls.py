@@ -46,9 +46,6 @@ urlpatterns = patterns('',
     url(r'^admin/config/$', views.ConfigurationView.as_view(), name = 'config'),
     url(r'^admin/config/$', views.configuration_done, name = 'config_done'),
 
-
-
-
     url(r'^staff/perfil/(?P<pk>\d+)/$', views. EmpleadoPerfilView.as_view(), name = 'perfil_empleado'),
     #url(r'^staff/nuevo_cliente/$', views.ClienteCreateView.as_view(), name = 'nuevo_cliente'),
     url(r'^staff/registro_cliente/$', views.ClientesLegadosView.as_view(), name = 'clientes_legados'),
@@ -68,8 +65,9 @@ urlpatterns = patterns('',
 
     url(r'^cliente/perfil/(?P<pk>\d+)/$', views.ClientePerfilView.as_view(), name = 'perfil_cliente'),
     url(r'^cliente/facturas/(?P<pk>\d+)/$', views.ClienteFacturasView.as_view(), name = 'facturas_cliente'),
-    url(r'^pdf/(?P<ruta>.*)$', views.pdf_factura_view, name = 'ver_factura'),
-    url(r'^pdf/(?P<ruta>.*)$', views.pdf_pedido_view, name = 'ver_pedido'),
+    url(r'^factura/(?P<ruta>.*)$', views.pdf_factura_view, name = 'ver_factura'),
+    url(r'^pedido/(?P<ruta>.*)$', views.pdf_pedido_view, name = 'ver_pedido'),
+    url(r'^diario/$', views.pdf_diario_view, name = 'diario_hoy'),
     url(r'^pdf_ayuda/$', views.pdf_help, name = 'ver_ayuda'),
 
 

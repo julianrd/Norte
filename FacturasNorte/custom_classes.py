@@ -138,6 +138,16 @@ class CustomClienteDetailView(DetailView):
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
 
+class Pagina(object):
+    ruta = None
+
+    def get_ruta(self):
+        return self.ruta
+
+    def set_ruta(self, ruta):
+        self.ruta = ruta
+        return
+
 class PDF(object):
     cliente = None
     fechaPed = None

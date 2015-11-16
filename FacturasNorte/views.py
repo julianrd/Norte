@@ -695,7 +695,12 @@ def pdf_help(request):
     return pdf
 
 @login_required
-def pdf_factura_view(request, ruta,):
+def pdf_diario_view(request):
+    ruta = 'diario/Diario_del_dia.pdf'
+    return open_pdf_view(request, ruta)
+
+@login_required
+def pdf_factura_view(request, ruta):
     cuit = ruta.split('_')[3].split('.')[0]
     if request.user.is_staff or request.user.is_superuser:
         return open_pdf_view(request, ruta)
@@ -713,8 +718,6 @@ def pdf_factura_view(request, ruta,):
             return not_found_view(request)
         except ObjectDoesNotExist:
             return not_found_view(request)
-
-
 
 @login_required
 def pdf_pedido_view(request, ruta,):
