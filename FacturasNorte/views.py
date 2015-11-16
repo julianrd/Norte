@@ -691,7 +691,6 @@ class Historial_register(generic.DetailView):
 
 def pdf_help(request):
     pdf = open_pdf_view(config.PDF_ROOT, "ayuda.pdf")
-
     return pdf
 
 @login_required
