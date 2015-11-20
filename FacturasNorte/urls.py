@@ -70,6 +70,8 @@ urlpatterns = patterns('',
     url(r'^pedido/(?P<ruta>.*)$', views.pdf_pedido_view, name = 'ver_pedido'),
     url(r'^diario/$', views.pdf_diario_view, name = 'diario_hoy'),
     url(r'^pdf_ayuda/$', views.pdf_help, name = 'ver_ayuda'),
+    url(r'^pdf_diario/$', views.pdf_diario, name = 'ver_diario'),
+
 
 
     url(r'^pdf/(?P<path>.*)$', 'django.views.static.serve', {'document_root': config.PDF_ROOT}, name = 'media'),

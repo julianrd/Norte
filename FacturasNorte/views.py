@@ -720,6 +720,12 @@ def pdf_help(request):
     pdf = open_pdf_view(config.PDF_ROOT, "ayuda.pdf")
     return pdf
 
+
+def pdf_diario(request):
+    ruta = 'diario/Diaro_del_dia.pdf'
+    pdf = open_pdf_view(config.PDF_DIARIOS, ruta)
+    return pdf
+
 @login_required
 def pdf_diario_view(request):
     ruta = 'diario/Diario_del_dia.pdf'
@@ -771,6 +777,8 @@ def open_pdf_view(request, ruta):
     pdf = open(ruta, 'rb').read()
     response = HttpResponse(pdf, content_type='application/pdf')
     return response
+
+
 
 def not_found_view(request):
     response = render_to_response('FacturasNorte/errors/404.html', {},
