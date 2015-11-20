@@ -46,7 +46,7 @@
                  <img src="{% static "FacturasNorte/img/edit.gif" %}" width="12", alt="Editar"/> Editar</a></td>
 
 
-            <td><a href={% url 'FacturasNorte:elim_empleado' empleado.id %}>
+            <td><a type="submit" onclick="borrar()" href={% url 'FacturasNorte:elim_empleado' empleado.id %}>
                  <img src="{% static "FacturasNorte/img/delete.gif" %}" width="12", alt="Borrar"/> Borrar</a></td>
 
         </tr>
@@ -74,5 +74,10 @@
             </span>
         </div>
     {% endif %}
+
+    {% block scripts2 %}
+        <script src="{% static 'FacturasNorte/js/scripts.js' %}">
+        </script>
+    {% endblock %}
 
 {% endblock %}

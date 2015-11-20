@@ -192,8 +192,12 @@ class Persona(models.Model):
     def get_usuario(self):
         return self.nroUsuario
 
+    def get_dni(self):
+        return self.dni
+
     def set_dni(self, dni):
         self.dni = dni
+        return
 
     def set_usuario(self, usuario):
         self.nroUsuario = usuario

@@ -66,7 +66,7 @@ def crear_perfil(form, perfil):
         nuevo_perfil.set_activo(True)
         nuevo_perfil.save()
         enviar_password(nuevo_perfil, password)
-        return
+        return True
 
     except Exception:
         usuario_creado = get_object_or_404(User, username=username)
@@ -339,7 +339,7 @@ def crear_historial_incorrecto(request, form):  #Se crea un historial de sesion,
 
 def crear_historial_alta(form, user): #se crea un historial, por cada cliente que se da de alta
     historial_alta = Historiales_registros()
-    historial_alta.cuit_cli = form.cleaned_data['nroDoc']
+    historial_alta.cuit_cli = form.cleaned_data['cuit']
     historial_alta.nombre = form.cleaned_data['nombre']
     historial_alta.fecha = timezone.now()
     historial_alta.operador = user.username
@@ -347,10 +347,13 @@ def crear_historial_alta(form, user): #se crea un historial, por cada cliente qu
     historial_alta.save()
 
 
-def crear_historial_baja(user, cliente): #se crea un historial, por cada cliente que se da de baja
+def crear_historial_baja(user, perfil, tipo): #se crea un historial, por cada cliente que se da de baja
     historial_baja = Historiales_registros()
-    historial_baja.cuit_cli = cliente.get_cuit()
-    historial_baja.nombre = cliente.get_nombre()
+    if tipo == 'empelado':
+        historial_baja.cuit_cli = perfil.get_dni()
+    else:
+        historial_baja.cuit_cli = perfil.get_cuit()
+    historial_baja.nombre = perfil.get_nombre()
     historial_baja.fecha = timezone.now()
     historial_baja.operador = user.username
     historial_baja.accion = 'Baja'

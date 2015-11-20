@@ -46,11 +46,11 @@
 
                 <img src="{% static "FacturasNorte/img/edit.gif" %}" width="12", alt="Editar"/> Editar</a></td>
             {% if cliente.activo %}
-            <td><a href={% url 'FacturasNorte:elim_cliente' cliente.id %}>
+            <td><a type="submit" onclick="borrar()" href={% url 'FacturasNorte:elim_cliente' cliente.id %}>
                 <img src="{% static "FacturasNorte/img/delete.gif" %}" width="12", alt="Borrar"/> Borrar</a></td>
             {% else %}
             <td><a href={% url 'FacturasNorte:registro_cliente_de_baja' cliente.id %}>
-                <img src="{% static "FacturasNorte/img/add.gif" %}" width="12", alt="Borrar"/> Registrar</a></td>
+                <img src="{% static "FacturasNorte/img/add.gif" %}" width="12", alt="Registrar"/> Registrar</a></td>
             {% endif %}
         </tr>
 
@@ -78,5 +78,10 @@
             </span>
         </div>
     {% endif %}
+
+    {% block scripts2 %}
+        <script src="{% static 'FacturasNorte/js/scripts.js' %}">
+        </script>
+    {% endblock %}
 
 {% endblock %}

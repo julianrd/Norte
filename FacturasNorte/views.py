@@ -32,7 +32,7 @@ from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDet
     LogicDeleteView, FormListView
 from FacturasNorte.functions import send_email_contact, reset_password, \
     crear_perfil, search_model, buscar_pdfs_pedidos, registrar_cambio_contrasena, crear_historial_alta, buscar_pdfs_facturas, \
-    get_client_ip, iniciar_sesion, corregir_fecha_update
+    get_client_ip, iniciar_sesion, corregir_fecha_update, crear_historial_baja
 from FacturasNorte import config
 
 from . import models
@@ -221,12 +221,16 @@ class AdminModifView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     permission_required = 'FacturasNorte.update_admin'
 
 
-class AdminDeleteView(LoginRequiredMixin, PermissionRequiredMixin, LogicDeleteView):
-    model = Empleado
-    template_name = "FacturasNorte/admin/del_admin.html"
+def delete_admin_view(request, pk):
+    perfil = Empleado.objects.get(pk=pk)
+    user = User.objects.get(pk=perfil.nroUsuario.id)
     success_url = reverse_lazy('FacturasNorte:lista_admin')
-    context_object_name = 'admin'
-    permission_required = 'FacturasNorte.del_admin'
+    try:
+        crear_historial_baja(user, perfil, 'empleado')
+        perfil.delete()
+        user.delete()
+    finally:
+        return HttpResponseRedirect(success_url)
 
 
 class AdminListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
@@ -235,6 +239,7 @@ class AdminListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     context_object_name = 'admin_list'
     permission_required = 'FacturasNorte.view_admin'
     form_class = FiltroPersonaForm
+
 
     def get_initial(self):
         """
@@ -300,12 +305,23 @@ class EmpModifPerfilView(EmpModifView):
         self.success_url = reverse_lazy('FacturasNorte:perfil_empleado', kwargs={'pk' : self.request.user.id})
         return super(EmpModifPerfilView, self).form_valid(form)
 
-class EmpDeleteView(LoginRequiredMixin, PermissionRequiredMixin, LogicDeleteView):
-    model = Empleado
-    template_name = "FacturasNorte/admin/del_emp.html"
+def delete_emp_view(request, pk):
+    perfil = Empleado.objects.get(pk=pk)
+    user = User.objects.get(pk=perfil.nroUsuario.id)
     success_url = reverse_lazy('FacturasNorte:lista_empleado')
-    context_object_name = 'empleado'
-    permission_required = 'FacturasNorte.del_empleado'
+    try:
+        crear_historial_baja(user, perfil, 'empleado')
+        perfil.delete()
+        user.delete()
+    finally:
+        return HttpResponseRedirect(success_url)
+
+# class EmpDeleteView(LoginRequiredMixin, PermissionRequiredMixin, LogicDeleteView):
+#     model = Empleado
+#     template_name = "FacturasNorte/admin/del_emp.html"
+#     success_url = reverse_lazy('FacturasNorte:lista_empleado')
+#     context_object_name = 'empleado'
+#     permission_required = 'FacturasNorte.del_empleado'
 
 class EmpListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     template_name = "FacturasNorte/admin/emp_list.html"
@@ -418,13 +434,25 @@ class ClienteDeBajaRegistroView(LoginRequiredMixin, PermissionRequiredMixin, Upd
         crear_historial_alta(form, self.request.user)
         return super(ClienteDeBajaRegistroView, self).form_valid(form)
 
-
-class ClienteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, LogicDeleteView):
-    model = Cliente
-    template_name = "FacturasNorte/empleado/del_cliente.html"
+def delete_cliente_view(request, pk):
+    perfil = Cliente.objects.get(pk=pk)
+    user = User.objects.get(pk=perfil.nroUsuario.id)
     success_url = reverse_lazy('FacturasNorte:lista_cliente')
-    context_object_name = 'cliente'
-    permission_required = 'FacturasNorte.del_cliente'
+    perfil.set_activo(False)
+    user.is_active = False
+    try:
+        crear_historial_baja(user, perfil, 'cliente')
+        perfil.save()
+        user.save()
+    finally:
+        return HttpResponseRedirect(success_url)
+
+# class ClienteDeleteView(LoginRequiredMixin, PermissionRequiredMixin, LogicDeleteView):
+#     model = Cliente
+#     template_name = "FacturasNorte/empleado/del_cliente.html"
+#     success_url = reverse_lazy('FacturasNorte:lista_cliente')
+#     context_object_name = 'cliente'
+#     permission_required = 'FacturasNorte.del_cliente'
 
 
 class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
@@ -673,7 +701,6 @@ class BlogIndex(generic.ListView):
 class BlogDetail(generic.DetailView):
     model = models.Entry
     template_name = "FacturasNorte/post.html"
-
 
 def reestablecer_password(request, pk):
     usuario = get_object_or_404(User, id=pk)

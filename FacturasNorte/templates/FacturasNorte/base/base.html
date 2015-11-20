@@ -82,10 +82,12 @@
                             <li><a href="{% url 'FacturasNorte:lista_admin'%}">Administradores</a></li>
                             <li><a href="{% url 'FacturasNorte:lista_empleado'%}">Empleados</a></li>
                             <li><a href="{% url 'FacturasNorte:lista_cliente'%}">Clientes</a></li>
+                            <li><a href="{% url 'FacturasNorte:diario_hoy' %}">Diario de hoy</a></li>
                             <li><a href="{% url 'FacturasNorte:config'%}">Configuraci&oacute;n</a></li>
                         {% elif user.is_staff %}
                             <li><a href="{% url 'FacturasNorte:perfil_empleado' user.id %}">Mi Perfil</a></li>
                             <li><a href="{% url 'FacturasNorte:lista_cliente' %}">Clientes</a></li>
+                            <li><a href="{% url 'FacturasNorte:diario_hoy' %}">Diario de hoy</a></li>
                         {% else %}
                             <li><a href="{% url 'FacturasNorte:perfil_cliente' user.id %}">Mi Perfil</a></li>
                             <li><a href="{% url 'FacturasNorte:facturas_cliente' user.id %}">Mis Facturas</a></li>
