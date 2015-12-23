@@ -1,0 +1,65 @@
+{% extends "FacturasNorte/base/base.html" %}
+{% load l10n %}
+{% load staticfiles %}
+{% block content %}
+
+    <h1>Diarios</h1>
+
+        <div id="searchbar">
+            <form action="" id="filter" method="get">
+            {% csrf_token %}
+
+                <div class="fieldWrapper">
+                    <p> {{ form.fecha.label_tag }} {{ form.fecha }} </p>
+                    <button id="boton" type="submit"> Filtrar  </button>
+                </div>
+
+            </form>
+        </div>
+
+        <br/>
+        <br/>
+
+        {% if not lista_diarios %}
+            <h3> No se han encontrado resultados.</h3>
+        {% else %}
+
+     <table style="width:100%">
+
+      <tr>
+        <th>Fecha</th>
+        <th>Ver</th>
+        </tr>
+         {% for d in lista_diarios %}
+            <tr>
+                <td>{{ d.fecha|date:"d/m/Y" }}</td>
+                <td><a href={% url 'FacturasNorte:ver_diario' d.ruta %}> <img src="{% static "FacturasNorte/img/view.png" %}" width="12", alt="Editar"/> Ver Diario</a></td>
+            </tr>
+
+         {% endfor %}
+      {% endif %}
+    </table>
+
+    {% if is_paginated %}
+        <div class="pagination">
+            <span class="page-links" style="margin: 500px; padding: 5px;">
+                {% if page_obj.has_previous %}
+                   <a href="?page={{ page_obj.previous_page_number }}">
+                        <button> <img src="{% static "FacturasNorte/img/anterior.jpg" %}" width="14", alt=""/>  Anterior </button>
+                    </a>
+                {% endif %}
+                <span class="page-current">
+                    Pagina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                </span>
+                {% if page_obj.has_next %}
+                   <a href="?page={{ page_obj.next_page_number }}">
+                       <button> <img src="{% static "FacturasNorte/img/siguiente.jpg" %}" width="14", alt=""/>  Siguiente </button>
+                    </a>
+
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+
+
+{% endblock %}
