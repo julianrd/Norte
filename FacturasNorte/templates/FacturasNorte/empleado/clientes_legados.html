@@ -49,18 +49,17 @@
         <div class="pagination">
             <span class="page-links" style="margin: 500px; padding: 5px;">
                 {% if page_obj.has_previous %}
-                   <a href="?page={{ page_obj.previous_page_number }}">
-                        <button> <img src="{% static "FacturasNorte/img/anterior.jpg" %}" width="14", alt=""/>  Anterior </button>
-                    </a>
+                   <a href="?page={{ page_obj.previous_page_number }}{{ query }}">
+                        <button><img src="{% static "FacturasNorte/img/anterior.jpg" %}" width="14", alt=""/>  Anterior </button>
+                   </a>
                 {% endif %}
                 <span class="page-current">
                     Pagina {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
                 </span>
                 {% if page_obj.has_next %}
-                   <a href="?page={{ page_obj.next_page_number }}">
-                       <button> <img src="{% static "FacturasNorte/img/siguiente.jpg" %}" width="14", alt=""/>  Siguiente </button>
-                    </a>
-
+                   <a href="?page={{ page_obj.next_page_number }}{{ query }}">
+                       <button><img src="{% static "FacturasNorte/img/siguiente.jpg" %}" width="14", alt=""/>  Siguiente </button>
+                   </a>
                 {% endif %}
             </span>
         </div>

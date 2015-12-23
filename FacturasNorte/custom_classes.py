@@ -148,7 +148,7 @@ class Pagina(object):
         self.ruta = ruta
         return
 
-class PDF(object):
+class Factura(object):
     cliente = None
     fechaPed = None
     fechaFac = None
@@ -238,3 +238,22 @@ class FormListView(FormMixin, ListView):
 
     def post(self, request, *args, **kwargs):
         return self.get(request, *args, **kwargs)
+
+class Diario(object):
+    fecha = None
+    ruta = None
+
+    def set_fecha(self, fecha):
+        self.fecha = fecha
+        return
+
+    def get_fecha(self):
+        return self.fecha
+
+    def set_ruta(self, ruta):
+        self.ruta = ruta
+        return
+
+    def get_ruta(self):
+        return self.ruta
+

@@ -169,6 +169,10 @@ class FiltroFacturaForm(forms.Form):
                                 )
     )
 
+class FiltroDiarioForm(forms.Form):
+    fecha = forms.DateField(required=False, label='Fecha', widget=SelectDateWidget(years=range(2014, datetime.date.today().year+1)))
+
+
 class ConfigurationForm(forms.Form):
     pdf_root = forms.CharField(label='Carpeta PDFs',initial=config.PDF_ROOT,widget=forms.TextInput(attrs={'size': '40'}))
     carpeta_facturas = forms.CharField(label='Nombre carpeta de Facturas',initial=config.CARPETA_FACTURAS,widget=forms.TextInput(attrs={'size': '40'}))

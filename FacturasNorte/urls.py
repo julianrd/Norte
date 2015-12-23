@@ -70,8 +70,9 @@ urlpatterns = patterns('',
     url(r'^factura/(?P<ruta>.*)$', views.pdf_factura_view, name = 'ver_factura'),
     url(r'^pedido/(?P<ruta>.*)$', views.pdf_pedido_view, name = 'ver_pedido'),
     url(r'^diario/$', views.pdf_diario_view, name = 'diario_hoy'),
+    url(r'^diarios/$', views.ListaDiariosView.as_view(), name = 'lista_diarios'),
     url(r'^pdf_ayuda/$', views.pdf_help, name = 'ver_ayuda'),
-    url(r'^pdf_diario/$', views.pdf_diario, name = 'ver_diario'),
+    url(r'^pdf_diario/(?P<ruta>.*)$', views.pdf_diario, name = 'ver_diario'),
 
 
 

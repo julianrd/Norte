@@ -25,7 +25,8 @@ from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDet
     FormListView
 from FacturasNorte.functions import send_email_contact, reset_password, \
     crear_perfil, search_model, buscar_pdfs_pedidos, registrar_cambio_contrasena, crear_historial_alta, \
-    buscar_pdfs_facturas, get_client_ip,  corregir_fecha_update, crear_historial_baja, enviar_password_regenerada
+    buscar_pdfs_facturas, get_client_ip,  corregir_fecha_update, crear_historial_baja, obtener_diarios, enviar_password_regenerada
+
 from FacturasNorte import config
 
 from . import models
@@ -41,7 +42,7 @@ from django.contrib import messages
 
 from FacturasNorte.forms import CambiarContrasenaForm, ContactUsuarioAnonimoForm, ContactUsuarioLoginForm, \
     IniciarSesionForm, RegenerarContrasenaForm, FiltroPersonaForm, FiltroFacturaForm, ClienteForm, \
-    EmpleadoForm, ClienteLegadoForm, FiltroClienteForm, IniciarSesionCaptchaForm, ConfigurationForm
+    EmpleadoForm, ClienteLegadoForm, FiltroClienteForm, IniciarSesionCaptchaForm, ConfigurationForm, FiltroDiarioForm
 
 from FacturasNorte.forms import EmpleadoRegisterForm
 from FacturasNorte.models import Empleado, Cliente, ClienteLegado, Historiales
@@ -250,6 +251,15 @@ class AdminListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
         finally:
             return initial
 
+    def get_context_data(self, **kwargs):
+        context = super(AdminListView, self).get_context_data(**kwargs)
+        query = ''
+        for k, v in self.request.GET.iteritems():
+            if k != 'page':
+                query = query + '&' + k + '=' + v
+        context['query'] = query
+        return context
+
     def get_queryset(self):
         try:
             return search_model(Empleado, self.request.GET['tipo'], self.request.GET['query'], u'True', True)
@@ -344,6 +354,15 @@ class EmpListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
             initial['activo'] = self.request.GET['activo']
         finally:
             return initial
+
+    def get_context_data(self, **kwargs):
+        context = super(EmpListView, self).get_context_data(**kwargs)
+        query = ''
+        for k, v in self.request.GET.iteritems():
+            if k != 'page':
+                query = query + '&' + k + '=' + v
+        context['query'] = query
+        return context
 
     def get_queryset(self):
         try:
@@ -487,6 +506,15 @@ class ClienteListView(LoginRequiredMixin, PermissionRequiredMixin, FormListView)
         finally:
             return initial
 
+    def get_context_data(self, **kwargs):
+        context = super(ClienteListView, self).get_context_data(**kwargs)
+        query = ''
+        for k, v in self.request.GET.iteritems():
+            if k != 'page':
+                query = query + '&' + k + '=' + v
+        context['query'] = query
+        return context
+
     def get_queryset(self):
         try:
             return search_model(Cliente, self.request.GET['tipo'], self.request.GET['query'],
@@ -514,6 +542,15 @@ class ClientesLegadosView(ClienteListView):
         finally:
             return initial
 
+    def get_context_data(self, **kwargs):
+        context = super(ClientesLegadosView, self).get_context_data(**kwargs)
+        query = ''
+        for k, v in self.request.GET.iteritems():
+            if k != 'page':
+                query = query + '&' + k + '=' + v
+        context['query'] = query
+        return context
+
     def get_queryset(self):
         try:
             return search_model(ClienteLegado, self.request.GET['tipo'], self.request.GET['query'], False, False)
@@ -533,12 +570,12 @@ class ClienteDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
         return context
 
 
-class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomClienteDetailView, FormMixin):
+class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     template_name = "FacturasNorte/cliente/facturas_list.html"
-    model = Cliente
-    context_object_name = 'cliente'
+    paginate_by = 10
     permission_required = 'FacturasNorte.view_facturas'
     form_class = FiltroFacturaForm
+    context_object_name = 'lista_facturas'
 
     def get_initial(self):
         """
@@ -554,6 +591,16 @@ class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomCli
     def get_context_data(self, **kwargs):
         context = super(ClienteFacturasView, self).get_context_data(**kwargs)
         context['form'] = self.get_form(FiltroFacturaForm)
+        pk = self.kwargs.get('pk', None)
+        context['cliente'] = Cliente.objects.get(nroUsuario=pk)
+        query = ''
+        for k, v in self.request.GET.iteritems():
+            if k != 'page':
+                query = query + '&' + k + '=' + v
+        context['query'] = query
+        return context
+
+    def get_queryset(self):
         try:
             dia = int(self.request.GET['fecha_day'])
             mes = int(self.request.GET['fecha_month'])
@@ -563,26 +610,27 @@ class ClienteFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomCli
             fecha = None
         try:
             field = self.request.GET['tipo']
-            if field in ('2', '4'):
-                context['lista_facturas'] = buscar_pdfs_pedidos(self.kwargs.get(self.pk_url_kwarg),
-                                                                field=self.request.GET['tipo'],
-                                                                pedido=self.request.GET['numero'],
-                                                                fecha_pedido=fecha)
+            if field in ('2', '4', ''):
+                lista_facturas = buscar_pdfs_pedidos(self.kwargs.get('pk'),
+                                                     field=self.request.GET['tipo'],
+                                                     pedido=self.request.GET['numero'],
+                                                     fecha_pedido=fecha)
             else:
-                context['lista_facturas'] = buscar_pdfs_facturas(self.kwargs.get(self.pk_url_kwarg),
-                                                                 field=self.request.GET['tipo'],
-                                                                 factura=self.request.GET['numero'],
-                                                                 fecha_factura=fecha)
+                lista_facturas = buscar_pdfs_facturas(self.kwargs.get('pk'),
+                                                      field=self.request.GET['tipo'],
+                                                      factura=self.request.GET['numero'],
+                                                      fecha_factura=fecha)
 
         except KeyError:
-            context['lista_facturas'] = buscar_pdfs_pedidos(self.kwargs.get(self.pk_url_kwarg))
-        return context
+            lista_facturas = buscar_pdfs_pedidos(self.kwargs.get('pk'))
+
+        return lista_facturas
 
 
-class EmpleadoListaFacturasView(LoginRequiredMixin, PermissionRequiredMixin, CustomClienteDetailView, FormMixin):
+class EmpleadoListaFacturasView(LoginRequiredMixin, PermissionRequiredMixin, FormListView):
     template_name = "FacturasNorte/empleado/facturas_cliente.html"
-    model = Cliente
-    context_object_name = 'cliente'
+    paginate_by = 10
+    context_object_name = 'lista_facturas'
     permission_required = 'FacturasNorte.view_facturas'
     form_class = FiltroFacturaForm
 
@@ -603,6 +651,16 @@ class EmpleadoListaFacturasView(LoginRequiredMixin, PermissionRequiredMixin, Cus
     def get_context_data(self, **kwargs):
         context = super(EmpleadoListaFacturasView, self).get_context_data(**kwargs)
         context['form'] = self.get_form(FiltroFacturaForm)
+        pk = self.kwargs.get('pk', None)
+        context['cliente'] = Cliente.objects.get(nroUsuario=pk)
+        query = ''
+        for k, v in self.request.GET.iteritems():
+            if k != 'page':
+                query = query + '&' + k + '=' + v
+        context['query'] = query
+        return context
+
+    def get_queryset(self):
         try:
             dia = int(self.request.GET['fecha_day'])
             mes = int(self.request.GET['fecha_month'])
@@ -612,21 +670,20 @@ class EmpleadoListaFacturasView(LoginRequiredMixin, PermissionRequiredMixin, Cus
             fecha = None
         try:
             field = self.request.GET['tipo']
-            if field in ('2', '4'):
-                context['lista_facturas'] = buscar_pdfs_pedidos(self.kwargs.get(self.pk_url_kwarg),
-                                                                field=self.request.GET['tipo'],
-                                                                pedido=self.request.GET['numero'],
-                                                                fecha_pedido=fecha)
+            if field in ('2', '4', ''):
+                lista_facturas = buscar_pdfs_pedidos(self.kwargs.get('pk'),
+                                                     field=self.request.GET['tipo'],
+                                                     pedido=self.request.GET['numero'],
+                                                     fecha_pedido=fecha)
             else:
-                context['lista_facturas'] = buscar_pdfs_facturas(self.kwargs.get(self.pk_url_kwarg),
-                                                                 field=self.request.GET['tipo'],
-                                                                 factura=self.request.GET['numero'],
-                                                                 fecha_factura=fecha)
-
+                lista_facturas = buscar_pdfs_facturas(self.kwargs.get('pk'),
+                                                      field=self.request.GET['tipo'],
+                                                      factura=self.request.GET['numero'],
+                                                      fecha_factura=fecha)
         except KeyError:
-            context['lista_facturas'] = buscar_pdfs_pedidos(self.kwargs.get(self.pk_url_kwarg))
+            lista_facturas = buscar_pdfs_pedidos(self.kwargs.get('pk'))
 
-        return context
+        return lista_facturas
 
 
 class ClienteRegenerarContrasenaView(FormView):
@@ -638,6 +695,24 @@ class ClienteRegenerarContrasenaView(FormView):
         empleado = Empleado.objects.get(nroUsuario=self.request.user.username)
         reset_password(usuario, empleado)
         return render(self.request, 'FacturasNorte/base/reset_contrasena_hecho.html', {})
+
+
+class ListaDiariosView(LoginRequiredMixin, FormListView):
+    template_name = 'FacturasNorte/cliente/diarios_list.html'
+    form_class = FiltroDiarioForm
+    paginate_by = 10
+    context_object_name = 'lista_diarios'
+
+    def get_queryset(self):
+        try:
+            dia = int(self.request.GET['fecha_day'])
+            mes = int(self.request.GET['fecha_month'])
+            anio = int(self.request.GET['fecha_year'])
+            fecha = date(anio, mes, dia)
+        except (MultiValueDictKeyError, ValueError):
+            fecha = None
+        lista_diarios = obtener_diarios(fecha=fecha)
+        return lista_diarios
 
 
 @login_required
@@ -698,7 +773,6 @@ def configuration_done(request):
 
 
 class ContactView(FormView):
-
     template_name = 'FacturasNorte/contact.html'
     success_url = reverse_lazy('FacturasNorte:thankyou')
 
@@ -756,8 +830,7 @@ def pdf_help(request):
     return pdf
 
 
-def pdf_diario(request):
-    ruta = 'diario/Diaro_del_dia.pdf'
+def pdf_diario(request, ruta):
     pdf = open_pdf_view(config.PDF_DIARIOS, ruta)
     return pdf
 
