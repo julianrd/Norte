@@ -159,7 +159,8 @@ class FiltroClienteForm(forms.Form):
 
 class FiltroFacturaForm(forms.Form):
     numero = forms.CharField(required=False, label='Nro', initial='')
-    fecha = forms.DateField(required=False, label='Fecha', widget=SelectDateWidget(years=range(1995, datetime.date.today().year+1)))
+    fecha = forms.DateField(required=False, label='Fecha', widget=SelectDateWidget(years=range(1995,
+                                                                                   datetime.date.today().year+1)))
     tipo = forms.ChoiceField(
                                 required=True,
                                 choices = ( ('1',u'Nro Factura'),
@@ -170,13 +171,21 @@ class FiltroFacturaForm(forms.Form):
     )
 
 class FiltroDiarioForm(forms.Form):
-    fecha = forms.DateField(required=False, label='Fecha', widget=SelectDateWidget(years=range(2014, datetime.date.today().year+1)))
+    fecha = forms.DateField(required=False, label='Fecha', widget=SelectDateWidget(years=range(2014,
+                                                                                   datetime.date.today().year+1)))
 
 
 class ConfigurationForm(forms.Form):
-    pdf_root = forms.CharField(label='Carpeta PDFs',initial=config.PDF_ROOT,widget=forms.TextInput(attrs={'size': '40'}))
-    carpeta_facturas = forms.CharField(label='Nombre carpeta de Facturas',initial=config.CARPETA_FACTURAS,widget=forms.TextInput(attrs={'size': '40'}))
-    carpeta_pedidos = forms.CharField(label='Nombre carpeta de Pedidos',initial=config.CARPETA_PEDIDOS,widget=forms.TextInput(attrs={'size': '40'}))
-    email_salida = forms.EmailField(label=u'Email para envíos', initial=config.EMAIL_SALIDA)
-    email_entrada = forms.EmailField(label='Email para recepciones', initial=config.EMAIL_ENTRADA)
+    pdf_root = forms.CharField(label='Carpeta PDFs',initial=config.PDF_ROOT,
+                               widget=forms.TextInput(attrs={'size': '40'}))
+    carpeta_facturas = forms.CharField(label='Nombre carpeta de Facturas', initial=config.CARPETA_FACTURAS,
+                                       widget=forms.TextInput(attrs={'size': '40'}))
+    carpeta_pedidos = forms.CharField(label='Nombre carpeta de Pedidos', initial=config.CARPETA_PEDIDOS,
+                                      widget=forms.TextInput(attrs={'size': '40'}))
+    carpeta_diarios = forms.CharField(label='Nombre carpeta de Diarios', initial=config.CARPETA_DIARIOS,
+                                      widget=forms.TextInput(attrs={'size': '40'}))
+    email_salida = forms.EmailField(label=u'Email para envíos', initial=config.EMAIL_SALIDA,
+                                    widget=forms.TextInput(attrs={'size': '40'}))
+    email_entrada = forms.EmailField(label='Email para recepciones', initial=config.EMAIL_ENTRADA,
+                                     widget=forms.TextInput(attrs={'size': '40'}))
 

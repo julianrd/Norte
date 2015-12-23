@@ -275,7 +275,7 @@ def buscar_pdfs_facturas(pk, field='', factura=None, fecha_factura=None):
 def obtener_diarios(fecha=None):
     from FacturasNorte.custom_classes import Diario
     storageManager = FileSystemStorage()
-    diarios = storageManager.listdir(config.PDF_DIARIOS)[1]
+    diarios = storageManager.listdir(config.CARPETA_DIARIOS)[1]
     lista_diarios = []
 
     for d in diarios:
@@ -283,13 +283,15 @@ def obtener_diarios(fecha=None):
             if fecha == obtener_fecha_diario(d):
                 pdf = Diario()
                 pdf.set_fecha(obtener_fecha_diario(d))
-                pdf.set_ruta('diarios/' + d)
+                pdf.set_ruta(d)
                 lista_diarios.append(pdf)
         else:
             pdf = Diario()
             pdf.set_fecha(obtener_fecha_diario(d))
-            pdf.set_ruta('diarios/' + d)
+            pdf.set_ruta(d)
             lista_diarios.append(pdf)
+
+    lista_diarios.sort(key=lambda x: x.fecha, reverse=True)
     return lista_diarios
 
 

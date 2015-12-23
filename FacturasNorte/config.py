@@ -1,5 +1,5 @@
 PDF_ROOT = '//maria/FacturacionPDF/'
-CARPETA_DIARIOS = '//Roxana/pdf anteriores/2015'
+CARPETA_DIARIOS = 'C:/Diarios/'
 CARPETA_FACTURAS = 'FacturasPDF/'
 CARPETA_PEDIDOS = 'PrefacturasPDF/'
 PDF_FACTURAS = PDF_ROOT + CARPETA_FACTURAS

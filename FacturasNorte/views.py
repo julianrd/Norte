@@ -744,6 +744,7 @@ class ConfigurationView(FormView):
         pdf_root = 'PDF_ROOT = ' + "'" + form.cleaned_data['pdf_root'] + "'"
         carpeta_facturas = 'CARPETA_FACTURAS' + "'" + form.cleaned_data['carpeta_facturas'] + "'"
         carpeta_pedidos = 'CARPETA_FACTURAS' + "'" + form.cleaned_data['carpeta_pedidos'] + "'"
+        carpeta_diarios = 'CARPETA_DIARIOS' + "'" + form.cleaned_data['carpeta_diarios'] + "'"
         email_entrada = 'EMAIL_ENTRADA = ' + "'" + form.cleaned_data['email_entrada'] + "'"
         email_salida = 'EMAIL_SALIDA = ' + "'" + form.cleaned_data['email_salida'] + "'"
         facturas = "PDF_FACTURAS = PDF_ROOT + 'facturas/' "
@@ -756,6 +757,8 @@ class ConfigurationView(FormView):
         pdf_file.write(carpeta_facturas)
         pdf_file.write('\n')
         pdf_file.write(carpeta_pedidos)
+        pdf_file.write('\n')
+        pdf_file.write(carpeta_diarios)
         pdf_file.write('\n')
         pdf_file.write(facturas)
         pdf_file.write('\n')
@@ -831,7 +834,7 @@ def pdf_help(request):
 
 
 def pdf_diario(request, ruta):
-    pdf = open_pdf_view(config.PDF_DIARIOS, ruta)
+    pdf = open_pdf_view(config.CARPETA_DIARIOS, ruta)
     return pdf
 
 
