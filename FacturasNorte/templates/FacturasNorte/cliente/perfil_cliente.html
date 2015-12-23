@@ -13,7 +13,7 @@
     <td class="datos">{{ cliente.nombre }}</td>
   </tr>
   <tr>
-    <th>DNI</th>
+    <th>DNI/CUIL</th>
     <td class="datos">{{ cliente.dni }}</td>
   </tr>
   <tr>
@@ -38,6 +38,7 @@
 <div id="links">
     <a id="flat-boton" methods="post" href="{% url 'FacturasNorte:cambiar_contrasena' %}"> Cambiar contrase&ntilde;a </a>
 </div>
+
 {% else %}
     <p>No tiene permiso para visualizar los datos de esta persona.</p>
 {% endif %}

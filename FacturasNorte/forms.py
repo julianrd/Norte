@@ -23,8 +23,8 @@ import datetime
 from django.forms.extras.widgets import SelectDateWidget
 
 class IniciarSesionForm(forms.Form):
-    username = forms.CharField(label='Usuario o Email', show_hidden_initial='ejemplo@dominio.com')
-    password = forms.CharField(label=u'Contraseña', widget=forms.PasswordInput(), initial='')
+    username = forms.CharField(label='Usuario o Email', show_hidden_initial='ejemplo@dominio.com',widget=forms.TextInput(attrs={'size': '30'}))
+    password = forms.CharField(label=u'Contraseña', widget=forms.PasswordInput(attrs={'size': '30'}), initial='',)
 
     def get_user(self):
         return get_object_or_404(User, email=self.cleaned_data['usuario'])
@@ -171,5 +171,8 @@ class FiltroFacturaForm(forms.Form):
 
 class ConfigurationForm(forms.Form):
     pdf_root = forms.CharField(label='Carpeta PDFs',initial=config.PDF_ROOT,widget=forms.TextInput(attrs={'size': '40'}))
+    carpeta_facturas = forms.CharField(label='Nombre carpeta de Facturas',initial=config.CARPETA_FACTURAS,widget=forms.TextInput(attrs={'size': '40'}))
+    carpeta_pedidos = forms.CharField(label='Nombre carpeta de Pedidos',initial=config.CARPETA_PEDIDOS,widget=forms.TextInput(attrs={'size': '40'}))
     email_salida = forms.EmailField(label=u'Email para envíos', initial=config.EMAIL_SALIDA)
     email_entrada = forms.EmailField(label='Email para recepciones', initial=config.EMAIL_ENTRADA)
+

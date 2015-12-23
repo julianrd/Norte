@@ -38,8 +38,13 @@
         </tr>
          {% for fac in lista_facturas %}
             <tr>
-                <td>{{ fac.nroFactura }}</td>
-                <td>{{ fac.fechaFac|date:"d/m/Y" }}</td>
+                {% if fac.nroFactura %}
+                    <td>{{ fac.nroFactura }}</td>
+                    <td>{{ fac.fechaFac|date:"d/m/Y" }}</td>
+                {% else %}
+                    <td> - </td>
+                    <td> - </td>
+                {% endif %}
                 <td>{{ fac.nroPedido }}</td>
                 <td>{{ fac.fechaPed|date:"d/m/Y" }}</td>
                 {% if fac.rutaFac %}

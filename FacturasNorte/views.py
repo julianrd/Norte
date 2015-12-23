@@ -25,7 +25,7 @@ from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDet
     FormListView
 from FacturasNorte.functions import send_email_contact, reset_password, \
     crear_perfil, search_model, buscar_pdfs_pedidos, registrar_cambio_contrasena, crear_historial_alta, \
-    buscar_pdfs_facturas, get_client_ip,  corregir_fecha_update, crear_historial_baja
+    buscar_pdfs_facturas, get_client_ip,  corregir_fecha_update, crear_historial_baja, enviar_password_regenerada
 from FacturasNorte import config
 
 from . import models
@@ -393,6 +393,7 @@ class CambiarContrasenaView(LoginRequiredMixin, PermissionRequiredMixin, FormVie
             self.request.user.set_password(form.cleaned_data['contrasena_nueva'])
             registrar_cambio_contrasena(self.request.user, None)
             self.request.user.save()
+            enviar_password_regenerada(self.request.user, form.cleaned_data['contrasena_nueva'])
         return super(CambiarContrasenaView, self).form_valid(form)
 
 
@@ -666,6 +667,8 @@ class ConfigurationView(FormView):
 
     def form_valid(self, form):
         pdf_root = 'PDF_ROOT = ' + "'" + form.cleaned_data['pdf_root'] + "'"
+        carpeta_facturas = 'CARPETA_FACTURAS' + "'" + form.cleaned_data['carpeta_facturas'] + "'"
+        carpeta_pedidos = 'CARPETA_FACTURAS' + "'" + form.cleaned_data['carpeta_pedidos'] + "'"
         email_entrada = 'EMAIL_ENTRADA = ' + "'" + form.cleaned_data['email_entrada'] + "'"
         email_salida = 'EMAIL_SALIDA = ' + "'" + form.cleaned_data['email_salida'] + "'"
         facturas = "PDF_FACTURAS = PDF_ROOT + 'facturas/' "
@@ -674,6 +677,10 @@ class ConfigurationView(FormView):
         f = open('C:\Apache24\htdocs\Norte\FacturasNorte\config.py', 'w')
         pdf_file = File(f)
         pdf_file.write(pdf_root)
+        pdf_file.write('\n')
+        pdf_file.write(carpeta_facturas)
+        pdf_file.write('\n')
+        pdf_file.write(carpeta_pedidos)
         pdf_file.write('\n')
         pdf_file.write(facturas)
         pdf_file.write('\n')
@@ -796,7 +803,7 @@ def pdf_pedido_view(request, ruta,):
 
 
 def open_pdf_view(request, ruta):
-    ruta = config.PDF_ROOT + ruta
+    ruta = config.CARPETA_DIARIOS + ruta
     pdf = open(ruta, 'rb').read()
     response = HttpResponse(pdf, content_type='application/pdf')
     return response

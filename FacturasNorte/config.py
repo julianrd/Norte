@@ -1,7 +1,8 @@
-PDF_ROOT = 'C:/Apache24/htdocs/PDFs/'
-PDF_FACTURAS = PDF_ROOT + 'facturas/' 
-PDF_PEDIDOS = PDF_ROOT + 'pedidos/'
-PDF_DIARIOS = PDF_ROOT + 'diarios/'
-EMAIL_ENTRADA = 'julian_rd7@hotmail.com'
-EMAIL_SALIDA = 'julian.rd7@gmail.com'
-PDF_DIARIO = PDF_ROOT + 'diario/Diario_del_dia.pdf'
+PDF_ROOT = '//maria/FacturacionPDF/'
+CARPETA_DIARIOS = '//Roxana/pdf anteriores/2015'
+CARPETA_FACTURAS = 'FacturasPDF/'
+CARPETA_PEDIDOS = 'PrefacturasPDF/'
+PDF_FACTURAS = PDF_ROOT + CARPETA_FACTURAS
+PDF_PEDIDOS = PDF_ROOT + CARPETA_PEDIDOS
+EMAIL_ENTRADA = 'servicios@diarionorte.com'
+EMAIL_SALIDA = 'servicios@diarionorte.com'

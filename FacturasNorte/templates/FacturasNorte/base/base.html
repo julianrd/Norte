@@ -67,9 +67,11 @@
 
             <div id="nav">
                 {% block nav-global %}
+                    {% if user.is_authenticated%}
                     <div>
                         <a href="{% url 'FacturasNorte:ver_ayuda' %}"> <span id="link"> Obtener ayuda </span></a>
                     </div>
+                    {% endif %}
 
                 <ul id="menu">
                     <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->

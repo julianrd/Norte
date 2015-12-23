@@ -64,6 +64,7 @@ urlpatterns = patterns('',
     url(r'^staff/mod_perfil/(?P<pk>\d+)/$', views.EmpModifPerfilView.as_view(), name = 'modif_perfil'),
     url(r'^staff/facturas/(?P<pk>\d+)/$', views.EmpleadoListaFacturasView.as_view(), name = 'facturas_cliente_empleado'),
 
+    # url(r'^cliente/edit/(?P<pk>\d+)/$', views.ClienteModifView.as_view(), name = 'edit_cliente'),
     url(r'^cliente/perfil/(?P<pk>\d+)/$', views.ClientePerfilView.as_view(), name = 'perfil_cliente'),
     url(r'^cliente/facturas/(?P<pk>\d+)/$', views.ClienteFacturasView.as_view(), name = 'facturas_cliente'),
     url(r'^factura/(?P<ruta>.*)$', views.pdf_factura_view, name = 'ver_factura'),

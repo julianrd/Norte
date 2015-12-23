@@ -149,15 +149,15 @@ LOGIN_URL = 'FacturasNorte:login'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 #EMAIL OPTIONS
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'julian.rd7@gmail.com'
-EMAIL_HOST_PASSWORD = 'tel563539'
-EMAIL_USE_TLS = True
+EMAIL_HOST = 'ailen.diarionorte.com'
+EMAIL_PORT = 25
+#EMAIL_HOST_USER = 'servicios@diarionorte.com'
+#EMAIL_HOST_PASSWORD = 'PT08p2x'
+#EMAIL_USE_TLS = False
 
 
 #MEDIA
-MEDIA_ROOT = 'C:/Apache24/htdocs/PDFs/'
+MEDIA_ROOT = '//maria/FacturacionPDF/'
 
 MEDIA_ULR = '/pdf/'
 

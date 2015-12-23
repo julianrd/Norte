@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import smtplib
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from FacturasNorte import config
@@ -115,24 +116,23 @@ def cast_fecha(fechaNacimiento):
 def enviar_password(usuario, password):
     message = u'Señor/a ' + usuario.nombre + u' Su contraseña es: ' + str(password)
     sender = config.EMAIL_SALIDA
-    receiver = config.EMAIL_ENTRADA #usuario.email
+    receiver = usuario.email
     email = EmailMessage('Cuenta registrada', message, sender,
-            [receiver],
-            headers = {'Reply-To': config.EMAIL_ENTRADA})
+                         [receiver])
 
     connection = mail.get_connection()
     connection.open()
     email.send()
     connection.close()
 
-def enviar_password_regenerada(usuario, password):
-    message = u'Señor/a usuario/a: ' + str(usuario.username) + '.' u' Su nueva contraseña es: ' + str(password)
-    sender = config.EMAIL_SALIDA
-    receiver = config.EMAIL_ENTRADA #usuario.email
-    email = EmailMessage(u'Contraseña regenerada', message, sender,
-            [receiver],
-            headers = {'Reply-To': config.EMAIL_ENTRADA})
 
+def enviar_password_regenerada(usuario, password):
+    message = u'Señor/a usuario/a: ' + str(usuario.username) + '.' + '\n' + u'  Su nueva contraseña es: ' \
+              + str(password) + '\n \n' + u'Saludos cordiales.' + '\n' + u'Equipo técnico de Facturas Norte.'
+    sender = config.EMAIL_SALIDA
+    receiver = usuario.email
+    email = EmailMessage(u'Cambio de contraseña - Facturas Norte', message, sender,
+                         [receiver])
     connection = mail.get_connection()
     connection.open()
     email.send()
@@ -142,12 +142,17 @@ def send_email_contact(email, subject, body):
     subject = subject.encode("utf-8")
     body = body.encode("utf-8")
     body = '{} ha enviado un username de contacto\n\n{}\n\n{}'.format(email, subject, body)
-    send_mail(
-        subject = subject,
-        message = body,
-        from_email = email,
-        recipient_list =[config.EMAIL_ENTRADA],
-        )
+    me = config.EMAIL_SALIDA
+    you = email
+    s = smtplib.SMTP('ailen.diarionorte.com')
+    s.sendmail(me, [you], body)
+    s.quit()
+    # send_mail(
+    #    subject = subject,
+    #    message = body,
+    #    from_email = email,
+    #    recipient_list =[config.EMAIL_ENTRADA],
+    #    )
 
 def obtener_fecha(fecha):
     fecstr = fecha[8:10] + ' ' + fecha[5:7] + ' ' + fecha[:4]
@@ -170,37 +175,42 @@ def buscar_pdfs_pedidos(pk, field='0', pedido=None, fecha_pedido=None):
             query = fecha_pedido
 
     for ped in pedidos:
-        cuit = ped.split('_')[3].split('.')[0]
-        if (cuit == cliente.cuit):
-            nroPed = ped.split('_')[1]
-            fechaPed = ped.split('_')[2]
-            fechaPed = obtener_fecha(fechaPed)
-            rutaPed = 'pedidos/'+ped
+        check = ped.split('_')[0]
+        if check == 'PED':
+            cuit = ped.split('_')[3].split('.')[0]
+            if (cuit == cliente.cuit):
+                nroPed = ped.split('_')[1]
+                fechaPed = ped.split('_')[2]
+                fechaPed = obtener_fecha(fechaPed)
+                rutaPed = config.CARPETA_PEDIDOS+ped
 
-            if (field == '0') or \
-               ((field == '2') and (query == nroPed)) or \
-               ((field == '4') and (query == fechaPed)):
+                if (field == '0') or \
+                   ((field == '2') and (query == nroPed)) or \
+                   ((field == '4') and (query == fechaPed)):
 
-                nroFac = None
-                fechaFac = None
-                rutaFac = None
+                    nroFac = None
+                    fechaFac = None
+                    rutaFac = None
 
-                for fac in facturas:
-                    pedido_factura = fac.split('-')[3]
-                    if (nroPed == pedido_factura):
-                        nroFac = fac.split('-')[2]
-                        fechaFac = fac.split('-')[4].split('.')[0]
-                        fechaFac = obtener_fecha(fechaFac)
-                        rutaFac = 'facturas/'+fac
+                    for fac in facturas:
+                        check = fac.split('_')[0]
+                        if check == 'FAC':
+                            pedido_factura = fac.split('-')[3]
+                            if (nroPed == pedido_factura):
+                                nroFac = fac.split('-')[2]
+                                fechaFac = fac.split('-')[4].split('.')[0]
+                                fechaFac = obtener_fecha(fechaFac)
+                                rutaFac = config.CARPETA_FACTURAS+fac
 
-                pdf = PDF()
-                pdf.set_nroPedido(nroPed)
-                pdf.set_nroFactura(nroFac)
-                pdf.set_fechaPed(fechaPed)
-                pdf.set_fechaFac(fechaFac)
-                pdf.set_rutaFac(rutaFac)
-                pdf.set_rutaPed(rutaPed)
-                PDFs.append(pdf)
+                    pdf = PDF()
+                    pdf.set_nroPedido(nroPed)
+                    pdf.set_nroFactura(nroFac)
+                    pdf.set_fechaPed(fechaPed)
+                    pdf.set_fechaFac(fechaFac)
+                    pdf.set_rutaFac(rutaFac)
+                    pdf.set_rutaPed(rutaPed)
+                    PDFs.append(pdf)
+
     return PDFs
 
 def buscar_pdfs_facturas(pk, field='0', factura=None, fecha_factura=None):
@@ -218,32 +228,36 @@ def buscar_pdfs_facturas(pk, field='0', factura=None, fecha_factura=None):
             query = fecha_factura
 
      for fac in facturas:
-         cuit = fac.split('-')[1]
-         if (cuit == cliente.cuit):
-             nroFac = fac.split('-')[2]
-             nroPed = fac.split('-')[3]
-             fechaFac = fac.split('-')[4].split('.')[0]
-             fechaFac = obtener_fecha(fechaFac)
+         check = fac.split('_')[0]
+         if check == 'FAC':
+             cuit = fac.split('-')[1]
+             if (cuit == cliente.cuit):
+                 nroFac = fac.split('-')[2]
+                 nroPed = fac.split('-')[3]
+                 fechaFac = fac.split('-')[4].split('.')[0]
+                 fechaFac = obtener_fecha(fechaFac)
 
-             if (field == '0') or \
-             ((field == '1') and (query == nroFac)) or \
-             ((field == '3') and (query == fechaFac)):
+                 if (field == '0') or \
+                 ((field == '1') and (query == nroFac)) or \
+                 ((field == '3') and (query == fechaFac)):
 
-                 for ped in pedidos:
-                     numero_pedido = ped.split('-')[2]
-                     if (numero_pedido == nroPed):
-                         fechaPed = ped.split('-')[3].split('.')[0]
-                         fechaPed = obtener_fecha(fechaPed)
+                     for ped in pedidos:
+                         check = fac.split('_')[0]
+                         if check == 'PED':
+                             numero_pedido = ped.split('-')[2]
+                             if (numero_pedido == nroPed):
+                                 fechaPed = ped.split('-')[3].split('.')[0]
+                                 fechaPed = obtener_fecha(fechaPed)
 
-                         pdf = PDF()
-                         pdf.set_cliente(cuit)
-                         pdf.set_nroPedido(nroPed)
-                         pdf.set_nroFactura(nroFac)
-                         pdf.set_fechaPed(fechaPed)
-                         pdf.set_fechaFac(fechaFac)
-                         pdf.set_rutaFac('facturas/'+fac)
-                         pdf.set_rutaPed('pedidos/'+ped)
-                         PDFs.append(pdf)
+                                 pdf = PDF()
+                                 pdf.set_cliente(cuit)
+                                 pdf.set_nroPedido(nroPed)
+                                 pdf.set_nroFactura(nroFac)
+                                 pdf.set_fechaPed(fechaPed)
+                                 pdf.set_fechaFac(fechaFac)
+                                 pdf.set_rutaFac(config.CARPETA_FACTURAS+fac)
+                                 pdf.set_rutaPed(config.CARPETA_PEDIDOS+ped)
+                                 PDFs.append(pdf)
 
      return PDFs
 
