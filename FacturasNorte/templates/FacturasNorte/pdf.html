@@ -106,14 +106,14 @@
 
         function zoomPag() {
 
-                document.body.style.zoom = 3.5
+               document.body.style.zoom = "100%";
 
 
         }
 
         function zoomPagb() {
 
-                document.body.style.zoom = 2,0
+                document.body.style.zoom = "50%";
 
 
         }
@@ -122,7 +122,7 @@
         function searchPDF(){
 
                     var value = parseInt(document.getElementById("page_num").value);
-
+                    pageNum = value;
                     renderPage(value);
             }
 
@@ -249,7 +249,7 @@
 	width:1385px;
 	text-align:right;
 	margin:20px 0px;
-	font:30px arial;
+	font:20px arial;
 }
 
 #controls__{
