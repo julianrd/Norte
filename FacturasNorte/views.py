@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic.edit import FormMixin
 from django.utils import timezone
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
-from django.views.generic import DetailView, FormView, UpdateView
+from django.views.generic import DetailView, FormView, UpdateView, TemplateView
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
@@ -744,6 +744,7 @@ class ConfigurationView(FormView):
         pdf_root = 'PDF_ROOT = ' + "'" + form.cleaned_data['pdf_root'] + "'"
         carpeta_facturas = 'CARPETA_FACTURAS' + "'" + form.cleaned_data['carpeta_facturas'] + "'"
         carpeta_pedidos = 'CARPETA_FACTURAS' + "'" + form.cleaned_data['carpeta_pedidos'] + "'"
+
         carpeta_diarios = 'CARPETA_DIARIOS' + "'" + form.cleaned_data['carpeta_diarios'] + "'"
         email_entrada = 'EMAIL_ENTRADA = ' + "'" + form.cleaned_data['email_entrada'] + "'"
         email_salida = 'EMAIL_SALIDA = ' + "'" + form.cleaned_data['email_salida'] + "'"
@@ -829,13 +830,21 @@ class HistorialRegister(generic.DetailView):
 
 
 def pdf_help(request):
-    pdf = open_pdf_view(config.PDF_ROOT, "ayuda.pdf")
+    pdf = open_pdf_view(config.CARPETA_DIARIOS, "ayuda/ayuda.pdf")
     return pdf
 
-
+#ver_diario
 def pdf_diario(request, ruta):
-    pdf = open_pdf_view(config.CARPETA_DIARIOS, ruta)
-    return pdf
+      pdf = open_pdf_view(config.CARPETA_DIARIOS, ruta)
+      return pdf
+
+class open_diario(TemplateView):
+    template_name = "FacturasNorte/pdf.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(open_diario, self).get_context_data(**kwargs)
+        context['url'] = 'http://localhost/FacturasNorte/pdf_diario/' + self.kwargs.get('ruta')
+        return context
 
 
 @login_required
@@ -911,5 +920,6 @@ def bad_request_view(request):
                                   context_instance=RequestContext(request))
     response.status_code = 400
     return response
+
 
 

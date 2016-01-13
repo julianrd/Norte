@@ -33,7 +33,7 @@
          {% for d in lista_diarios %}
             <tr>
                 <td>{{ d.fecha|date:"d/m/Y" }}</td>
-                <td><a href={% url 'FacturasNorte:ver_diario' d.ruta %}> <img src="{% static "FacturasNorte/img/view.png" %}" width="12", alt="Editar"/> Ver Diario</a></td>
+                <td><a href={% url 'FacturasNorte:open_diario' d.ruta %}> <img src="{% static "FacturasNorte/img/view.png" %}" width="12", alt="Editar"/> Ver Diario</a></td>
             </tr>
 
          {% endfor %}

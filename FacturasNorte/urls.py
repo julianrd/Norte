@@ -73,6 +73,8 @@ urlpatterns = patterns('',
     url(r'^diarios/$', views.ListaDiariosView.as_view(), name = 'lista_diarios'),
     url(r'^pdf_ayuda/$', views.pdf_help, name = 'ver_ayuda'),
     url(r'^pdf_diario/(?P<ruta>.*)$', views.pdf_diario, name = 'ver_diario'),
+    url(r'^open_diario/(?P<ruta>.*)$', views.open_diario.as_view(), name = 'open_diario'),
+
 
 
 

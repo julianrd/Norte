@@ -1,0 +1,334 @@
+<html>
+<head>
+    <title>Diario Online</title>
+    {% block js %}
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/jquery-1.7.1.min.js"></script>
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/turn.js"></script>
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/pdf.js"></script>
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/pdf.worker.js"></script>
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/jquery.js"></script>
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/turn.js"></script>
+
+
+    {% endblock %}
+
+{% load staticfiles %}
+    <link rel="stylesheet" href="{% static "FacturasNorte/css/base_style.css" %}?v=00001">
+
+    <h1>Diario Online</h1>
+</head>
+
+{#{% if user.is_active %}#}
+<body style="background:rgba(243, 243, 243, 0)">
+<div>
+
+
+     <div id = "controls__">
+         <button id="flat-boton" onClick="zoomPag()">Zoom + </button>
+         <button id="flat-boton" onClick="zoomPagb()"> Zoom - </button>
+
+     </div>
+ </div>
+
+{#     Archivo:      #}
+{#     <input type="text" id="txtRuta" value="" /> #}
+{#     <input type="button" id="cmdBuscar" value="Buscar"/>#}
+ </div>
+    <table id = "controls__">
+        <label id = "controls_" for="page_num">P&aacute;gina:</label>
+{#        <input type="text" id="page_num">#}
+
+          <input id="page_num" onkeypress="return justNumbers(event);" value=""> de <span id="page_count"> </span>
+          <button  id="flat-boton" type="button" onclick="searchPDF()">  Buscar </button>
+
+
+    <div id="controls_">
+     <button id="flat-boton" background-color: #e1e1db; onClick="goPrevious()">Anterior</button>
+        <button id="flat-boton" onClick="goNext()">Siguiente</button>
+
+     </div>
+
+{#        &nbsp; &nbsp; <span>P&aacute;gina: <span id="page_num"></span>/ <span id="page_count"></span>#}
+{#        </span>#}
+    </table>
+
+    
+    <script type="text/javascript">
+
+
+
+        'use strict';
+
+        PDFJS.disableWorker = true;
+
+        var pdfDoc, pageNum, scale, canvas, ctx;
+
+
+        var url = '{{ url }}';
+
+
+
+        function Init() {
+            pdfDoc = null;
+            pageNum = 1;
+            scale = 1.5;
+            canvas = document.getElementById('the-canvas');
+            ctx = canvas.getContext('2d');
+
+
+        }
+
+          function justNumbers(e)     {
+            var keynum = window.event ? window.event.keyCode : e.which;
+            if ((keynum == 8) || (keynum == 46))
+            return true;
+
+            return /\d/.test(String.fromCharCode(keynum));
+            }
+
+        //
+        // Get page info from document, resize canvas accordingly, and render page
+        //
+        function renderPage(num) {
+            pdfDoc.getPage(num).then(function (page) {
+                var viewport = page.getViewport(scale);
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                var renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                };
+                page.render(renderContext);
+            });
+            document.getElementById('page_num').textContent = pageNum;
+            document.getElementById('page_count').textContent = pdfDoc.numPages;
+        }
+
+        function zoomPag() {
+
+                document.body.style.zoom = 3.5
+
+
+        }
+
+        function zoomPagb() {
+
+                document.body.style.zoom = 2,0
+
+
+        }
+
+        //Search Pag
+        function searchPDF(){
+
+                    var value = parseInt(document.getElementById("page_num").value);
+
+                    renderPage(value);
+            }
+
+
+        //
+        // Go to previous page
+        //
+
+
+        function goPrevious() {
+            if (pageNum <= 1){
+                return;}
+            pageNum--;
+            renderPage(pageNum);
+        }
+
+        //
+        // Go to next page
+        //
+        function goNext() {
+            if (pageNum >= pdfDoc.numPages)
+                return;
+            pageNum++;
+            renderPage(pageNum);
+        }
+
+        $(document).ready(function () {
+            Init();
+            PDFJS.getDocument(url).then(function (doc) {
+                pdfDoc = doc;
+                renderPage(pageNum);
+            });
+
+            $("#cmdBuscar").click(function () {
+                PDFJS.getDocument($("#txtRuta").val()).then(function (doc) {
+                    pdfDoc = doc;
+                    renderPage(pageNum);
+                });
+            });
+        });
+
+
+
+
+    </script>
+    <style type="text/css">
+        body
+        {
+            background: #ccc;
+        }
+        #magazine
+        {
+            width: 1152px;
+            height: 752px;
+        }
+        #magazine .turn-page
+        {
+            background-color: white;
+        }
+
+
+
+        #prevnext{
+            width:800px;
+	        text-align:center;
+        	margin:0px 0px;
+	        font:20px arial;
+
+        }
+
+ #book{
+	width:1350px;
+	height:1700px;
+	margin: 20px;
+	box-shadow: 0px 0px 20px gray;
+}
+
+#book .turn-page{
+	/*
+	background-color:white;
+	*/
+	background-color:silver;
+	box-shadow: 0px 0px 10px gray;
+}
+
+
+#book .cover{
+	background:#333;
+}
+
+#book .cover h1{
+	color:white;
+	text-align:center;
+	font-size:50px;
+	line-height:500px;
+	margin:0px;
+}
+
+#book .loader{
+	background-image:url(FacturasNorte/img/loader.GIF);
+	width:24px;
+	height:24px;
+	display:block;
+	position:absolute;
+	top:238px;
+	left:188px;
+}
+
+#book .data{
+	text-align:center;
+	font-size:40px;
+	color:#999;
+	line-height:500px;
+}
+
+#controls{
+	width:1400px;
+	text-align:center;
+	margin:30px 0px;
+	font:60px arial;
+}
+
+#controls_{
+	width:1385px;
+	text-align:right;
+	margin:20px 0px;
+	font:30px arial;
+}
+
+#controls__{
+	width:1385px;
+	text-align:right;
+	margin:20px 0px;
+	font:30px arial;
+}
+
+#controls input, #controls label{
+	font:30px arial;
+}
+
+#book .odd{
+	background-image:-webkit-linear-gradient(left, #FFF 95%, #ddd 100%);
+	background-image:-moz-linear-gradient(left, #FFF 95%, #ddd 100%);
+	background-image:-o-linear-gradient(left, #FFF 95%, #ddd 100%);
+	background-image:-ms-linear-gradient(left, #FFF 95%, #ddd 100%);
+}
+
+#book .even{
+	background-image:-webkit-linear-gradient(right, #FFF 95%, #ddd 100%);
+	background-image:-moz-linear-gradient(right, #FFF 95%, #ddd 100%);
+	background-image:-o-linear-gradient(right, #FFF 95%, #ddd 100%);
+	background-image:-ms-linear-gradient(right, #FFF 95%, #ddd 100%);
+}
+
+
+
+
+    </style>
+    
+    <div id="book">
+    
+    <div>
+        <canvas  id="the-canvas" style="border: 1px solid black; width:100%; height:100%;">
+        </canvas>
+    </div>
+    <div>
+
+    </div>
+
+
+    <script type="text/javascript">
+
+        $(window).ready(function () {
+            $('#magazine').turn({
+                display: 'double',
+                acceleration: true,
+                gradients: !$.isTouch,
+                elevation: 50,
+                when: {
+                    turned: function (e, page) {
+                        /*console.log('Current view: ', $(this).turn('view'));*/
+                    }
+                }
+            });
+        });
+
+
+        $(window).bind('keydown', function (e) {
+
+            if (e.keyCode == 37)
+                $('#magazine').turn('previous');
+            else if (e.keyCode == 39)
+                $('#magazine').turn('next');
+
+        });
+
+    </script>
+
+ </body>
+{#{% else %}#}
+{##}
+{#        <script type="text/javascript">#}
+{#        alert("Usted debe estar autenticado para ver el diario");#}
+{##}
+{#        </script>#}
+{##}
+{##}
+{#{%  endif %}#}
+</html>
