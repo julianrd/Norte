@@ -1,0 +1,106 @@
+﻿<html>
+<head>
+    <title>PDF</title>
+    {% block js %}
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/jquery-1.7.1.min.js"></script>
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/turn.js"></script>
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/pdf.js"></script>
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/pdf.worker.js"></script>
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/jquery.js"></script>
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/turn.js"></script>
+
+
+    {% endblock %}
+</head>
+<body>
+
+<script type="text/javascript"
+src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"> </script>
+
+<div id="placeholder"></div>
+
+<script type="text/javascript">
+    CFInstall.check({
+        node: "placeholder",
+        destination: "http://www.waikiki.com"
+    });
+</script>
+
+
+    <div id="carga">
+        <embed src="img/5.gif" class="centrar" /></div>
+    <div id="imagen-oculta2" />
+    <header id="botoner">
+        <nav id="botoner-2">
+            <menu>
+                <button>
+                    <img src="img/fi.gif" width="35" height="35" alt="" onclick="previous();">
+                </button>
+            </menu>
+            <menu>
+                <button>
+                    <img src="img/fd.gif" width="35" height="35" alt="" onclick="next();">
+                </button>
+            </menu>
+            <menu>
+                <button>
+                    <img src="img/lupa01.jpg" width="35" height="35" alt="" onclick="if(window.parent.document.body.style.zoom!=0) window.parent.document.body.style.zoom*=1.2; else window.parent.document.body.style.zoom=1.2;">
+                </button>
+            </menu>
+            <menu>
+                <button>
+                    <img src="img/lupa02.jpg" width="35" height="35" alt="" onclick="if(window.parent.document.body.style.zoom!=0) window.parent.document.body.style.zoom*=0.8; else window.parent.document.body.style.zoom=0.8;">
+                </button>
+            </menu>
+        </nav>
+    </header>
+     
+
+<div style="text-align: right;">
+   <embed id="imagen-oculta" src="img/4.gif" />
+</div>
+    
+    <div class="magazine">
+    </div>
+
+
+
+    <script type="text/javascript">
+
+        PDFJS.disableWorker = true;
+        var pdfDoc, scale, file, np;
+
+        $(document).ready(function () {
+            file = getUrlVars()["file"];
+            if (file == null)
+                file = '{{ url }}';
+
+            PDFJS.getDocument(file).then(function (doc) {
+                pdfDoc = doc;
+                np = (doc.numPages);
+
+                scale = 3;
+
+                for (var i = 1; i <= np; i++) {
+                    $(".magazine").html($(".magazine").html() + '<div><canvas id="hoja' + i + '" style="border: 1px solid black; width: 99.4%; height: 99.5%;"></canvas></div>');
+                }
+
+                for (var i = 1; i <= np; i++) {
+                    renderPage(i, document.getElementById('hoja' + i));
+                }
+
+                //Evento Window Ready
+                flipkey();
+                demoDisplay();
+                window.onload = function () {
+                    setContent();
+
+                }
+                document.getElementById('imagen-oculta').style.visibility = 'visible';
+                document.getElementById('imagen-oculta2').style.visibility = 'visible';
+            });
+        });
+      
+    </script>
+</body>
+</html>

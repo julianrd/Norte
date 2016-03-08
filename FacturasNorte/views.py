@@ -25,7 +25,7 @@ from FacturasNorte.custom_classes import CustomClienteDetailView, CustomAdminDet
     FormListView
 from FacturasNorte.functions import send_email_contact, reset_password, \
     crear_perfil, search_model, buscar_pdfs_pedidos, registrar_cambio_contrasena, crear_historial_alta, \
-    buscar_pdfs_facturas, get_client_ip,  corregir_fecha_update, crear_historial_baja, obtener_diarios, enviar_password_regenerada
+    buscar_pdfs_facturas, get_client_ip,  corregir_fecha_update, crear_historial_baja, obtener_diarios, enviar_password_regenerada, obtener_diarios_2
 
 from FacturasNorte import config
 
@@ -830,7 +830,7 @@ class HistorialRegister(generic.DetailView):
 
 
 def pdf_help(request):
-    pdf = open_pdf_view(config.CARPETA_DIARIOS, "ayuda/ayuda.pdf")
+    pdf = open_pdf_view(config.CARPETA_DIARIOS, "/ayuda/ayuda.pdf")
     return pdf
 
 #ver_diario
@@ -843,7 +843,7 @@ class open_diario(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(open_diario, self).get_context_data(**kwargs)
-        context['url'] = 'http://localhost/FacturasNorte/pdf_diario/' + self.kwargs.get('ruta')
+        context['url'] = 'http://clientes.diarionorte.com/FacturasNorte/pdf_diario/' + self.kwargs.get('ruta')
         return context
 
 
@@ -920,6 +920,9 @@ def bad_request_view(request):
                                   context_instance=RequestContext(request))
     response.status_code = 400
     return response
+
+
+
 
 
 

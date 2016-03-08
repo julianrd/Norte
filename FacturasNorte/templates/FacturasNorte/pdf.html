@@ -19,7 +19,7 @@
 </head>
 
 {#{% if user.is_active %}#}
-<body style="background:rgba(243, 243, 243, 0)">
+<body style="background:rgba(243, 243, 243, 0)" >
 <div>
 
 
@@ -52,7 +52,7 @@
 {#        </span>#}
     </table>
 
-    
+
     <script type="text/javascript">
 
 
@@ -106,7 +106,7 @@
 
         function zoomPag() {
 
-               document.body.style.zoom = "100%";
+               document.body.style.zoom = "90%";
 
 
         }
@@ -270,20 +270,22 @@
 	background-image:-ms-linear-gradient(left, #FFF 95%, #ddd 100%);
 }
 
-#book .even{
-	background-image:-webkit-linear-gradient(right, #FFF 95%, #ddd 100%);
-	background-image:-moz-linear-gradient(right, #FFF 95%, #ddd 100%);
-	background-image:-o-linear-gradient(right, #FFF 95%, #ddd 100%);
-	background-image:-ms-linear-gradient(right, #FFF 95%, #ddd 100%);
+#book .even {
+    background-image: -webkit-linear-gradient(right, #FFF 95%, #ddd 100%);
+    background-image: -moz-linear-gradient(right, #FFF 95%, #ddd 100%);
+    background-image: -o-linear-gradient(right, #FFF 95%, #ddd 100%);
+    background-image: -ms-linear-gradient(right, #FFF 95%, #ddd 100%);
+
 }
 
 
 
 
+
     </style>
-    
+
     <div id="book">
-    
+
     <div>
         <canvas  id="the-canvas" style="border: 1px solid black; width:100%; height:100%;">
         </canvas>
@@ -332,3 +334,4 @@
 {##}
 {#{%  endif %}#}
 </html>
+

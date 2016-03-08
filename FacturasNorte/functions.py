@@ -21,8 +21,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 from Norte import settings
-from FacturasNorte.models import Cliente, Empleado, Historiales, ClienteLegado, HistorialContrasena, \
-    Historiales_registros
+from FacturasNorte.models import Cliente, Empleado, Historiales, ClienteLegado, HistorialContrasena, Historiales_registros
 
 
 def crear_perfil(form, perfil):
@@ -65,7 +64,7 @@ def crear_perfil(form, perfil):
         nuevo_perfil.set_usuario(nuevo_usuario)
         nuevo_perfil.set_activo(True)
         nuevo_perfil.save()
-        enviar_password(nuevo_perfil, password)
+       #enviar_password(nuevo_perfil, password)
         return True
 
     except Exception:
@@ -293,6 +292,45 @@ def obtener_diarios(fecha=None):
 
     lista_diarios.sort(key=lambda x: x.fecha, reverse=True)
     return lista_diarios
+
+
+def obtener_diarios_2(fecha=None):
+    from FacturasNorte.custom_classes import Diario
+    storageManager = FileSystemStorage()
+    diarios = storageManager.listdir(config.CARPETA_DIARIOS2)[1]
+
+    lista_diarios = []
+
+    for list1 in listdir(diarios):
+        for list2 in listdir(list1):
+            for list3 in listdir(list2):
+                for list4 in listdir(list3):
+                    for list5 in listdir(list4):
+
+                            if isfile(join(list5, f)):
+                                lista_diarios.append(list5)
+
+
+    return lista_diarios
+
+
+
+    for d in diarios:
+        if fecha:
+            if fecha == obtener_fecha_diario(d):
+                pdf = Diario()
+                pdf.set_fecha(obtener_fecha_diario(d))
+                pdf.set_ruta(d)
+                lista_diarios.append(pdf)
+        else:
+            pdf = Diario()
+            pdf.set_fecha(obtener_fecha_diario(d))
+            pdf.set_ruta(d)
+            lista_diarios.append(pdf)
+
+    lista_diarios.sort(key=lambda x: x.fecha, reverse=True)
+    return lista_diarios
+
 
 
 def reset_password(usuario, empleado):

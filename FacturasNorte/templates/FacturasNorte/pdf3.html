@@ -1,0 +1,174 @@
+<html>
+<head>
+    <title>Visor PDF</title>    
+    {% block js %}
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/jquery-1.7.1.min.js"></script>
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/turn.js"></script>
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/pdf.js"></script>
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/pdf.worker.js"></script>
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/jquery.js"></script>
+        <script  src="{{ STATIC_URL }}/FacturasNorte/js/turn.js"></script>
+
+
+    {% endblock %}
+
+{% load staticfiles %}
+    <link rel="stylesheet" href="{% static "FacturasNorte/css/base_style.css" %}?v=00001">
+<body>
+<div>
+     Archivo:      
+     <input type="text" id="txtRuta" value="" /> 
+     <input type="button" id="cmdBuscar" value="Buscar" />
+ </div>
+    
+    <div>
+        <button id="prev" onClick="goPrevious()">
+            Previous</button>
+        <button id="next" onClick="goNext()">
+            Next</button>
+        &nbsp; &nbsp; <span>Page: <span id="page_num"></span>/ <span id="page_count"></span>
+        </span>
+    </div>
+    
+    <script type="text/javascript">
+
+        'use strict';
+
+        PDFJS.disableWorker = true;
+
+        var pdfDoc, pageNum, scale, canvas, ctx;
+
+        var url = '{{ url }}';
+
+        function Init() {
+            pdfDoc = null;
+            pageNum = 1;
+            scale = 0.5;
+            canvas = document.getElementById('the-canvas');
+            ctx = canvas.getContext('2d');
+			
+        }
+
+        //
+        // Get page info from document, resize canvas accordingly, and render page
+        //
+        function renderPage(num) {
+            pdfDoc.getPage(num).then(function (page) {
+                var viewport = page.getViewport(scale);
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                var renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                };
+                page.render(renderContext);
+            });
+            document.getElementById('page_num').textContent = pageNum;
+            document.getElementById('page_count').textContent = pdfDoc.numPages;
+        }
+
+        //
+        // Go to previous page
+        //
+        function goPrevious() {
+            if (pageNum <= 1)
+                return;
+            pageNum--;
+            renderPage(pageNum);
+        }
+
+        //
+        // Go to next page
+        //
+        function goNext() {
+            if (pageNum >= pdfDoc.numPages)
+                return;
+            pageNum++;
+            renderPage(pageNum);
+        }
+
+        $(document).ready(function () {
+            Init();
+            PDFJS.getDocument(url).then(function (doc) {
+                pdfDoc = doc;
+                renderPage(pageNum);
+            });
+
+            $("#cmdBuscar").click(function () {
+                PDFJS.getDocument($("#txtRuta").val()).then(function (doc) {
+                    pdfDoc = doc;
+                    renderPage(pageNum);
+                });
+            });
+        });
+    </script>
+    <style type="text/css">
+        body
+        {
+            background: #ccc;
+        }
+        #magazine
+        {
+            width: 1152px;
+            height: 752px;
+        }
+        #magazine .turn-page
+        {
+            background-color: white;
+        }
+    </style>
+    
+    <div id="magazine">
+    
+    <div>
+        <canvas  id="the-canvas" style="border: 1px solid black; width:100%; height:100%;">
+        </canvas>
+    </div>
+    <div>
+        
+    </div>
+        <div>
+            pag1</div>
+        <div>
+            pag2</div>
+        <div>
+            pag3</div>
+        <div>
+            pag4</div>
+        <div>
+            pag5</div>
+        <div>
+            pag6</div>
+        <div>
+            pag7</div>
+    </div>
+    <script type="text/javascript">
+
+        $(window).ready(function () {
+            $('#magazine').turn({
+                display: 'double',
+                acceleration: true,
+                gradients: !$.isTouch,
+                elevation: 50,
+                when: {
+                    turned: function (e, page) {
+                        /*console.log('Current view: ', $(this).turn('view'));*/
+                    }
+                }
+            });
+        });
+
+
+        $(window).bind('keydown', function (e) {
+
+            if (e.keyCode == 37)
+                $('#magazine').turn('previous');
+            else if (e.keyCode == 39)
+                $('#magazine').turn('next');
+
+        });
+
+    </script>
+
+</body>
+</html>
