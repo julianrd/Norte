@@ -10,7 +10,11 @@
       {{ object.created }} |
       {{  object.tags.all|join:", " }}
     </p>
-    {{ object.body|markdown }}
+     <p>
+      {% if user.is_active %}
+         {{ object.body|markdown }}
+      {% endif%}
+     </p>
   </div>
 {% endfor %}
 {% endblock %}
