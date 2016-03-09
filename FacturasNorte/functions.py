@@ -119,8 +119,8 @@ def enviar_password(usuario, password):
               + usuario.nombre + u', para ingresar al sitio utilice los siguientes datos: \n' \
               u' usuario: '+ usuario.email +  u' \n contraseña: ' + str(password) +\
               u'\n Para ello, diríjase al siguente enlace: ' \
-              u' http://clientes.diarionorte.com/FacturasNorte/login/'
-
+              u' http://clientes.diarionorte.com/FacturasNorte/login/' \
+              '\n \n' + u'Saludos cordiales.' + '\n' + u'Equipo técnico de Facturas Norte.'
 
 
     sender = config.EMAIL_SALIDA
@@ -135,7 +135,7 @@ def enviar_password(usuario, password):
 
 
 def enviar_password_regenerada(usuario, password):
-    message = u'Señor/a usuario/a: ' + str(usuario.username) + '.' + '\n' + u'  Su nueva contraseña es: ' \
+    message = u'Señor/a ' + str(usuario.email) + '.' + '\n' + u'  Su nueva contraseña es: ' \
               + str(password) + '\n \n' + u'Saludos cordiales.' + '\n' + u'Equipo técnico de Facturas Norte.'
     sender = config.EMAIL_SALIDA
     receiver = usuario.email
