@@ -790,7 +790,7 @@ class ContactView(FormView):
     def form_valid(self, form):
         subject = form.cleaned_data.get('subject')
         body = form.cleaned_data.get('body')
-        email = form.cleaned_data.get('username')
+        email = form.cleaned_data.get('email')
 
         if self.request.user.is_authenticated():
             send_email_contact(self.request.user.email, subject, body)

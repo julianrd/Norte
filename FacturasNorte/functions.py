@@ -8,6 +8,7 @@ __author__ = 'Julian'
 
 from time import strptime
 from datetime import date, datetime
+from django.core.mail import send_mail
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.auth.models import Permission
@@ -64,7 +65,7 @@ def crear_perfil(form, perfil):
         nuevo_perfil.set_usuario(nuevo_usuario)
         nuevo_perfil.set_activo(True)
         nuevo_perfil.save()
-       #enviar_password(nuevo_perfil, password)
+        enviar_password(nuevo_perfil, password)
         return True
 
     except Exception:
@@ -114,7 +115,14 @@ def cast_fecha(fechaNacimiento):
 
 
 def enviar_password(usuario, password):
-    message = u'Señor/a ' + usuario.nombre + u' Su contraseña es: ' + str(password)
+    message = u'Registro realizado con éxito. \nSeñor/a '\
+              + usuario.nombre + u', para ingresar al sitio utilice los siguientes datos: \n' \
+              u' usuario: '+ usuario.email +  u' \n contraseña: ' + str(password) +\
+              u'\n Para ello, diríjase al siguente enlace: ' \
+              u' http://clientes.diarionorte.com/FacturasNorte/login/'
+
+
+
     sender = config.EMAIL_SALIDA
     receiver = usuario.email
     email = EmailMessage('Cuenta registrada', message, sender,
@@ -142,13 +150,19 @@ def enviar_password_regenerada(usuario, password):
 def send_email_contact(email, subject, body):
     subject = subject.encode("utf-8")
     body = body.encode("utf-8")
-    body = '{} ha enviado un username de contacto\n\n{}\n\n{}'.format(email, subject, body)
+    body = '{} ha enviado el siguiente mensaje: \n\n{}\n\n{}'.format(email, subject, body)
     me = config.EMAIL_SALIDA
     you = email
-    s = smtplib.SMTP('ailen.diarionorte.com')
-    s.sendmail(me, [you], body)
-    s.quit()
-    # send_mail(
+    send_mail(subject, body, settings.EMAIL_HOST_USER,
+         [me], fail_silently=False)
+
+
+
+
+    #s = smtplib.SMTP('smtp.gmail.com')
+    #s.send(me, [you], body)
+    #s.quit()
+    #send_mail(
     #    subject = subject,
     #    message = body,
     #    from_email = email,
