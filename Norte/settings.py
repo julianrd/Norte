@@ -167,14 +167,14 @@ PDF_PEDIDOS = MEDIA_ROOT + 'pedidos/'
 
 
 #PERMISSIONS
-CLIENTE_PERMISOS = [('cambiar_cont', 'Puede cambiar su contrasena'), ('view_perfil_cliente', 'Puede ver su perfil de cliente'),
+CLIENTE_PERMISOS = [ ('cambiar_cont', 'Puede cambiar su contrasena'), ('view_perfil_cliente', 'Puede ver su perfil de cliente'),
                        ('view_facturas', 'Puede ver sus facturas')]
 
 EMPLEADO_PERMISOS = [ ('view_facturas', 'Puede ver las facutras de los clientes'),
                        ('view_lista_cliente', 'Puede ver la lista de clientes'),
                        ('view_detalle_cliente', 'Puede ver detalle cliente'), ('update_cliente', 'Puede modificar cliente'),
                        ('agregar_cliente', 'Puede agregar cliente'), ('del_cliente', 'Puede eliminar cliente'),
-                       ('view_perfil_empleado', 'Puede ver su perfil de empleado'), ('view_facturas', 'Puede ver sus facturas')
+                       ('view_perfil_empleado', 'Puede ver su perfil de empleado'), ('view_facturas', 'Puede ver sus facturas'), ('cambiar_cont', 'Puede cambiar su contrasena')
                        ]
 
 

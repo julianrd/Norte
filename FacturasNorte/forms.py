@@ -76,6 +76,7 @@ class ClienteLegadoForm(forms.ModelForm):
     fechaNacimiento = forms.DateField(label='Fecha de nacimiento', widget=SelectDateWidget(years=range(1930, datetime.date.today().year+1)))
     domicilio = forms.CharField(validators=[validate_domicilio])
     telefono = forms.CharField(required=False, validators=[validate_telefono])
+  # clubnorte = form.BooleanField(required=True)
 
     class Meta:
         model = ClienteLegado

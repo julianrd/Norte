@@ -24,7 +24,6 @@ from django.contrib.auth.models import User
 from Norte import settings
 from FacturasNorte.models import Cliente, Empleado, Historiales, ClienteLegado, HistorialContrasena, Historiales_registros
 
-
 def crear_perfil(form, perfil):
     username = form.cleaned_data['email'].split("@")[0]
     # Nuevo Usuario
@@ -49,11 +48,13 @@ def crear_perfil(form, perfil):
 
     else:
         # Nuevo_Perfil
+
         nuevo_perfil = crear_persona(form, Cliente)
         nuevo_usuario.is_staff = False
         nuevo_usuario.is_superuser = False
         password = User.objects.make_random_password()
         permissions = settings.CLIENTE_PERMISOS
+
 
     try:
         nuevo_usuario.set_password(password)
@@ -120,7 +121,7 @@ def enviar_password(usuario, password):
               u' usuario: '+ usuario.email +  u' \n contraseña: ' + str(password) +\
               u'\n Para ello, diríjase al siguente enlace: ' \
               u' http://clientes.diarionorte.com/FacturasNorte/login/' \
-              '\n \n' + u'Saludos cordiales.' + '\n' + u'Equipo técnico de Facturas Norte.'
+              '\n \n' + u'Saludos cordiales.' + '\n' + u'Equipo técnico de Norte.'
 
 
     sender = config.EMAIL_SALIDA
@@ -454,10 +455,10 @@ def crear_historial_alta(form, user):  # se crea un historial, por cada cliente 
     historial_alta.accion = 'Alta'
     historial_alta.save()
 
-
-def crear_historial_baja(user, perfil, tipo):  # se crea un historial, por cada cliente que se da de baja
+ # se crea un historial, por cada cliente que se da de baja
+def crear_historial_baja(user, perfil, tipo):
     historial_baja = Historiales_registros()
-    if tipo == 'empelado':
+    if tipo == 'empleado':
         historial_baja.cuit_cli = perfil.get_dni()
     else:
         historial_baja.cuit_cli = perfil.get_cuit()

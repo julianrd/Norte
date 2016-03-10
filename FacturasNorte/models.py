@@ -172,6 +172,7 @@ class Persona(models.Model):
     telefono = models.CharField(max_length=254, blank=True, default='')
     activo = models.BooleanField(default=True, null=False)
 
+
     class Meta:
         abstract = 'True'
 
@@ -257,6 +258,7 @@ class Empleado(Persona):
 
 class Cliente(Persona):
     cuit = models.CharField(max_length=11, null=True, default=0)
+
 
     @classmethod
     def filter(self, searchField, searchQuery, active, admin):
