@@ -55,7 +55,6 @@ def crear_perfil(form, perfil):
         password = User.objects.make_random_password()
         permissions = settings.CLIENTE_PERMISOS
 
-
     try:
         nuevo_usuario.set_password(password)
         nuevo_usuario.save()
@@ -189,9 +188,12 @@ def buscar_pdfs_pedidos(pk, field='', pedido=None, fecha_pedido=None):
     from FacturasNorte.custom_classes import Factura
     cliente = get_object_or_404(Cliente, nroUsuario=pk)
     storageManager = FileSystemStorage()
-    facturas = storageManager.listdir(config.PDF_FACTURAS)[1]
+
+    facturas =  storageManager.listdir(config.PDF_FACTURAS)[1]
     pedidos = storageManager.listdir(config.PDF_PEDIDOS)[1]
     PDFs = []
+
+
 
     if field != '':
         if field == '2':
@@ -209,34 +211,37 @@ def buscar_pdfs_pedidos(pk, field='', pedido=None, fecha_pedido=None):
                 fechaPed = obtener_fecha_factura(fechaPed)
                 rutaPed = config.CARPETA_PEDIDOS + ped
 
-            if (field == '') or \
+
+
+                if (field == '') or \
                     ((field == '2') and (query == nroPed)) or \
                     ((field == '4') and (query == fechaPed)):
 
-                nroFac = None
-                fechaFac = None
-                rutaFac = None
+                    nroFac = None
+                    fechaFac = None
+                    rutaFac = None
 
-                for fac in facturas:
-                    check = fac.split('_')[0]
-                    if check == 'FAC':
-                        pedido_factura = fac.split('-')[3]
-                        if (nroPed == pedido_factura):
-                            nroFac = fac.split('-')[2]
-                            fechaFac = fac.split('-')[4].split('.')[0]
-                            fechaFac = obtener_fecha_factura(fechaFac)
-                            rutaFac = config.CARPETA_FACTURAS + fac
+                    for fac in facturas:
+                        check = fac.split('-')[0]
+                        if check == 'fac':
+                            pedido_factura = fac.split('-')[3]
+                            if (nroPed == pedido_factura):
+                                nroFac = fac.split('-')[2]
+                                fechaFac = fac.split('-')[4].split('.')[0]
+                                #fechaFac = obtener_fecha_factura(fechaFac)
+                                rutaFac = config.CARPETA_FACTURAS + fac
 
-                pdf = Factura()
-                pdf.set_nroPedido(nroPed)
-                pdf.set_nroFactura(nroFac)
-                pdf.set_fechaPed(fechaPed)
-                pdf.set_fechaFac(fechaFac)
-                pdf.set_rutaFac(rutaFac)
-                pdf.set_rutaPed(rutaPed)
-                PDFs.append(pdf)
+                    pdf = Factura()
+                    pdf.set_nroPedido(nroPed)
+                    pdf.set_nroFactura(nroFac)
+                    pdf.set_fechaPed(fechaPed)
+                    pdf.set_fechaFac(fechaFac)
+                    pdf.set_rutaFac(rutaFac)
+                    pdf.set_rutaPed(rutaPed)
+                    PDFs.append(pdf)
+
+
     return PDFs
-
 
 def buscar_pdfs_facturas(pk, field='', factura=None, fecha_factura=None):
     from FacturasNorte.custom_classes import Factura
@@ -283,7 +288,7 @@ def buscar_pdfs_facturas(pk, field='', factura=None, fecha_factura=None):
                             pdf.set_rutaFac(config.CARPETA_FACTURAS + fac)
                             pdf.set_rutaPed(config.CARPETA_PEDIDOS + ped)
                             PDFs.append(pdf)
-    return PDFs
+                return PDFs
 
 
 def obtener_diarios(fecha=None):

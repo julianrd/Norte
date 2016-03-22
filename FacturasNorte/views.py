@@ -855,15 +855,16 @@ def pdf_diario_view(request):
 
 @login_required
 def pdf_factura_view(request, ruta):
-    cuit = ruta.split('_')[3].split('.')[0]
+    cuit = ruta.split('-')[1]
+     #cuit = ruta.split('_')[3].split('.')[0]
     if request.user.is_staff or request.user.is_superuser:
-        return open_pdf_view(request, ruta)
+        return open_pdf_(request, ruta)
     else:
         try:
             id = request.user.id
             cliente = Cliente.objects.get(nroUsuario=id)
             if cliente.cuit == cuit:
-                return open_pdf_view(request, ruta)
+                return open_pdf_(request, ruta)
             else:
                 return not_found_view(request)
         except ObjectDoesNotExist:
@@ -886,6 +887,12 @@ def pdf_pedido_view(request, ruta,):
         except ObjectDoesNotExist:
             return not_found_view(request)
 
+
+def open_pdf_(request, ruta):
+    ruta = config.PDF_ROOT + ruta
+    pdf = open(ruta, 'rb').read()
+    response = HttpResponse(pdf, content_type='application/pdf')
+    return response
 
 def open_pdf_view(request, ruta):
     ruta = config.CARPETA_DIARIOS + ruta
